@@ -1,0 +1,336 @@
+/* =========================================================
+THEME SYSTEM
+Nathan — Frontend Developer Portfolio
+========================================================= */
+
+/* =========================================================
+DARK THEME
+Default theme
+========================================================= */
+
+:root,
+.dark-theme {
+
+/* -------------------------------------------------------
+Backgrounds
+------------------------------------------------------- */
+
+--bg-primary: #080808;
+--bg-secondary: #0d0d0d;
+--bg-tertiary: #141414;
+
+--bg-card: rgba(255, 255, 255, 0.045);
+--bg-card-hover: rgba(255, 255, 255, 0.075);
+
+--bg-surface: rgba(255, 255, 255, 0.055);
+
+--bg-glass: rgba(10, 10, 10, 0.58);
+
+--bg-glass-hover: rgba(20, 20, 20, 0.72);
+
+/* -------------------------------------------------------
+Text
+------------------------------------------------------- */
+
+--text-primary: #ffffff;
+
+--text-secondary: rgba(255, 255, 255, 0.72);
+
+--text-tertiary: rgba(255, 255, 255, 0.52);
+
+--text-muted: rgba(255, 255, 255, 0.38);
+
+--text-disabled: rgba(255, 255, 255, 0.24);
+
+/* -------------------------------------------------------
+Borders
+------------------------------------------------------- */
+
+--border-primary: rgba(255, 255, 255, 0.08);
+
+--border-secondary: rgba(255, 255, 255, 0.13);
+
+--border-strong: rgba(255, 255, 255, 0.2);
+
+--border-hover: rgba(255, 159, 0, 0.55);
+
+--border-accent: rgba(255, 138, 0, 0.65);
+
+/* -------------------------------------------------------
+Shadows
+------------------------------------------------------- */
+
+--shadow-color: rgba(0, 0, 0, 0.45);
+
+--shadow-soft:
+0 8px 30px rgba(0, 0, 0, 0.2);
+
+--shadow-medium:
+0 15px 45px rgba(0, 0, 0, 0.3);
+
+--shadow-heavy:
+0 25px 70px rgba(0, 0, 0, 0.45);
+
+--shadow-accent:
+0 12px 35px rgba(255, 138, 0, 0.25);
+
+/* -------------------------------------------------------
+Glass
+------------------------------------------------------- */
+
+--glass-background:
+rgba(255, 255, 255, 0.055);
+
+--glass-background-hover:
+rgba(255, 255, 255, 0.085);
+
+--glass-border:
+rgba(255, 255, 255, 0.1);
+
+--glass-highlight:
+rgba(255, 255, 255, 0.08);
+
+/* -------------------------------------------------------
+Form Controls
+------------------------------------------------------- */
+
+--input-background:
+rgba(255, 255, 255, 0.045);
+
+--input-background-focus:
+rgba(255, 255, 255, 0.07);
+
+--input-border:
+rgba(255, 255, 255, 0.1);
+
+--input-border-focus:
+rgba(255, 138, 0, 0.7);
+
+--input-placeholder:
+rgba(255, 255, 255, 0.38);
+
+/* -------------------------------------------------------
+Scrollbar
+------------------------------------------------------- */
+
+--scrollbar-track: #080808;
+
+--scrollbar-thumb:
+rgba(255, 255, 255, 0.15);
+
+--scrollbar-thumb-hover:
+rgba(255, 138, 0, 0.65);
+}
+
+/* =========================================================
+LIGHT THEME
+========================================================= */
+
+.light-theme {
+
+/* -------------------------------------------------------
+Backgrounds
+------------------------------------------------------- */
+
+--bg-primary: #fffaf3;
+
+--bg-secondary: #ffffff;
+
+--bg-tertiary: #f6f2eb;
+
+--bg-card: rgba(20, 20, 20, 0.035);
+
+--bg-card-hover: rgba(255, 138, 0, 0.07);
+
+--bg-surface: rgba(20, 20, 20, 0.035);
+
+--bg-glass:
+rgba(255, 255, 255, 0.72);
+
+--bg-glass-hover:
+rgba(255, 255, 255, 0.9);
+
+/* -------------------------------------------------------
+Text
+------------------------------------------------------- */
+
+--text-primary: #151515;
+
+--text-secondary:
+rgba(21, 21, 21, 0.7);
+
+--text-tertiary:
+rgba(21, 21, 21, 0.52);
+
+--text-muted:
+rgba(21, 21, 21, 0.4);
+
+--text-disabled:
+rgba(21, 21, 21, 0.25);
+
+/* -------------------------------------------------------
+Borders
+------------------------------------------------------- */
+
+--border-primary:
+rgba(20, 20, 20, 0.08);
+
+--border-secondary:
+rgba(20, 20, 20, 0.13);
+
+--border-strong:
+rgba(20, 20, 20, 0.2);
+
+--border-hover:
+rgba(255, 138, 0, 0.55);
+
+--border-accent:
+rgba(255, 138, 0, 0.7);
+
+/* -------------------------------------------------------
+Shadows
+------------------------------------------------------- */
+
+--shadow-color:
+rgba(20, 20, 20, 0.16);
+
+--shadow-soft:
+0 8px 30px rgba(20, 20, 20, 0.08);
+
+--shadow-medium:
+0 15px 45px rgba(20, 20, 20, 0.12);
+
+--shadow-heavy:
+0 25px 70px rgba(20, 20, 20, 0.16);
+
+--shadow-accent:
+0 12px 35px rgba(255, 138, 0, 0.2);
+
+/* -------------------------------------------------------
+Glass
+------------------------------------------------------- */
+
+--glass-background:
+rgba(255, 255, 255, 0.72);
+
+--glass-background-hover:
+rgba(255, 255, 255, 0.9);
+
+--glass-border:
+rgba(20, 20, 20, 0.08);
+
+--glass-highlight:
+rgba(255, 255, 255, 0.8);
+
+/* -------------------------------------------------------
+Form Controls
+------------------------------------------------------- */
+
+--input-background:
+rgba(20, 20, 20, 0.035);
+
+--input-background-focus:
+rgba(255, 138, 0, 0.05);
+
+--input-border:
+rgba(20, 20, 20, 0.12);
+
+--input-border-focus:
+rgba(255, 138, 0, 0.7);
+
+--input-placeholder:
+rgba(20, 20, 20, 0.4);
+
+/* -------------------------------------------------------
+Scrollbar
+------------------------------------------------------- */
+
+--scrollbar-track: #f6f2eb;
+
+--scrollbar-thumb:
+rgba(20, 20, 20, 0.18);
+
+--scrollbar-thumb-hover:
+rgba(255, 138, 0, 0.65);
+}
+
+/* =========================================================
+GLOBAL THEME TRANSITION
+========================================================= */
+
+html,
+body,
+button,
+input,
+textarea,
+select,
+a,
+section,
+header,
+footer,
+nav,
+main,
+article,
+aside {
+transition:
+background-color var(--transition-theme),
+border-color var(--transition-theme),
+color var(--transition-theme),
+box-shadow var(--transition-theme);
+}
+
+/* =========================================================
+BODY THEME
+========================================================= */
+
+body {
+background-color: var(--bg-primary);
+
+color: var(--text-primary);
+}
+
+/* =========================================================
+SELECTION
+========================================================= */
+
+::selection {
+background: var(--accent-primary);
+
+color: #080808;
+}
+
+/* =========================================================
+SCROLLBAR
+========================================================= */
+
+::-webkit-scrollbar {
+width: 9px;
+}
+
+::-webkit-scrollbar-track {
+background: var(--scrollbar-track);
+}
+
+::-webkit-scrollbar-thumb {
+background: var(--scrollbar-thumb);
+
+border-radius: var(--radius-full);
+
+border: 2px solid var(--scrollbar-track);
+}
+
+::-webkit-scrollbar-thumb:hover {
+background: var(--scrollbar-thumb-hover);
+}
+
+/* =========================================================
+FIREFOX SCROLLBAR
+========================================================= */
+
+html {
+scrollbar-width: thin;
+
+scrollbar-color:
+var(--scrollbar-thumb)
+var(--scrollbar-track);
+}

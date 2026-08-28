@@ -1,0 +1,606 @@
+@import "./navbar.css";
+@import "./footer.css";
+@import "./Button/button.css";
+
+/* =========================================================
+   SHARED VARIABLES
+   Nathan — Frontend Developer Portfolio
+
+   variables.css
+   → Global colors, spacing, typography tokens, etc.
+
+   typography.css
+   → Fonts and text styling
+
+   shared.css
+   → Shared component variables
+
+   Component CSS
+   → Actual component styling
+========================================================= */
+
+:root {
+
+
+  /* =======================================================
+     NAVBAR
+  ======================================================= */
+
+  --navbar-height:
+    76px;
+
+  --navbar-padding-x:
+    2rem;
+
+
+  /* =======================================================
+     NAVBAR LINKS
+  ======================================================= */
+
+  --navbar-link-gap:
+    2rem;
+
+  --navbar-link-size:
+    0.82rem;
+
+  --navbar-link-weight:
+    500;
+
+
+  /* =======================================================
+     NAVBAR RIGHT SIDE
+  ======================================================= */
+
+  --navbar-right-gap:
+    0.6rem;
+
+
+  /* =======================================================
+     NAVBAR BUTTON
+  ======================================================= */
+
+  --navbar-button-size:
+    36px;
+
+  --navbar-border-radius:
+    var(--radius-md);
+
+
+/* =======================================================
+   NAVBAR RESUME BUTTON
+======================================================= */
+
+--navbar-resume-size:
+  0.78rem;
+
+--navbar-resume-padding-x:
+  0.9rem;
+
+--navbar-resume-padding-y:
+  0.5rem;
+
+--navbar-resume-height:
+  36px;
+
+--navbar-resume-gap:
+  0.45rem;
+
+
+
+  /* =======================================================
+     NAVBAR TRANSITION
+  ======================================================= */
+
+  --navbar-transition:
+    260ms cubic-bezier(0.4, 0, 0.2, 1);
+
+
+  /* =======================================================
+     NAVBAR TABLET
+  ======================================================= */
+
+  --navbar-tablet-padding-x:
+    1.5rem;
+
+  --navbar-tablet-link-gap:
+    1.35rem;
+
+  --navbar-tablet-link-size:
+    0.78rem;
+
+
+  /* =======================================================
+     NAVBAR MOBILE
+  ======================================================= */
+
+  --navbar-mobile-height:
+    68px;
+
+  --navbar-mobile-padding-x:
+    1rem;
+
+  --navbar-mobile-right-gap:
+    0.5rem;
+
+  --navbar-mobile-button-size:
+    35px;
+
+
+  /* =======================================================
+     MOBILE DROPDOWN
+  ======================================================= */
+
+  --navbar-mobile-width:
+    min(390px, 88vw);
+
+  --navbar-mobile-offset:
+    0.7rem;
+
+  --navbar-mobile-right:
+    0;
+
+  --navbar-mobile-padding:
+    1.4rem 1.25rem 1.1rem;
+
+
+  /* =======================================================
+     MOBILE LINKS
+  ======================================================= */
+
+  --navbar-mobile-link-gap:
+    0.25rem;
+
+  --navbar-mobile-link-height:
+    52px;
+
+  --navbar-mobile-number-width:
+    27px;
+
+
+  /* =======================================================
+     MOBILE CLOSE BUTTON
+  ======================================================= */
+
+  --navbar-mobile-close-size:
+    34px;
+
+
+  /* =======================================================
+     SMALL MOBILE
+  ======================================================= */
+
+  --navbar-small-padding-x:
+    0.8rem;
+
+  --navbar-small-button-size:
+    34px;
+
+  --navbar-small-mobile-width:
+    min(370px, 91vw);
+
+  --navbar-small-mobile-padding:
+    1.2rem 1rem 1rem;
+
+
+
+  /* =======================================================
+     SHARED CARD VARIABLES
+  ======================================================= */
+
+  --card-padding:
+    1.5rem;
+
+  --card-radius:
+    var(--radius-lg);
+
+  --card-border:
+    var(--border-primary);
+
+  --card-background:
+    var(--bg-surface);
+
+  --card-transition:
+    var(--transition-normal);
+
+  --card-hover-transform:
+    translateY(-5px);
+
+
+
+  /* =======================================================
+     SHARED CONTENT WIDTHS
+  ======================================================= */
+
+  --content-width-sm:
+    620px;
+
+  --content-width-md:
+    760px;
+
+  --content-width-lg:
+    900px;
+
+
+
+  /* =======================================================
+     SHARED SECTION HEADER
+  ======================================================= */
+
+  --section-eyebrow-size:
+    0.75rem;
+
+  --section-eyebrow-spacing:
+    0.16em;
+
+  --section-title-margin:
+    0.75rem;
+
+  --section-description-margin:
+    1rem;
+
+  --section-description-width:
+    650px;
+
+
+
+  /* =======================================================
+     SHARED BUTTONS
+  ======================================================= */
+
+  --button-padding-x:
+    1.25rem;
+
+  --button-padding-y:
+    0.7rem;
+
+  --button-gap:
+    0.6rem;
+
+  --button-radius:
+    var(--radius-full);
+
+  --button-transition:
+    var(--transition-normal);
+
+
+
+  /* =======================================================
+     SHARED ICON BUTTON
+  ======================================================= */
+
+  --icon-button-size:
+    42px;
+
+  --icon-button-radius:
+    var(--radius-md);
+
+
+
+  /* =======================================================
+     SHARED GRID
+  ======================================================= */
+
+  --grid-gap-sm:
+    1rem;
+
+  --grid-gap-md:
+    1.5rem;
+
+  --grid-gap-lg:
+    2rem;
+
+  --grid-gap-xl:
+    3rem;
+
+
+
+  /* =======================================================
+     SHARED OVERLAY
+  ======================================================= */
+
+  --overlay-dark:
+    rgba(9, 9, 9, 0.75);
+
+  --overlay-dark-heavy:
+    rgba(9, 9, 9, 0.9);
+
+  --overlay-light:
+    rgba(255, 255, 255, 0.06);
+
+
+
+  /* =======================================================
+     SHARED GLASS
+  ======================================================= */
+
+  --glass-background:
+    rgba(255, 255, 255, 0.05);
+
+  --glass-background-strong:
+    rgba(255, 255, 255, 0.08);
+
+  --glass-border:
+    rgba(255, 255, 255, 0.1);
+
+  --glass-blur:
+    var(--blur-lg);
+
+
+
+  /* =======================================================
+     SHARED HOVER
+  ======================================================= */
+
+  --hover-lift:
+    translateY(-4px);
+
+  --hover-lift-lg:
+    translateY(-7px);
+
+  --hover-scale:
+    scale(1.02);
+
+
+
+  /* =======================================================
+     SHARED FOCUS
+  ======================================================= */
+
+  --focus-width:
+    2px;
+
+  --focus-offset:
+    3px;
+
+
+
+  /* =======================================================
+     SHARED FORM ELEMENTS
+  ======================================================= */
+
+  --input-height:
+    50px;
+
+  --input-padding-x:
+    1rem;
+
+  --input-radius:
+    var(--radius-md);
+
+  --input-border:
+    var(--border-primary);
+
+  --input-background:
+    var(--bg-surface);
+
+  --input-focus-border:
+    var(--border-accent);
+
+
+
+  /* =======================================================
+     SHARED MODAL
+  ======================================================= */
+
+  --modal-width:
+    560px;
+
+  --modal-padding:
+    2rem;
+
+  --modal-radius:
+    var(--radius-xl);
+
+  --modal-background:
+    var(--bg-surface);
+
+  --modal-border:
+    var(--border-primary);
+
+  --modal-overlay:
+    rgba(0, 0, 0, 0.7);
+
+
+
+  /* =======================================================
+     SHARED BADGES
+  ======================================================= */
+
+  --badge-padding-x:
+    0.65rem;
+
+  --badge-padding-y:
+    0.3rem;
+
+  --badge-radius:
+    var(--radius-full);
+
+  --badge-font-size:
+    0.72rem;
+
+  --badge-font-weight:
+    var(--font-weight-semibold);
+
+
+
+  /* =======================================================
+     SHARED DIVIDERS
+  ======================================================= */
+
+  --divider-color:
+    var(--border-primary);
+
+  --divider-muted:
+    var(--border-muted);
+
+  --divider-accent:
+    var(--border-accent);
+
+
+
+  /* =======================================================
+     SHARED ANIMATION
+  ======================================================= */
+
+  --animation-fast:
+    200ms;
+
+  --animation-normal:
+    400ms;
+
+  --animation-slow:
+    700ms;
+
+
+
+  /* =======================================================
+     SHARED RESPONSIVE SPACING
+  ======================================================= */
+
+  --mobile-content-padding:
+    1rem;
+
+  --tablet-content-padding:
+    1.5rem;
+
+  --desktop-content-padding:
+    2rem;
+
+}
+
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 1024px) {
+
+  :root {
+
+    --card-padding:
+      1.35rem;
+
+    --section-description-width:
+      600px;
+
+    --grid-gap-lg:
+      1.5rem;
+
+    --modal-padding:
+      1.5rem;
+
+  }
+
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 768px) {
+
+  :root {
+
+    --card-padding:
+      1.15rem;
+
+    --button-padding-x:
+      1rem;
+
+    --button-padding-y:
+      0.65rem;
+
+    --icon-button-size:
+      40px;
+
+    --grid-gap-md:
+      1.25rem;
+
+    --grid-gap-lg:
+      1.35rem;
+
+    --section-title-margin:
+      0.6rem;
+
+    --section-description-margin:
+      0.85rem;
+
+    --modal-width:
+      calc(100% - 2rem);
+
+    --modal-padding:
+      1.25rem;
+
+  }
+
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
+
+@media (max-width: 480px) {
+
+  :root {
+
+    --card-padding:
+      1rem;
+
+    --mobile-content-padding:
+      0.75rem;
+
+    --button-padding-x:
+      0.9rem;
+
+    --button-padding-y:
+      0.6rem;
+
+    --grid-gap-sm:
+      0.75rem;
+
+    --grid-gap-md:
+      1rem;
+
+    --modal-width:
+      calc(100% - 1.5rem);
+
+    --modal-padding:
+      1rem;
+
+  }
+
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+  :root {
+
+    --navbar-transition:
+      0ms;
+
+    --button-transition:
+      0ms;
+
+    --card-transition:
+      0ms;
+
+    --animation-fast:
+      0ms;
+
+    --animation-normal:
+      0ms;
+
+    --animation-slow:
+      0ms;
+
+  }
+
+}
+

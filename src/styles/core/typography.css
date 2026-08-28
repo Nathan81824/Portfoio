@@ -1,0 +1,322 @@
+/* =========================================================
+TYPOGRAPHY
+Nathan — Frontend Developer Portfolio
+========================================================= */
+
+/* =========================================================
+GOOGLE FONTS
+========================================================= */
+
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap");
+
+/* =========================================================
+FONT VARIABLES
+========================================================= */
+
+:root {
+--font-body:
+"Inter",
+system-ui,
+-apple-system,
+BlinkMacSystemFont,
+"Segoe UI",
+sans-serif;
+
+--font-heading:
+"Space Grotesk",
+"Inter",
+system-ui,
+sans-serif;
+
+--font-mono:
+"JetBrains Mono",
+"Fira Code",
+Consolas,
+monospace;
+}
+
+/* =========================================================
+BODY
+========================================================= */
+
+body {
+font-family: var(--font-body);
+
+font-size: 1rem;
+
+font-weight: 400;
+
+line-height: var(--line-height-normal);
+
+color: var(--text-primary);
+
+text-rendering: optimizeLegibility;
+}
+
+/* =========================================================
+HEADINGS
+========================================================= */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+font-family: var(--font-heading);
+
+color: var(--text-primary);
+
+line-height: var(--line-height-tight);
+
+letter-spacing: -0.025em;
+
+text-wrap: balance;
+}
+
+/* =========================================================
+HEADING SIZES
+========================================================= */
+
+h1 {
+font-size: clamp(2.75rem, 7vw, 6rem);
+
+font-weight: 700;
+
+letter-spacing: -0.05em;
+}
+
+h2 {
+font-size: clamp(2.25rem, 5vw, 4rem);
+
+font-weight: 700;
+
+letter-spacing: -0.04em;
+}
+
+h3 {
+font-size: clamp(1.75rem, 3vw, 2.5rem);
+
+font-weight: 600;
+
+letter-spacing: -0.03em;
+}
+
+h4 {
+font-size: clamp(1.35rem, 2vw, 1.75rem);
+
+font-weight: 600;
+}
+
+h5 {
+font-size: 1.2rem;
+
+font-weight: 600;
+}
+
+h6 {
+font-size: 1rem;
+
+font-weight: 600;
+}
+
+/* =========================================================
+PARAGRAPHS
+========================================================= */
+
+p {
+font-family: var(--font-body);
+
+font-size: 1rem;
+
+font-weight: 400;
+
+line-height: var(--line-height-relaxed);
+
+color: var(--text-secondary);
+}
+
+/* =========================================================
+LINKS
+========================================================= */
+
+a {
+font-family: inherit;
+
+color: inherit;
+
+text-decoration: none;
+}
+
+/* =========================================================
+SMALL TEXT
+========================================================= */
+
+small {
+font-size: 0.875rem;
+
+line-height: 1.5;
+
+color: var(--text-tertiary);
+}
+
+/* =========================================================
+STRONG / BOLD
+========================================================= */
+
+strong,
+b {
+font-weight: 700;
+}
+
+/* =========================================================
+EMPHASIS
+========================================================= */
+
+em {
+font-style: italic;
+}
+
+/* =========================================================
+LABELS
+========================================================= */
+
+label {
+font-family: var(--font-body);
+
+font-size: 0.875rem;
+
+font-weight: 600;
+
+line-height: 1.4;
+
+color: var(--text-primary);
+}
+
+/* =========================================================
+BUTTONS
+========================================================= */
+
+button,
+input,
+textarea,
+select {
+font-family: var(--font-body);
+}
+
+/* =========================================================
+CODE
+========================================================= */
+
+code,
+pre,
+kbd,
+samp {
+font-family: var(--font-mono);
+
+font-size: 0.9em;
+}
+
+/* =========================================================
+CODE BLOCK
+========================================================= */
+
+pre {
+line-height: 1.7;
+
+white-space: pre-wrap;
+
+word-break: break-word;
+}
+
+/* =========================================================
+BLOCKQUOTE
+========================================================= */
+
+blockquote {
+font-family: var(--font-heading);
+
+font-size: clamp(1.2rem, 2vw, 1.5rem);
+
+font-weight: 500;
+
+line-height: 1.6;
+
+color: var(--text-secondary);
+}
+
+/* =========================================================
+EYEBROW / OVERLINE
+========================================================= */
+
+.text-eyebrow {
+font-family: var(--font-body);
+
+font-size: 0.75rem;
+
+font-weight: 700;
+
+line-height: 1.2;
+
+letter-spacing: 0.16em;
+
+text-transform: uppercase;
+
+color: var(--accent-primary);
+}
+
+/* =========================================================
+GRADIENT TEXT
+========================================================= */
+
+.text-gradient {
+background: var(--accent-gradient);
+
+background-clip: text;
+-webkit-background-clip: text;
+
+color: transparent;
+-webkit-text-fill-color: transparent;
+}
+
+/* =========================================================
+RESPONSIVE TYPOGRAPHY
+========================================================= */
+
+@media (max-width: 768px) {
+
+body {
+font-size: 0.95rem;
+}
+
+h1 {
+letter-spacing: -0.04em;
+}
+
+h2 {
+letter-spacing: -0.035em;
+}
+
+h3 {
+letter-spacing: -0.025em;
+}
+
+p {
+line-height: 1.7;
+}
+}
+
+@media (max-width: 480px) {
+
+body {
+font-size: 0.925rem;
+}
+
+h1 {
+letter-spacing: -0.035em;
+}
+
+h2 {
+letter-spacing: -0.03em;
+}
+}

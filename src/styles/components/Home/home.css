@@ -1,0 +1,539 @@
+/* =========================================================
+   HOME PAGE
+   Nathan — Frontend Developer Portfolio
+
+   Home-specific + Hero-specific variables live here.
+
+   variables.css
+   → Global design tokens
+
+   shared.css
+   → Shared component tokens
+
+   typography.css
+   → Typography
+
+   hero.css
+   → Hero styling only
+========================================================= */
+
+@import "hero.css";
+
+
+/* =========================================================
+   HOME
+========================================================= */
+
+.home {
+
+  /* =======================================================
+     HOME BACKGROUND
+  ======================================================= */
+
+  --home-bg:
+    var(--bg-primary);
+
+
+  /* =======================================================
+     HERO HEIGHT
+  ======================================================= */
+
+  --hero-min-height:
+    100vh;
+
+
+  /* =======================================================
+     HERO CONTAINER
+  ======================================================= */
+
+  --hero-container-width:
+    var(--container-width);
+
+  --hero-padding-x:
+    var(--section-padding-x);
+
+  --hero-padding-top:
+    5rem;
+
+  --hero-padding-bottom:
+    5rem;
+
+
+  /* =======================================================
+     HERO CONTENT
+  ======================================================= */
+
+  --hero-content-width:
+    760px;
+
+  --hero-heading-width:
+    100%;
+
+  --hero-description-width:
+    620px;
+
+
+  /* =======================================================
+     HERO TYPOGRAPHY
+  ======================================================= */
+
+  --hero-title-size:
+    clamp(
+      3.5rem,
+      7vw,
+      6.8rem
+    );
+
+  --hero-title-line-height:
+    0.98;
+
+  --hero-title-spacing:
+    -0.055em;
+
+  --hero-subtitle-size:
+    clamp(
+      1.5rem,
+      3vw,
+      2.6rem
+    );
+
+  --hero-description-size:
+    1.05rem;
+
+
+  /* =======================================================
+     HERO EYEBROW
+  ======================================================= */
+
+  --hero-eyebrow-size:
+    0.78rem;
+
+  --hero-eyebrow-spacing:
+    0.18em;
+
+  --hero-eyebrow-gap:
+    0.6rem;
+
+  --hero-eyebrow-margin:
+    1.25rem;
+
+  --hero-eyebrow-line-width:
+    32px;
+
+  --hero-eyebrow-line-height:
+    2px;
+
+
+  /* =======================================================
+     HERO VIDEO
+  ======================================================= */
+
+  --hero-video-position:
+    center;
+
+  --hero-video-overlay:
+    linear-gradient(
+      90deg,
+      rgba(5, 5, 5, 0.96) 0%,
+      rgba(5, 5, 5, 0.82) 32%,
+      rgba(5, 5, 5, 0.48) 65%,
+      rgba(5, 5, 5, 0.68) 100%
+    );
+
+
+  /* =======================================================
+     HERO VIDEO FADE
+  ======================================================= */
+
+  --hero-fade-height:
+    180px;
+
+
+  /* =======================================================
+     HERO GLOWS
+  ======================================================= */
+
+  --hero-glow-size:
+    420px;
+
+  --hero-glow-blur:
+    110px;
+
+  --hero-glow-opacity:
+    0.14;
+
+  --hero-glow-secondary-opacity:
+    0.08;
+
+
+  /* =======================================================
+     HERO GLOW POSITION
+  ======================================================= */
+
+  --hero-glow-one-top:
+    5%;
+
+  --hero-glow-one-right:
+    5%;
+
+  --hero-glow-two-left:
+    20%;
+
+  --hero-glow-two-bottom:
+    -20%;
+
+
+  /* =======================================================
+     HERO DESCRIPTION
+  ======================================================= */
+
+  --hero-description-margin:
+    1.5rem;
+
+  --hero-description-opacity:
+    0.9;
+
+
+  /* =======================================================
+     HERO ACTIONS
+  ======================================================= */
+
+  --hero-actions-gap:
+    1rem;
+
+  --hero-actions-margin:
+    2.25rem;
+
+
+  /* =======================================================
+     HERO BUTTONS
+  ======================================================= */
+
+  --hero-button-height:
+    var(--button-height-lg);
+
+  --hero-button-padding-x:
+    1.35rem;
+
+  --hero-button-padding-y:
+    0.75rem;
+
+  --hero-button-gap:
+    0.65rem;
+
+  --hero-button-font-size:
+    0.95rem;
+
+  --hero-button-radius:
+    var(--radius-full);
+
+
+  /* =======================================================
+     HERO PRIMARY BUTTON
+  ======================================================= */
+
+  --hero-primary-shadow:
+    0 10px 30px var(--accent-glow);
+
+  --hero-primary-hover-shadow:
+    0 14px 40px var(--accent-glow-strong);
+
+
+  /* =======================================================
+     HERO SECONDARY BUTTON
+  ======================================================= */
+
+  --hero-secondary-background:
+    rgba(255, 255, 255, 0.06);
+
+  --hero-secondary-hover-background:
+    rgba(255, 159, 0, 0.08);
+
+  --hero-secondary-blur:
+    var(--blur-md);
+
+
+  /* =======================================================
+     HERO SCROLL INDICATOR
+  ======================================================= */
+
+  --hero-scroll-bottom:
+    2rem;
+
+  --hero-scroll-gap:
+    0.65rem;
+
+  --hero-scroll-size:
+    0.78rem;
+
+
+  /* =======================================================
+     HERO TRANSITIONS
+  ======================================================= */
+
+  --hero-transition:
+    var(--transition-normal);
+
+}
+
+
+/* =========================================================
+   HOME PAGE
+========================================================= */
+
+.home {
+  position: relative;
+
+  width: 100%;
+  max-width: 100%;
+
+  margin: 0;
+  padding: 0;
+
+  overflow-x: hidden;
+
+  background:
+    var(--home-bg);
+}
+
+
+/* =========================================================
+   TABLET VARIABLES
+========================================================= */
+
+@media (max-width: 1024px) {
+
+  .home {
+
+    /* Container */
+
+    --hero-padding-x:
+      1.5rem;
+
+    --hero-padding-top:
+      4.5rem;
+
+    --hero-padding-bottom:
+      4.5rem;
+
+
+    /* Content */
+
+    --hero-content-width:
+      680px;
+
+    --hero-description-width:
+      560px;
+
+
+    /* Typography */
+
+    --hero-title-size:
+      clamp(
+        3.2rem,
+        8vw,
+        5.5rem
+      );
+
+    --hero-subtitle-size:
+      clamp(
+        1.4rem,
+        3.2vw,
+        2.2rem
+      );
+
+
+    /* Actions */
+
+    --hero-actions-gap:
+      0.9rem;
+
+  }
+
+}
+
+
+/* =========================================================
+   MOBILE VARIABLES
+========================================================= */
+
+@media (max-width: 768px) {
+
+  .home {
+
+    /* Height */
+
+    --hero-min-height:
+      100svh;
+
+
+    /* Container */
+
+    --hero-padding-x:
+      1rem;
+
+    --hero-padding-top:
+      4rem;
+
+    --hero-padding-bottom:
+      4rem;
+
+
+    /* Content */
+
+    --hero-content-width:
+      100%;
+
+    --hero-description-width:
+      100%;
+
+
+    /* Typography */
+
+    --hero-title-size:
+      clamp(
+        2.8rem,
+        13vw,
+        4.5rem
+      );
+
+    --hero-subtitle-size:
+      clamp(
+        1.3rem,
+        5.5vw,
+        1.9rem
+      );
+
+    --hero-description-size:
+      0.95rem;
+
+
+    /* Eyebrow */
+
+    --hero-eyebrow-size:
+      0.72rem;
+
+    --hero-eyebrow-spacing:
+      0.15em;
+
+    --hero-eyebrow-line-width:
+      28px;
+
+
+    /* Glow */
+
+    --hero-glow-size:
+      260px;
+
+    --hero-glow-blur:
+      80px;
+
+
+    /* Fade */
+
+    --hero-fade-height:
+      140px;
+
+
+    /* Actions */
+
+    --hero-actions-gap:
+      0.75rem;
+
+    --hero-actions-margin:
+      1.75rem;
+
+
+    /* Buttons */
+
+    --hero-button-height:
+      var(--button-height-md);
+
+    --hero-button-padding-x:
+      1rem;
+
+    --hero-button-padding-y:
+      0.7rem;
+
+    --hero-button-font-size:
+      0.88rem;
+
+
+    /* Scroll */
+
+    --hero-scroll-bottom:
+      1.5rem;
+
+  }
+
+}
+
+
+/* =========================================================
+   SMALL MOBILE VARIABLES
+========================================================= */
+
+@media (max-width: 480px) {
+
+  .home {
+
+    /* Container */
+
+    --hero-padding-x:
+      0.75rem;
+
+    --hero-padding-top:
+      3.5rem;
+
+    --hero-padding-bottom:
+      3rem;
+
+
+    /* Typography */
+
+    --hero-title-size:
+      clamp(
+        2.5rem,
+        14vw,
+        3.5rem
+      );
+
+    --hero-subtitle-size:
+      1.25rem;
+
+    --hero-description-size:
+      0.9rem;
+
+
+    /* Eyebrow */
+
+    --hero-eyebrow-size:
+      0.68rem;
+
+    --hero-eyebrow-spacing:
+      0.14em;
+
+    --hero-eyebrow-line-width:
+      24px;
+
+
+    /* Buttons */
+
+    --hero-button-height:
+      44px;
+
+    --hero-button-padding-x:
+      1rem;
+
+    --hero-button-padding-y:
+      0.7rem;
+
+
+    /* Actions */
+
+    --hero-actions-gap:
+      0.75rem;
+
+  }
+
+}

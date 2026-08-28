@@ -1,0 +1,465 @@
+/* =========================================================
+GLOBAL ANIMATIONS
+Nathan — Frontend Developer Portfolio
+========================================================= */
+
+/* =========================================================
+FADE
+========================================================= */
+
+@keyframes fadeIn {
+from {
+opacity: 0;
+}
+
+to {
+opacity: 1;
+}
+}
+
+@keyframes fadeOut {
+from {
+opacity: 1;
+}
+
+to {
+opacity: 0;
+}
+}
+
+/* =========================================================
+FADE + MOVEMENT
+========================================================= */
+
+@keyframes fadeInUp {
+from {
+opacity: 0;
+transform: translateY(24px);
+}
+
+to {
+opacity: 1;
+transform: translateY(0);
+}
+}
+
+@keyframes fadeInDown {
+from {
+opacity: 0;
+transform: translateY(-24px);
+}
+
+to {
+opacity: 1;
+transform: translateY(0);
+}
+}
+
+@keyframes fadeInLeft {
+from {
+opacity: 0;
+transform: translateX(-24px);
+}
+
+to {
+opacity: 1;
+transform: translateX(0);
+}
+}
+
+@keyframes fadeInRight {
+from {
+opacity: 0;
+transform: translateX(24px);
+}
+
+to {
+opacity: 1;
+transform: translateX(0);
+}
+}
+
+/* =========================================================
+SCALE
+========================================================= */
+
+@keyframes scaleIn {
+from {
+opacity: 0;
+transform: scale(0.94);
+}
+
+to {
+opacity: 1;
+transform: scale(1);
+}
+}
+
+@keyframes scaleOut {
+from {
+opacity: 1;
+transform: scale(1);
+}
+
+to {
+opacity: 0;
+transform: scale(0.94);
+}
+}
+
+/* =========================================================
+SLIDE
+========================================================= */
+
+@keyframes slideInLeft {
+from {
+transform: translateX(-100%);
+}
+
+to {
+transform: translateX(0);
+}
+}
+
+@keyframes slideInRight {
+from {
+transform: translateX(100%);
+}
+
+to {
+transform: translateX(0);
+}
+}
+
+@keyframes slideInUp {
+from {
+transform: translateY(100%);
+}
+
+to {
+transform: translateY(0);
+}
+}
+
+@keyframes slideInDown {
+from {
+transform: translateY(-100%);
+}
+
+to {
+transform: translateY(0);
+}
+}
+
+/* =========================================================
+FLOAT
+========================================================= */
+
+@keyframes float {
+0%,
+100% {
+transform: translateY(0);
+}
+
+50% {
+transform: translateY(-10px);
+}
+}
+
+/* =========================================================
+GENTLE FLOAT
+========================================================= */
+
+@keyframes floatGentle {
+0%,
+100% {
+transform: translateY(0);
+}
+
+50% {
+transform: translateY(-5px);
+}
+}
+
+/* =========================================================
+PULSE
+========================================================= */
+
+@keyframes pulse {
+0%,
+100% {
+opacity: 1;
+transform: scale(1);
+}
+
+50% {
+opacity: 0.75;
+transform: scale(1.03);
+}
+}
+
+/* =========================================================
+GLOW
+========================================================= */
+
+@keyframes glow {
+0%,
+100% {
+opacity: 0.65;
+}
+
+50% {
+opacity: 1;
+}
+}
+
+/* =========================================================
+GLOW PULSE
+========================================================= */
+
+@keyframes glowPulse {
+0%,
+100% {
+box-shadow:
+0 0 0 rgba(255, 138, 0, 0);
+}
+
+50% {
+box-shadow:
+0 0 30px rgba(255, 138, 0, 0.3);
+}
+}
+
+/* =========================================================
+ROTATE
+========================================================= */
+
+@keyframes rotate {
+from {
+transform: rotate(0deg);
+}
+
+to {
+transform: rotate(360deg);
+}
+}
+
+/* =========================================================
+SHIMMER
+========================================================= */
+
+@keyframes shimmer {
+from {
+background-position: -200% center;
+}
+
+to {
+background-position: 200% center;
+}
+}
+
+/* =========================================================
+GRADIENT SHIFT
+========================================================= */
+
+@keyframes gradientShift {
+0% {
+background-position: 0% 50%;
+}
+
+50% {
+background-position: 100% 50%;
+}
+
+100% {
+background-position: 0% 50%;
+}
+}
+
+/* =========================================================
+BLUR IN
+========================================================= */
+
+@keyframes blurIn {
+from {
+opacity: 0;
+filter: blur(12px);
+}
+
+to {
+opacity: 1;
+filter: blur(0);
+}
+}
+
+/* =========================================================
+BLUR OUT
+========================================================= */
+
+@keyframes blurOut {
+from {
+opacity: 1;
+filter: blur(0);
+}
+
+to {
+opacity: 0;
+filter: blur(12px);
+}
+}
+
+/* =========================================================
+BOUNCE
+========================================================= */
+
+@keyframes bounce {
+0%,
+100% {
+transform: translateY(0);
+}
+
+40% {
+transform: translateY(-8px);
+}
+
+60% {
+transform: translateY(-4px);
+}
+}
+
+/* =========================================================
+WIGGLE
+========================================================= */
+
+@keyframes wiggle {
+0%,
+100% {
+transform: rotate(0deg);
+}
+
+25% {
+transform: rotate(-2deg);
+}
+
+75% {
+transform: rotate(2deg);
+}
+}
+
+/* =========================================================
+UTILITY ANIMATION CLASSES
+========================================================= */
+
+.animate-fade-in {
+animation: fadeIn var(--duration-slow) var(--ease-smooth) both;
+}
+
+.animate-fade-up {
+animation: fadeInUp var(--duration-slow) var(--ease-smooth) both;
+}
+
+.animate-fade-down {
+animation: fadeInDown var(--duration-slow) var(--ease-smooth) both;
+}
+
+.animate-fade-left {
+animation: fadeInLeft var(--duration-slow) var(--ease-smooth) both;
+}
+
+.animate-fade-right {
+animation: fadeInRight var(--duration-slow) var(--ease-smooth) both;
+}
+
+.animate-scale-in {
+animation: scaleIn var(--duration-slow) var(--ease-smooth) both;
+}
+
+.animate-float {
+animation: float 4s var(--ease-standard) infinite;
+}
+
+.animate-float-gentle {
+animation: floatGentle 4s var(--ease-standard) infinite;
+}
+
+.animate-pulse {
+animation: pulse 2.5s var(--ease-standard) infinite;
+}
+
+.animate-glow {
+animation: glow 2.5s var(--ease-standard) infinite;
+}
+
+.animate-glow-pulse {
+animation: glowPulse 2.5s var(--ease-standard) infinite;
+}
+
+.animate-rotate {
+animation: rotate 8s linear infinite;
+}
+
+.animate-shimmer {
+animation: shimmer 2.5s linear infinite;
+}
+
+.animate-gradient {
+animation: gradientShift 5s ease infinite;
+}
+
+.animate-blur-in {
+animation: blurIn var(--duration-slow) var(--ease-smooth) both;
+}
+
+.animate-bounce {
+animation: bounce 1.5s var(--ease-bounce) infinite;
+}
+
+.animate-wiggle {
+animation: wiggle 2s var(--ease-standard) infinite;
+}
+
+/* =========================================================
+ANIMATION DELAYS
+========================================================= */
+
+.animation-delay-100 {
+animation-delay: 100ms;
+}
+
+.animation-delay-200 {
+animation-delay: 200ms;
+}
+
+.animation-delay-300 {
+animation-delay: 300ms;
+}
+
+.animation-delay-400 {
+animation-delay: 400ms;
+}
+
+.animation-delay-500 {
+animation-delay: 500ms;
+}
+
+.animation-delay-700 {
+animation-delay: 700ms;
+}
+
+.animation-delay-1000 {
+animation-delay: 1000ms;
+}
+
+/* =========================================================
+REDUCED MOTION
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+*,
+*::before,
+*::after {
+animation-duration: 0.01ms !important;
+animation-iteration-count: 1 !important;
+animation-delay: 0ms !important;
+}
+}

@@ -1,0 +1,9 @@
+@import "./styles/core/reset.css";
+@import "./styles/core/variables.css";
+@import "./styles/core/theme.css";
+@import "./styles/core/typography.css";
+@import "./styles/global.css";
+ @import "./styles/core/animations.css";
+@import "./styles/core/utilities.css"; 
+
+/* @import "./styles/responsive/responsive.css"; */

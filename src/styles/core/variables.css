@@ -1,0 +1,442 @@
+
+/* =========================================================
+   GLOBAL VARIABLES
+   Nathan — Frontend Developer Portfolio
+
+   Only shared/global design values belong here.
+
+   Do NOT put:
+   - Navbar variables
+   - Hero variables
+   - Component-specific variables
+   - Page-specific variables
+========================================================= */
+
+:root {
+
+  /* =======================================================
+     BRAND COLORS
+  ======================================================= */
+
+  /*
+     PRIMARY BRAND COLOR
+
+     Change this ONE value to change the main
+     yellow/brand color throughout the website.
+  */
+
+  --color-primary: #ffc400;
+
+
+  /*
+     SECONDARY BRAND COLOR
+
+     Transparent version of the primary color.
+
+     Use this for:
+     - subtle backgrounds
+     - hover backgrounds
+     - glass effects
+     - cards
+     - borders
+     - soft highlights
+  */
+
+  --color-secondary:
+    rgba(255, 196, 0, 0.10);
+
+
+  /*
+     STRONGER TRANSPARENT BRAND COLOR
+  */
+
+  --color-secondary-medium:
+    rgba(255, 196, 0, 0.18);
+
+
+  /*
+     VERY STRONG TRANSPARENT BRAND COLOR
+  */
+
+  --color-secondary-strong:
+    rgba(255, 196, 0, 0.28);
+
+
+  /* =======================================================
+     BASIC COLORS
+  ======================================================= */
+
+  --color-black:
+    #090909;
+
+  --color-black-soft:
+    #111111;
+
+  --color-white:
+    #ffffff;
+
+  --color-transparent:
+    transparent;
+
+
+  /* =======================================================
+     BRAND COLOR VARIATIONS
+  ======================================================= */
+
+  --color-primary-dark:
+    #d9a600;
+
+  --color-primary-light:
+    #ffd84d;
+
+
+  /* =======================================================
+     GLOBAL TEXT COLORS
+  ======================================================= */
+
+  --text-primary:
+    #ffffff;
+
+  --text-secondary:
+    #b8b8b8;
+
+  --text-tertiary:
+    #929292;
+
+  --text-muted:
+    #707070;
+
+  --text-dark:
+    #090909;
+
+
+  /* =======================================================
+     GLOBAL ACCENT COLORS
+  ======================================================= */
+
+  /*
+     Main accent now follows the primary brand color.
+  */
+
+  --accent-primary:
+    var(--color-primary);
+
+
+  /*
+     Secondary accent follows the transparent
+     version of the primary brand color.
+  */
+
+  --accent-secondary:
+    var(--color-secondary);
+
+
+  --accent-dark:
+    var(--color-primary-dark);
+
+
+  --accent-light:
+    var(--color-primary-light);
+
+
+  /* =======================================================
+     GLOBAL ACCENT GRADIENT
+  ======================================================= */
+
+  --accent-gradient:
+    linear-gradient(
+      135deg,
+      var(--color-primary-light) 0%,
+      var(--color-primary) 55%,
+      var(--color-primary-dark) 100%
+    );
+
+
+  /* =======================================================
+     GLOBAL BACKGROUNDS
+  ======================================================= */
+
+  --bg-primary:
+    var(--color-black);
+
+  --bg-secondary:
+    #0e0e0e;
+
+  --bg-tertiary:
+    #151515;
+
+  --bg-surface:
+    #181818;
+
+
+  /*
+     Brand-tinted backgrounds
+  */
+
+  --bg-primary-color:
+    var(--color-primary);
+
+  --bg-secondary-color:
+    var(--color-secondary);
+
+  --bg-secondary-color-medium:
+    var(--color-secondary-medium);
+
+  --bg-secondary-color-strong:
+    var(--color-secondary-strong);
+
+
+  /* =======================================================
+     GLOBAL BORDERS
+  ======================================================= */
+
+  --border-primary:
+    rgba(255, 255, 255, 0.12);
+
+  --border-secondary:
+    rgba(255, 255, 255, 0.08);
+
+  --border-muted:
+    rgba(255, 255, 255, 0.05);
+
+
+  /*
+     Brand border automatically follows
+     the primary color.
+  */
+
+  --border-accent:
+    rgba(255, 196, 0, 0.45);
+
+
+  /* =======================================================
+     GLOBAL SHADOWS
+  ======================================================= */
+
+  --shadow-sm:
+    0 4px 12px
+    rgba(0, 0, 0, 0.18);
+
+  --shadow-md:
+    0 10px 30px
+    rgba(0, 0, 0, 0.25);
+
+  --shadow-lg:
+    0 20px 50px
+    rgba(0, 0, 0, 0.35);
+
+  --shadow-xl:
+    0 30px 80px
+    rgba(0, 0, 0, 0.45);
+
+
+  /* =======================================================
+     GLOBAL ACCENT GLOW
+  ======================================================= */
+
+  --accent-glow:
+    rgba(255, 196, 0, 0.18);
+
+  --accent-glow-strong:
+    rgba(255, 196, 0, 0.32);
+
+
+  /* =======================================================
+     GLOBAL FONT WEIGHTS
+  ======================================================= */
+
+  --font-weight-regular:
+    400;
+
+  --font-weight-medium:
+    500;
+
+  --font-weight-semibold:
+    600;
+
+  --font-weight-bold:
+    700;
+
+  --font-weight-extrabold:
+    800;
+
+  --font-weight-black:
+    900;
+
+
+  /* =======================================================
+     GLOBAL LINE HEIGHTS
+  ======================================================= */
+
+  --line-height-tight:
+    1;
+
+  --line-height-snug:
+    1.2;
+
+  --line-height-normal:
+    1.5;
+
+  --line-height-relaxed:
+    1.7;
+
+  --line-height-loose:
+    1.8;
+
+
+  /* =======================================================
+     GLOBAL BORDER RADIUS
+  ======================================================= */
+
+  --radius-xs:
+    4px;
+
+  --radius-sm:
+    6px;
+
+  --radius-md:
+    10px;
+
+  --radius-lg:
+    16px;
+
+  --radius-xl:
+    24px;
+
+  --radius-2xl:
+    32px;
+
+  --radius-full:
+    999px;
+
+
+  /* =======================================================
+     GLOBAL TRANSITIONS
+  ======================================================= */
+
+  --transition-fast:
+    150ms ease;
+
+  --transition-normal:
+    300ms ease;
+
+  --transition-slow:
+    500ms ease;
+
+
+  /* =======================================================
+     GLOBAL CONTAINER
+  ======================================================= */
+
+  --container-width:
+    1280px;
+
+
+  /* =======================================================
+     GLOBAL SECTION SPACING
+  ======================================================= */
+
+  --section-padding-x:
+    2rem;
+
+  --section-padding-y:
+    6rem;
+
+
+  /* =======================================================
+     GLOBAL GAP
+  ======================================================= */
+
+  --gap-xs:
+    0.25rem;
+
+  --gap-sm:
+    0.5rem;
+
+  --gap-md:
+    1rem;
+
+  --gap-lg:
+    1.5rem;
+
+  --gap-xl:
+    2rem;
+
+  --gap-2xl:
+    3rem;
+
+
+  /* =======================================================
+     GLOBAL BUTTON SIZES
+  ======================================================= */
+
+  --button-height-sm:
+    40px;
+
+  --button-height-md:
+    44px;
+
+  --button-height-lg:
+    50px;
+
+
+  /* =======================================================
+     GLOBAL Z-INDEX
+  ======================================================= */
+
+  --z-base:
+    1;
+
+  --z-content:
+    10;
+
+  --z-overlay:
+    20;
+
+  --z-dropdown:
+    100;
+
+  --z-sticky:
+    500;
+
+  --z-modal:
+    1000;
+
+  --z-toast:
+    2000;
+
+
+  /* =======================================================
+     GLOBAL BLUR
+  ======================================================= */
+
+  --blur-sm:
+    8px;
+
+  --blur-md:
+    12px;
+
+  --blur-lg:
+    20px;
+
+  --blur-xl:
+    30px;
+
+
+  /* =======================================================
+     GLOBAL OPACITY
+  ======================================================= */
+
+  --opacity-subtle:
+    0.05;
+
+  --opacity-light:
+    0.1;
+
+  --opacity-medium:
+    0.2;
+
+  --opacity-heavy:
+    0.5;
+
+}
