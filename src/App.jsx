@@ -1,19 +1,23 @@
 import { useEffect } from "react";
+
 import {
   Routes,
   Route,
   useLocation,
+  Link,
 } from "react-router-dom";
 
-import Navbar from "./components/Shared/Navbar/Navbar";
+import Navbar from "./components/Shared/Navbar/Navbar.jsx";
+import Footer from "./components/Shared/Footer/Footer.jsx";
 
-import Home from "./pages/Home";
-import About from "./pages/About";
-import Skills from "./pages/Skills";
-import Projects from "./pages/Projects";
-import Contact from "./pages/Contact";
+import Home from "./pages/Home.jsx";
+import About from "./pages/About.jsx";
+import Skills from "./pages/Skills.jsx";
+import Projects from "./pages/Projects.jsx";
+import Contact from "./pages/Contact.jsx";
 
-import { getData } from "./javascript/data/data";
+import { getData } from "./javascript/data/data.js";
+import FloatingContact from "./components/Shared/Button/FloatingContact.jsx";
 
 
 /* =========================================================
@@ -21,7 +25,6 @@ import { getData } from "./javascript/data/data";
 ========================================================= */
 
 function NotFound() {
-
   return (
     <main className="not-found">
 
@@ -40,12 +43,12 @@ function NotFound() {
           or may have been moved.
         </p>
 
-        <a
-          href="/"
+        <Link
+          to="/"
           className="btn btn-primary"
         >
           Back Home
-        </a>
+        </Link>
 
       </div>
 
@@ -57,13 +60,13 @@ function NotFound() {
 /* =========================================================
    PAGE TITLE
 ========================================================= */
-function PageTitle() {
 
+function PageTitle() {
   const location = useLocation();
 
   const {
-    personalInfo,
-    roles,
+    personalInfo = {},
+    roles = [],
   } = getData();
 
 
@@ -73,15 +76,14 @@ function PageTitle() {
        FORMAT NAME
     ===================================================== */
 
-    const formattedName =
-      personalInfo.name
-        ? personalInfo.name.charAt(0).toUpperCase() +
-          personalInfo.name.slice(1).toLowerCase()
-        : "Portfolio";
+    const formattedName = personalInfo.name
+      ? personalInfo.name.charAt(0).toUpperCase() +
+        personalInfo.name.slice(1).toLowerCase()
+      : "Portfolio";
 
 
     /* =====================================================
-       NON-HOME PAGES
+       PAGE TITLES
     ===================================================== */
 
     const pages = {
@@ -92,6 +94,10 @@ function PageTitle() {
       "/contact": "Contact",
     };
 
+
+    /* =====================================================
+       NON-HOME PAGES
+    ===================================================== */
 
     if (location.pathname !== "/") {
 
@@ -107,11 +113,10 @@ function PageTitle() {
 
 
     /* =====================================================
-       HOME PAGE TITLE
-       Uses roles from data.js
+       HOME PAGE
     ===================================================== */
 
-    if (!roles || roles.length === 0) {
+    if (!roles.length) {
 
       document.title =
         `${formattedName} — Portfolio`;
@@ -119,6 +124,10 @@ function PageTitle() {
       return;
     }
 
+
+    /* =====================================================
+       ROLE ROTATION
+    ===================================================== */
 
     let index = 0;
 
@@ -136,7 +145,7 @@ function PageTitle() {
     updateTitle();
 
 
-    /* Rotate roles */
+    /* Rotate every 3 seconds */
 
     const interval = setInterval(() => {
 
@@ -163,12 +172,13 @@ function PageTitle() {
 
   return null;
 }
+
+
 /* =========================================================
    APP
 ========================================================= */
 
 export default function App() {
-
   return (
     <>
 
@@ -194,30 +204,55 @@ export default function App() {
 
         <Routes>
 
+          {/* =================================================
+              HOME
+          ================================================= */}
+
           <Route
             path="/"
             element={<Home />}
           />
+
+
+          {/* =================================================
+              ABOUT
+          ================================================= */}
 
           <Route
             path="/about"
             element={<About />}
           />
 
+
+          {/* =================================================
+              SKILLS
+          ================================================= */}
+
           <Route
             path="/skills"
             element={<Skills />}
           />
+
+
+          {/* =================================================
+              PROJECTS
+          ================================================= */}
 
           <Route
             path="/projects"
             element={<Projects />}
           />
 
+
+          {/* =================================================
+              CONTACT
+          ================================================= */}
+
           <Route
             path="/contact"
             element={<Contact />}
           />
+
 
           {/* =================================================
               404
@@ -231,6 +266,15 @@ export default function App() {
         </Routes>
 
       </main>
+
+      <FloatingContact/>
+
+
+      {/* ===================================================
+          FOOTER
+      =================================================== */}
+
+      <Footer />
 
     </>
   );

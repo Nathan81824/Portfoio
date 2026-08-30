@@ -1,11 +1,20 @@
 
+import ProjectsHero from "../components/Projects/ProjectsHero";
 
-function About() {
+export default function Projects() {
+
   return (
-    <div>
-      <h1>PAGE@#$</h1>
-    </div>
-  )
-}
 
-export default About
+    <main className="projects-page">
+
+      {/* ===================================================
+          PROJECTS HERO / SLIDER
+      =================================================== */}
+
+      <ProjectsHero/>
+
+    </main>
+
+  );
+
+}

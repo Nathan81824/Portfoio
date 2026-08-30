@@ -1,26 +1,69 @@
-// src/javascript/formatters.js
+/* =========================================================
+   SITE CONFIG
+   Nathan — Frontend Developer Portfolio
+========================================================= */
 
-export function formatName(name) {
-  if (!name) {
-    return {
-      original: "",
-      lowercase: "",
-      uppercase: "",
-      capitalized: "",
-    };
-  }
+const siteConfig = {
 
-  return {
-    original: name,
+  /* =======================================================
+     SITE INFORMATION
+  ======================================================= */
 
-    lowercase:
-      name.toLowerCase(),
+  name: "Nathan",
 
-    uppercase:
-      name.toUpperCase(),
+  title:
+    "Nathan — Frontend Developer",
 
-    capitalized:
-      name.charAt(0).toUpperCase() +
-      name.slice(1).toLowerCase(),
-  };
-}
+  description:
+    "Frontend Developer creating modern, responsive and interactive digital experiences.",
+
+
+  /* =======================================================
+     SITE URL
+  ======================================================= */
+
+  url:
+    "https://nathan81824.github.io",
+
+
+  /* =======================================================
+     DEFAULT SETTINGS
+  ======================================================= */
+
+  theme:
+    "dark",
+
+  language:
+    "en",
+
+
+  /* =======================================================
+     AUTHOR
+  ======================================================= */
+
+  author: {
+    name: "Nathan",
+    role: "Frontend Developer",
+  },
+
+
+  /* =======================================================
+     SOCIAL LINKS
+  ======================================================= */
+
+  social: {
+    github:
+      "https://github.com/Nathan81824",
+
+    linkedin:
+      "",
+
+    twitter:
+      "",
+
+  },
+
+};
+
+
+export default siteConfig;

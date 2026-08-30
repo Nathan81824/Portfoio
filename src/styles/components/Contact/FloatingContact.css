@@ -1,0 +1,1127 @@
+/* =========================================================
+   FLOATING CONTACT
+   Nathan — Frontend Developer Portfolio
+
+   Uses:
+   - variables.css
+   - animation.css
+   - global theme variables
+========================================================= */
+
+
+/* =========================================================
+   FLOATING CONTACT WRAPPER
+========================================================= */
+
+.floating-contact {
+  position: fixed;
+
+  right: 1.5rem;
+  bottom: 1.5rem;
+
+  z-index: var(--z-toast, 2000);
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: flex-end;
+
+  gap: 0.8rem;
+
+  pointer-events: none;
+}
+
+
+/* =========================================================
+   FLOATING CONTACT BUTTON
+========================================================= */
+
+.floating-contact-button {
+  position: relative;
+
+  width: 58px;
+  height: 58px;
+
+  display: inline-flex;
+
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  border:
+    1px solid
+    var(--border-accent);
+
+  border-radius:
+    var(--radius-full);
+
+  color:
+    var(--color-black, #090909);
+
+  background:
+    var(--accent-gradient);
+
+  box-shadow:
+    0 10px 30px
+    var(--accent-glow),
+
+    0 0 0
+    rgba(255, 159, 0, 0);
+
+  cursor: pointer;
+
+  pointer-events: auto;
+
+  transition:
+    transform var(--transition-normal),
+    box-shadow var(--transition-normal),
+    filter var(--transition-normal);
+}
+
+
+/* =========================================================
+   BUTTON OUTER GLOW
+========================================================= */
+
+.floating-contact-button::before {
+  content: "";
+
+  position: absolute;
+
+  inset: -5px;
+
+  border-radius:
+    var(--radius-full);
+
+  border:
+    1px solid
+    rgba(255, 159, 0, 0.22);
+
+  pointer-events: none;
+
+  opacity: 0.7;
+}
+
+
+/* =========================================================
+   BUTTON INNER SHINE
+========================================================= */
+
+.floating-contact-button::after {
+  content: "";
+
+  position: absolute;
+
+  inset: 1px;
+
+  border-radius:
+    var(--radius-full);
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.24),
+      transparent 45%
+    );
+
+  pointer-events: none;
+}
+
+
+/* =========================================================
+   ICON
+========================================================= */
+
+.floating-contact-button svg {
+  position: relative;
+
+  z-index: 2;
+
+  flex-shrink: 0;
+
+  transition:
+    transform var(--transition-normal);
+}
+
+
+/* =========================================================
+   BUTTON HOVER
+========================================================= */
+
+.floating-contact-button:hover {
+  transform:
+    translateY(-4px)
+    scale(1.04);
+
+  filter:
+    brightness(1.06);
+
+  box-shadow:
+    0 14px 40px
+    var(--accent-glow-strong),
+
+    0 0 30px
+    rgba(255, 159, 0, 0.2);
+}
+
+
+.floating-contact-button:hover svg {
+  transform:
+    rotate(-6deg)
+    scale(1.05);
+}
+
+
+/* =========================================================
+   BUTTON ACTIVE
+========================================================= */
+
+.floating-contact-button:active {
+  transform:
+    translateY(-1px)
+    scale(0.98);
+}
+
+
+/* =========================================================
+   OPEN STATE
+========================================================= */
+
+.floating-contact-button.is-open {
+  box-shadow:
+    0 10px 30px
+    var(--accent-glow-strong);
+}
+
+
+.floating-contact-button.is-open svg {
+  transform:
+    rotate(0deg);
+}
+
+
+/* =========================================================
+   CONTACT PANEL
+========================================================= */
+
+.floating-contact-panel {
+  position: relative;
+
+  width:
+    min(
+      380px,
+      calc(100vw - 2rem)
+    );
+
+  max-height:
+    calc(100vh - 8rem);
+
+  overflow-y: auto;
+
+  padding:
+    1.25rem;
+
+  border:
+    1px solid
+    var(--border-primary);
+
+  border-radius:
+    var(--radius-xl);
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(24, 24, 24, 0.94),
+      rgba(10, 10, 10, 0.92)
+    );
+
+  color:
+    var(--text-primary);
+
+  box-shadow:
+    var(--shadow-xl),
+
+    0 0 45px
+    rgba(255, 159, 0, 0.08);
+
+  backdrop-filter:
+    blur(24px);
+
+  -webkit-backdrop-filter:
+    blur(24px);
+
+  pointer-events: auto;
+
+  scrollbar-width: thin;
+
+  animation:
+    scaleIn
+    260ms
+    ease-out
+    forwards;
+}
+
+
+/* =========================================================
+   PANEL TOP ACCENT
+========================================================= */
+
+.floating-contact-panel::before {
+  content: "";
+
+  position: absolute;
+
+  top: 0;
+  left: 1.25rem;
+  right: 1.25rem;
+
+  height: 1px;
+
+  background:
+    var(--accent-gradient);
+
+  opacity: 0.75;
+
+  pointer-events: none;
+}
+
+
+/* =========================================================
+   PANEL HEADER
+========================================================= */
+
+.floating-contact-header {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 1rem;
+
+  padding-bottom:
+    1rem;
+
+  border-bottom:
+    1px solid
+    var(--border-muted);
+}
+
+
+/* =========================================================
+   HEADING GROUP
+========================================================= */
+
+.floating-contact-heading {
+  display: flex;
+
+  align-items: center;
+
+  gap: 0.75rem;
+
+  min-width: 0;
+}
+
+
+/* =========================================================
+   AVATAR
+========================================================= */
+
+.floating-contact-avatar {
+  width: 40px;
+  height: 40px;
+
+  flex-shrink: 0;
+
+  display: inline-flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border:
+    1px solid
+    rgba(255, 159, 0, 0.3);
+
+  border-radius:
+    12px;
+
+  color:
+    var(--accent-primary);
+
+  background:
+    rgba(255, 159, 0, 0.08);
+
+  box-shadow:
+    0 0 20px
+    rgba(255, 159, 0, 0.08);
+}
+
+
+/* =========================================================
+   HEADING
+========================================================= */
+
+.floating-contact-heading strong {
+  display: block;
+
+  margin: 0;
+
+  color:
+    var(--text-primary);
+
+  font-family:
+    var(--font-heading);
+
+  font-size:
+    0.98rem;
+
+  font-weight:
+    var(--font-weight-bold);
+
+  line-height:
+    1.2;
+}
+
+
+/* =========================================================
+   AVAILABILITY
+   Uses animation.css → .animate-status
+========================================================= */
+
+.floating-contact-status {
+  display: flex;
+
+  align-items: center;
+
+  gap: 0.45rem;
+
+  margin-top: 0.3rem;
+
+  color:
+    var(--text-muted);
+
+  font-family:
+    var(--font-body);
+
+  font-size:
+    0.68rem;
+
+  font-weight:
+    var(--font-weight-medium);
+
+  line-height:
+    1.2;
+}
+
+
+/*
+  We intentionally do NOT define another
+  status animation here.
+
+  The dot uses:
+
+  .animate-status
+
+  from animation.css.
+*/
+
+
+/* =========================================================
+   CLOSE BUTTON
+========================================================= */
+
+.floating-contact-close {
+  width: 34px;
+  height: 34px;
+
+  flex-shrink: 0;
+
+  display: inline-flex;
+
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  border:
+    1px solid
+    var(--border-primary);
+
+  border-radius:
+    var(--radius-md);
+
+  color:
+    var(--text-secondary);
+
+  background:
+    rgba(255, 255, 255, 0.035);
+
+  cursor: pointer;
+
+  transition:
+    color var(--transition-fast),
+    background var(--transition-fast),
+    border-color var(--transition-fast),
+    transform var(--transition-fast);
+}
+
+
+.floating-contact-close:hover {
+  color:
+    var(--accent-primary);
+
+  background:
+    rgba(255, 159, 0, 0.07);
+
+  border-color:
+    var(--border-accent);
+
+  transform:
+    rotate(5deg);
+}
+
+
+/* =========================================================
+   INTRO
+========================================================= */
+
+.floating-contact-intro {
+  padding:
+    1rem 0 0.75rem;
+}
+
+
+.floating-contact-intro p {
+  margin: 0;
+
+  color:
+    var(--text-secondary);
+
+  font-family:
+    var(--font-body);
+
+  font-size:
+    0.78rem;
+
+  line-height:
+    1.65;
+}
+
+
+/* =========================================================
+   FORM
+========================================================= */
+
+.floating-contact-form {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 0.8rem;
+}
+
+
+/* =========================================================
+   FIELD
+========================================================= */
+
+.floating-contact-field {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 0.35rem;
+}
+
+
+/* =========================================================
+   LABEL
+========================================================= */
+
+.floating-contact-field label {
+  color:
+    var(--text-secondary);
+
+  font-family:
+    var(--font-body);
+
+  font-size:
+    0.7rem;
+
+  font-weight:
+    var(--font-weight-semibold);
+
+  letter-spacing:
+    0.02em;
+}
+
+
+/* =========================================================
+   INPUTS
+========================================================= */
+
+.floating-contact-field input,
+.floating-contact-field textarea {
+  width: 100%;
+
+  box-sizing: border-box;
+
+  border:
+    1px solid
+    var(--border-primary);
+
+  border-radius:
+    var(--radius-md);
+
+  color:
+    var(--text-primary);
+
+  background:
+    rgba(255, 255, 255, 0.035);
+
+  font-family:
+    var(--font-body);
+
+  font-size:
+    0.8rem;
+
+  outline: none;
+
+  transition:
+    border-color var(--transition-fast),
+    background var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+
+/* =========================================================
+   INPUT
+========================================================= */
+
+.floating-contact-field input {
+  min-height: 42px;
+
+  padding:
+    0.65rem 0.75rem;
+}
+
+
+/* =========================================================
+   TEXTAREA
+========================================================= */
+
+.floating-contact-field textarea {
+  min-height: 110px;
+
+  padding:
+    0.7rem 0.75rem;
+
+  resize: vertical;
+
+  line-height:
+    1.55;
+}
+
+
+/* =========================================================
+   PLACEHOLDER
+========================================================= */
+
+.floating-contact-field input::placeholder,
+.floating-contact-field textarea::placeholder {
+  color:
+    var(--text-muted);
+
+  opacity: 0.75;
+}
+
+
+/* =========================================================
+   INPUT FOCUS
+========================================================= */
+
+.floating-contact-field input:focus,
+.floating-contact-field textarea:focus {
+  border-color:
+    var(--border-accent);
+
+  background:
+    rgba(255, 159, 0, 0.045);
+
+  box-shadow:
+    0 0 0 3px
+    rgba(255, 159, 0, 0.08);
+}
+
+
+/* =========================================================
+   DISABLED
+========================================================= */
+
+.floating-contact-field input:disabled,
+.floating-contact-field textarea:disabled {
+  cursor:
+    not-allowed;
+
+  opacity:
+    0.6;
+}
+
+
+/* =========================================================
+   META / CHARACTER COUNT
+========================================================= */
+
+.floating-contact-meta {
+  display: flex;
+
+  justify-content: flex-end;
+
+  margin-top: -0.35rem;
+}
+
+
+.floating-contact-meta span {
+  color:
+    var(--text-muted);
+
+  font-size:
+    0.62rem;
+
+  font-family:
+    var(--font-body);
+}
+
+
+/* =========================================================
+   ERROR
+========================================================= */
+
+.floating-contact-error {
+  display: flex;
+
+  align-items: flex-start;
+
+  gap: 0.5rem;
+
+  padding:
+    0.7rem 0.75rem;
+
+  border:
+    1px solid
+    rgba(239, 68, 68, 0.22);
+
+  border-radius:
+    var(--radius-md);
+
+  color:
+    #fca5a5;
+
+  background:
+    rgba(239, 68, 68, 0.06);
+
+  font-size:
+    0.72rem;
+
+  line-height:
+    1.45;
+}
+
+
+/* =========================================================
+   SUCCESS
+========================================================= */
+
+.floating-contact-success {
+  display: flex;
+
+  align-items: center;
+
+  gap: 0.5rem;
+
+  padding:
+    0.7rem 0.75rem;
+
+  border:
+    1px solid
+    rgba(34, 197, 94, 0.22);
+
+  border-radius:
+    var(--radius-md);
+
+  color:
+    #86efac;
+
+  background:
+    rgba(34, 197, 94, 0.06);
+
+  font-size:
+    0.72rem;
+
+  line-height:
+    1.45;
+}
+
+
+/* =========================================================
+   SEND BUTTON
+========================================================= */
+
+.floating-contact-send {
+  width: 100%;
+
+  min-height:
+    var(--button-height-md);
+
+  margin-top:
+    0.2rem;
+
+  padding:
+    0.7rem 1rem;
+
+  display: inline-flex;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 0.55rem;
+
+  border:
+    1px solid
+    var(--border-accent);
+
+  border-radius:
+    var(--radius-md);
+
+  color:
+    var(--color-black, #090909);
+
+  background:
+    var(--accent-gradient);
+
+  font-family:
+    var(--font-body);
+
+  font-size:
+    0.8rem;
+
+  font-weight:
+    var(--font-weight-bold);
+
+  cursor: pointer;
+
+  box-shadow:
+    0 8px 24px
+    var(--accent-glow);
+
+  transition:
+    transform var(--transition-normal),
+    filter var(--transition-normal),
+    box-shadow var(--transition-normal),
+    opacity var(--transition-fast);
+}
+
+
+.floating-contact-send:hover:not(:disabled) {
+  transform:
+    translateY(-2px);
+
+  filter:
+    brightness(1.05);
+
+  box-shadow:
+    0 12px 32px
+    var(--accent-glow-strong);
+}
+
+
+.floating-contact-send:active:not(:disabled) {
+  transform:
+    translateY(0);
+}
+
+
+/* =========================================================
+   SEND BUTTON DISABLED
+========================================================= */
+
+.floating-contact-send:disabled {
+  opacity: 0.45;
+
+  cursor:
+    not-allowed;
+
+  box-shadow:
+    none;
+
+  filter:
+    saturate(0.7);
+}
+
+
+/* =========================================================
+   SPINNER
+========================================================= */
+
+.floating-contact-spinner {
+  animation:
+    rotate
+    0.9s
+    linear
+    infinite;
+}
+
+
+/* =========================================================
+   PANEL SCROLLBAR
+========================================================= */
+
+.floating-contact-panel::-webkit-scrollbar {
+  width: 5px;
+}
+
+
+.floating-contact-panel::-webkit-scrollbar-track {
+  background:
+    transparent;
+}
+
+
+.floating-contact-panel::-webkit-scrollbar-thumb {
+  background:
+    rgba(255, 159, 0, 0.25);
+
+  border-radius:
+    var(--radius-full);
+}
+
+
+/* =========================================================
+   FOCUS STATES
+========================================================= */
+
+.floating-contact-button:focus-visible,
+.floating-contact-close:focus-visible,
+.floating-contact-send:focus-visible,
+.floating-contact-field input:focus-visible,
+.floating-contact-field textarea:focus-visible {
+  outline:
+    2px solid
+    var(--accent-primary);
+
+  outline-offset:
+    3px;
+}
+
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 768px) {
+
+  .floating-contact {
+    right: 1rem;
+
+    bottom: 1rem;
+  }
+
+
+  .floating-contact-button {
+    width: 54px;
+    height: 54px;
+  }
+
+
+  .floating-contact-panel {
+    width:
+      min(
+        360px,
+        calc(100vw - 2rem)
+      );
+
+    max-height:
+      calc(100svh - 7rem);
+
+    padding:
+      1.1rem;
+  }
+
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
+
+@media (max-width: 480px) {
+
+  .floating-contact {
+    right: 0.75rem;
+
+    bottom: 0.75rem;
+
+    gap: 0.65rem;
+  }
+
+
+  .floating-contact-button {
+    width: 52px;
+    height: 52px;
+  }
+
+
+  .floating-contact-panel {
+    width:
+      calc(100vw - 1.5rem);
+
+    padding:
+      1rem;
+
+    border-radius:
+      var(--radius-lg);
+  }
+
+
+  .floating-contact-avatar {
+    width: 36px;
+    height: 36px;
+
+    border-radius:
+      10px;
+  }
+
+
+  .floating-contact-heading strong {
+    font-size:
+      0.92rem;
+  }
+
+
+  .floating-contact-status {
+    font-size:
+      0.62rem;
+  }
+
+
+  .floating-contact-field input {
+    min-height:
+      40px;
+  }
+
+
+  .floating-contact-field textarea {
+    min-height:
+      100px;
+  }
+
+}
+
+
+/* =========================================================
+   VERY SMALL SCREENS
+========================================================= */
+
+@media (max-width: 360px) {
+
+  .floating-contact {
+    right: 0.6rem;
+
+    bottom: 0.6rem;
+  }
+
+
+  .floating-contact-button {
+    width: 50px;
+    height: 50px;
+  }
+
+
+  .floating-contact-panel {
+    width:
+      calc(100vw - 1.2rem);
+
+    padding:
+      0.85rem;
+  }
+
+
+  .floating-contact-intro p {
+    font-size:
+      0.72rem;
+  }
+
+
+  .floating-contact-form {
+    gap:
+      0.65rem;
+  }
+
+
+  .floating-contact-field textarea {
+    min-height:
+      90px;
+  }
+
+}
+
+
+/* =========================================================
+   LIGHT THEME
+========================================================= */
+
+.light-theme .floating-contact-panel {
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.96),
+      rgba(255, 250, 240, 0.94)
+    );
+
+  border-color:
+    rgba(23, 18, 11, 0.1);
+
+  box-shadow:
+    0 25px 60px
+    rgba(23, 18, 11, 0.16);
+}
+
+
+.light-theme .floating-contact-field input,
+.light-theme .floating-contact-field textarea {
+  color:
+    var(--text-primary);
+
+  background:
+    rgba(23, 18, 11, 0.035);
+
+  border-color:
+    rgba(23, 18, 11, 0.1);
+}
+
+
+.light-theme .floating-contact-field input:focus,
+.light-theme .floating-contact-field textarea:focus {
+  background:
+    rgba(232, 135, 0, 0.045);
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+  .floating-contact *,
+  .floating-contact *::before,
+  .floating-contact *::after {
+    animation: none !important;
+
+    transition: none !important;
+  }
+
+}
+

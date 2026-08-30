@@ -1,465 +1,1010 @@
 /* =========================================================
-GLOBAL ANIMATIONS
-Nathan — Frontend Developer Portfolio
+   GLOBAL CSS ANIMATIONS
+   Nathan — Frontend Developer Portfolio
+
+   Location:
+   src/styles/animation.css
+
+   Framer Motion presets belong in:
+   src/javascript/utils/animations.js
 ========================================================= */
 
-/* =========================================================
-FADE
-========================================================= */
-
-@keyframes fadeIn {
-from {
-opacity: 0;
-}
-
-to {
-opacity: 1;
-}
-}
-
-@keyframes fadeOut {
-from {
-opacity: 1;
-}
-
-to {
-opacity: 0;
-}
-}
 
 /* =========================================================
-FADE + MOVEMENT
-========================================================= */
-
-@keyframes fadeInUp {
-from {
-opacity: 0;
-transform: translateY(24px);
-}
-
-to {
-opacity: 1;
-transform: translateY(0);
-}
-}
-
-@keyframes fadeInDown {
-from {
-opacity: 0;
-transform: translateY(-24px);
-}
-
-to {
-opacity: 1;
-transform: translateY(0);
-}
-}
-
-@keyframes fadeInLeft {
-from {
-opacity: 0;
-transform: translateX(-24px);
-}
-
-to {
-opacity: 1;
-transform: translateX(0);
-}
-}
-
-@keyframes fadeInRight {
-from {
-opacity: 0;
-transform: translateX(24px);
-}
-
-to {
-opacity: 1;
-transform: translateX(0);
-}
-}
-
-/* =========================================================
-SCALE
-========================================================= */
-
-@keyframes scaleIn {
-from {
-opacity: 0;
-transform: scale(0.94);
-}
-
-to {
-opacity: 1;
-transform: scale(1);
-}
-}
-
-@keyframes scaleOut {
-from {
-opacity: 1;
-transform: scale(1);
-}
-
-to {
-opacity: 0;
-transform: scale(0.94);
-}
-}
-
-/* =========================================================
-SLIDE
-========================================================= */
-
-@keyframes slideInLeft {
-from {
-transform: translateX(-100%);
-}
-
-to {
-transform: translateX(0);
-}
-}
-
-@keyframes slideInRight {
-from {
-transform: translateX(100%);
-}
-
-to {
-transform: translateX(0);
-}
-}
-
-@keyframes slideInUp {
-from {
-transform: translateY(100%);
-}
-
-to {
-transform: translateY(0);
-}
-}
-
-@keyframes slideInDown {
-from {
-transform: translateY(-100%);
-}
-
-to {
-transform: translateY(0);
-}
-}
-
-/* =========================================================
-FLOAT
-========================================================= */
-
-@keyframes float {
-0%,
-100% {
-transform: translateY(0);
-}
-
-50% {
-transform: translateY(-10px);
-}
-}
-
-/* =========================================================
-GENTLE FLOAT
-========================================================= */
-
-@keyframes floatGentle {
-0%,
-100% {
-transform: translateY(0);
-}
-
-50% {
-transform: translateY(-5px);
-}
-}
-
-/* =========================================================
-PULSE
-========================================================= */
-
-@keyframes pulse {
-0%,
-100% {
-opacity: 1;
-transform: scale(1);
-}
-
-50% {
-opacity: 0.75;
-transform: scale(1.03);
-}
-}
-
-/* =========================================================
-GLOW
-========================================================= */
-
-@keyframes glow {
-0%,
-100% {
-opacity: 0.65;
-}
-
-50% {
-opacity: 1;
-}
-}
-
-/* =========================================================
-GLOW PULSE
+   GLOW PULSE
 ========================================================= */
 
 @keyframes glowPulse {
-0%,
-100% {
-box-shadow:
-0 0 0 rgba(255, 138, 0, 0);
+
+  0%,
+  100% {
+    opacity: 0.65;
+
+    transform: scale(0.9);
+
+    box-shadow:
+      0 0 4px rgba(255, 159, 0, 0.35),
+      0 0 10px rgba(255, 159, 0, 0.2);
+  }
+
+  50% {
+    opacity: 1;
+
+    transform: scale(1.2);
+
+    box-shadow:
+      0 0 6px rgba(255, 159, 0, 0.85),
+      0 0 16px rgba(255, 159, 0, 0.65),
+      0 0 30px rgba(255, 159, 0, 0.35);
+  }
 }
 
-50% {
-box-shadow:
-0 0 30px rgba(255, 138, 0, 0.3);
-}
-}
 
 /* =========================================================
-ROTATE
+   SOFT PULSE
+========================================================= */
+
+@keyframes softPulse {
+
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.04);
+  }
+}
+
+
+/* =========================================================
+   FLOAT
+========================================================= */
+
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+
+/* =========================================================
+   SLOW FLOAT
+========================================================= */
+
+@keyframes floatSlow {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-14px);
+  }
+}
+
+
+/* =========================================================
+   FLOAT HORIZONTAL
+========================================================= */
+
+@keyframes floatHorizontal {
+
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  50% {
+    transform: translateX(8px);
+  }
+}
+
+
+/* =========================================================
+   ROTATE
 ========================================================= */
 
 @keyframes rotate {
-from {
-transform: rotate(0deg);
+
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }
 
-to {
-transform: rotate(360deg);
-}
-}
 
 /* =========================================================
-SHIMMER
+   SLOW ROTATE
+========================================================= */
+
+@keyframes rotateSlow {
+
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
+/* =========================================================
+   SHIMMER
 ========================================================= */
 
 @keyframes shimmer {
-from {
-background-position: -200% center;
+
+  0% {
+    background-position: -200% center;
+  }
+
+  100% {
+    background-position: 200% center;
+  }
 }
 
-to {
-background-position: 200% center;
-}
-}
 
 /* =========================================================
-GRADIENT SHIFT
+   GRADIENT SHIFT
 ========================================================= */
 
 @keyframes gradientShift {
-0% {
-background-position: 0% 50%;
+
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
-50% {
-background-position: 100% 50%;
-}
-
-100% {
-background-position: 0% 50%;
-}
-}
-
-/* =========================================================
-BLUR IN
-========================================================= */
-
-@keyframes blurIn {
-from {
-opacity: 0;
-filter: blur(12px);
-}
-
-to {
-opacity: 1;
-filter: blur(0);
-}
-}
 
 /* =========================================================
-BLUR OUT
+   FADE IN
 ========================================================= */
 
-@keyframes blurOut {
-from {
-opacity: 1;
-filter: blur(0);
+@keyframes fadeIn {
+
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
-to {
-opacity: 0;
-filter: blur(12px);
-}
-}
 
 /* =========================================================
-BOUNCE
+   FADE UP
 ========================================================= */
 
-@keyframes bounce {
-0%,
-100% {
-transform: translateY(0);
+@keyframes fadeUp {
+
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-40% {
-transform: translateY(-8px);
-}
-
-60% {
-transform: translateY(-4px);
-}
-}
 
 /* =========================================================
-WIGGLE
+   FADE DOWN
 ========================================================= */
 
-@keyframes wiggle {
-0%,
-100% {
-transform: rotate(0deg);
+@keyframes fadeDown {
+
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-25% {
-transform: rotate(-2deg);
-}
-
-75% {
-transform: rotate(2deg);
-}
-}
 
 /* =========================================================
-UTILITY ANIMATION CLASSES
+   FADE LEFT
 ========================================================= */
 
-.animate-fade-in {
-animation: fadeIn var(--duration-slow) var(--ease-smooth) both;
+@keyframes fadeLeft {
+
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
-.animate-fade-up {
-animation: fadeInUp var(--duration-slow) var(--ease-smooth) both;
+
+/* =========================================================
+   FADE RIGHT
+========================================================= */
+
+@keyframes fadeRight {
+
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
-.animate-fade-down {
-animation: fadeInDown var(--duration-slow) var(--ease-smooth) both;
+
+/* =========================================================
+   SCALE IN
+========================================================= */
+
+@keyframes scaleIn {
+
+  from {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
-.animate-fade-left {
-animation: fadeInLeft var(--duration-slow) var(--ease-smooth) both;
+
+/* =========================================================
+   SCALE POP
+========================================================= */
+
+@keyframes scalePop {
+
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+
+  70% {
+    opacity: 1;
+    transform: scale(1.04);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
-.animate-fade-right {
-animation: fadeInRight var(--duration-slow) var(--ease-smooth) both;
+
+/* =========================================================
+   BORDER GLOW
+========================================================= */
+
+@keyframes borderGlow {
+
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 rgba(255, 159, 0, 0);
+  }
+
+  50% {
+    box-shadow:
+      0 0 12px rgba(255, 159, 0, 0.35),
+      0 0 28px rgba(255, 159, 0, 0.18);
+  }
 }
 
-.animate-scale-in {
-animation: scaleIn var(--duration-slow) var(--ease-smooth) both;
+
+/* =========================================================
+   ACCENT GLOW
+========================================================= */
+
+@keyframes accentGlow {
+
+  0%,
+  100% {
+    filter: brightness(1);
+  }
+
+  50% {
+    filter: brightness(1.12);
+  }
 }
 
-.animate-float {
-animation: float 4s var(--ease-standard) infinite;
+
+/* =========================================================
+   STRONG ACCENT GLOW
+========================================================= */
+
+@keyframes accentGlowStrong {
+
+  0%,
+  100% {
+    filter: brightness(1);
+
+    text-shadow:
+      0 0 4px rgba(255, 159, 0, 0.3);
+  }
+
+  50% {
+    filter: brightness(1.18);
+
+    text-shadow:
+      0 0 8px rgba(255, 159, 0, 0.7),
+      0 0 20px rgba(255, 159, 0, 0.45),
+      0 0 35px rgba(255, 159, 0, 0.2);
+  }
 }
 
-.animate-float-gentle {
-animation: floatGentle 4s var(--ease-standard) infinite;
+
+/* =========================================================
+   SCROLL BOUNCE
+========================================================= */
+
+@keyframes scrollBounce {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(7px);
+  }
 }
 
-.animate-pulse {
-animation: pulse 2.5s var(--ease-standard) infinite;
+
+/* =========================================================
+   BLINK
+========================================================= */
+
+@keyframes blink {
+
+  0%,
+  45% {
+    opacity: 1;
+  }
+
+  50%,
+  100% {
+    opacity: 0.35;
+  }
 }
+
+
+/* =========================================================
+   PULSE OPACITY
+========================================================= */
+
+@keyframes pulseOpacity {
+
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+
+/* =========================================================
+   REVEAL LEFT
+========================================================= */
+
+@keyframes revealLeft {
+
+  from {
+    opacity: 0;
+
+    clip-path:
+      inset(0 100% 0 0);
+  }
+
+  to {
+    opacity: 1;
+
+    clip-path:
+      inset(0 0 0 0);
+  }
+}
+
+
+/* =========================================================
+   REVEAL RIGHT
+========================================================= */
+
+@keyframes revealRight {
+
+  from {
+    opacity: 0;
+
+    clip-path:
+      inset(0 0 0 100%);
+  }
+
+  to {
+    opacity: 1;
+
+    clip-path:
+      inset(0 0 0 0);
+  }
+}
+
+
+/* =========================================================
+   REVEAL UP
+========================================================= */
+
+@keyframes revealUp {
+
+  from {
+    opacity: 0;
+
+    clip-path:
+      inset(100% 0 0 0);
+
+    transform:
+      translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+
+    clip-path:
+      inset(0 0 0 0);
+
+    transform:
+      translateY(0);
+  }
+}
+
+
+/* =========================================================
+   IMAGE ZOOM
+========================================================= */
+
+@keyframes imageZoom {
+
+  from {
+    transform: scale(1);
+  }
+
+  to {
+    transform: scale(1.04);
+  }
+}
+
+
+/* =========================================================
+   GRADIENT FLOW
+========================================================= */
+
+@keyframes gradientFlow {
+
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+
+/* =========================================================
+   STATUS DOT
+   Main availability animation.
+========================================================= */
+
+@keyframes statusDot {
+
+  0%,
+  100% {
+    opacity: 0.7;
+
+    transform:
+      scale(0.88);
+
+    box-shadow:
+      0 0 3px rgba(255, 159, 0, 0.45),
+      0 0 8px rgba(255, 159, 0, 0.25);
+  }
+
+  50% {
+    opacity: 1;
+
+    transform:
+      scale(1.2);
+
+    box-shadow:
+      0 0 5px rgba(255, 159, 0, 1),
+      0 0 12px rgba(255, 159, 0, 0.85),
+      0 0 24px rgba(255, 159, 0, 0.55),
+      0 0 40px rgba(255, 159, 0, 0.25);
+  }
+}
+
+
+/* =========================================================
+   STATUS RING
+   Expanding ring around availability dot.
+========================================================= */
+
+@keyframes statusRing {
+
+  0% {
+    opacity: 0.7;
+
+    transform:
+      scale(0.8);
+  }
+
+  70% {
+    opacity: 0;
+
+    transform:
+      scale(2.2);
+  }
+
+  100% {
+    opacity: 0;
+
+    transform:
+      scale(2.4);
+  }
+}
+
+
+/* =========================================================
+   STATUS GLOW
+========================================================= */
+
+@keyframes statusGlow {
+
+  0%,
+  100% {
+    box-shadow:
+      0 0 4px rgba(255, 159, 0, 0.45),
+      0 0 10px rgba(255, 159, 0, 0.2);
+  }
+
+  50% {
+    box-shadow:
+      0 0 7px rgba(255, 159, 0, 1),
+      0 0 16px rgba(255, 159, 0, 0.75),
+      0 0 30px rgba(255, 159, 0, 0.4);
+  }
+}
+
+
+/* =========================================================
+   GLOBAL ANIMATION UTILITIES
+========================================================= */
+
+
+/* =========================================================
+   GLOW
+========================================================= */
 
 .animate-glow {
-animation: glow 2.5s var(--ease-standard) infinite;
+  animation:
+    glowPulse
+    2.2s
+    ease-in-out
+    infinite;
 }
 
-.animate-glow-pulse {
-animation: glowPulse 2.5s var(--ease-standard) infinite;
-}
-
-.animate-rotate {
-animation: rotate 8s linear infinite;
-}
-
-.animate-shimmer {
-animation: shimmer 2.5s linear infinite;
-}
-
-.animate-gradient {
-animation: gradientShift 5s ease infinite;
-}
-
-.animate-blur-in {
-animation: blurIn var(--duration-slow) var(--ease-smooth) both;
-}
-
-.animate-bounce {
-animation: bounce 1.5s var(--ease-bounce) infinite;
-}
-
-.animate-wiggle {
-animation: wiggle 2s var(--ease-standard) infinite;
-}
 
 /* =========================================================
-ANIMATION DELAYS
+   SOFT PULSE
 ========================================================= */
 
-.animation-delay-100 {
-animation-delay: 100ms;
+.animate-pulse-soft {
+  animation:
+    softPulse
+    2.5s
+    ease-in-out
+    infinite;
 }
 
-.animation-delay-200 {
-animation-delay: 200ms;
-}
-
-.animation-delay-300 {
-animation-delay: 300ms;
-}
-
-.animation-delay-400 {
-animation-delay: 400ms;
-}
-
-.animation-delay-500 {
-animation-delay: 500ms;
-}
-
-.animation-delay-700 {
-animation-delay: 700ms;
-}
-
-.animation-delay-1000 {
-animation-delay: 1000ms;
-}
 
 /* =========================================================
-REDUCED MOTION
+   FLOAT
+========================================================= */
+
+.animate-float {
+  animation:
+    float
+    3s
+    ease-in-out
+    infinite;
+}
+
+
+/* =========================================================
+   SLOW FLOAT
+========================================================= */
+
+.animate-float-slow {
+  animation:
+    floatSlow
+    5s
+    ease-in-out
+    infinite;
+}
+
+
+/* =========================================================
+   HORIZONTAL FLOAT
+========================================================= */
+
+.animate-float-horizontal {
+  animation:
+    floatHorizontal
+    4s
+    ease-in-out
+    infinite;
+}
+
+
+/* =========================================================
+   ROTATE
+========================================================= */
+
+.animate-rotate {
+  animation:
+    rotate
+    8s
+    linear
+    infinite;
+}
+
+
+/* =========================================================
+   SLOW ROTATE
+========================================================= */
+
+.animate-rotate-slow {
+  animation:
+    rotateSlow
+    20s
+    linear
+    infinite;
+}
+
+
+/* =========================================================
+   SHIMMER
+========================================================= */
+
+.animate-shimmer {
+  background-size:
+    200% auto;
+
+  animation:
+    shimmer
+    3s
+    linear
+    infinite;
+}
+
+
+/* =========================================================
+   GRADIENT
+========================================================= */
+
+.animate-gradient {
+  background-size:
+    200% 200%;
+
+  animation:
+    gradientShift
+    6s
+    ease
+    infinite;
+}
+
+
+/* =========================================================
+   ACCENT GLOW
+========================================================= */
+
+.animate-accent-glow {
+  animation:
+    accentGlow
+    2.5s
+    ease-in-out
+    infinite;
+}
+
+
+/* =========================================================
+   STRONG ACCENT GLOW
+========================================================= */
+
+.animate-accent-glow-strong {
+  animation:
+    accentGlowStrong
+    2.5s
+    ease-in-out
+    infinite;
+}
+
+
+/* =========================================================
+   BORDER GLOW
+========================================================= */
+
+.animate-border-glow {
+  animation:
+    borderGlow
+    2.5s
+    ease-in-out
+    infinite;
+}
+
+
+/* =========================================================
+   SCROLL
+========================================================= */
+
+.animate-scroll {
+  animation:
+    scrollBounce
+    1.5s
+    ease-in-out
+    infinite;
+}
+
+
+/* =========================================================
+   STATUS / AVAILABILITY
+========================================================= */
+
+.animate-status {
+  position: relative;
+
+  display: inline-block;
+
+  width: 8px;
+  height: 8px;
+
+  flex-shrink: 0;
+
+  border-radius: 50%;
+
+  background:
+    #ff9f00;
+
+  animation:
+    statusDot
+    2s
+    ease-in-out
+    infinite;
+}
+
+
+/* =========================================================
+   STATUS RING
+========================================================= */
+
+.animate-status::after {
+  content: "";
+
+  position: absolute;
+
+  inset: 0;
+
+  border:
+    1px solid
+    rgba(255, 159, 0, 0.65);
+
+  border-radius: 50%;
+
+  pointer-events: none;
+
+  animation:
+    statusRing
+    2s
+    ease-out
+    infinite;
+}
+
+
+/* =========================================================
+   STATUS GLOW ONLY
+========================================================= */
+
+.animate-status-glow {
+  animation:
+    statusGlow
+    2s
+    ease-in-out
+    infinite;
+}
+
+
+/* =========================================================
+   PULSE OPACITY
+========================================================= */
+
+.animate-pulse-opacity {
+  animation:
+    pulseOpacity
+    2s
+    ease-in-out
+    infinite;
+}
+
+
+/* =========================================================
+   BLINK
+========================================================= */
+
+.animate-blink {
+  animation:
+    blink
+    1.5s
+    ease-in-out
+    infinite;
+}
+
+
+/* =========================================================
+   REVEAL LEFT
+========================================================= */
+
+.animate-reveal-left {
+  animation:
+    revealLeft
+    0.8s
+    ease-out
+    forwards;
+}
+
+
+/* =========================================================
+   REVEAL RIGHT
+========================================================= */
+
+.animate-reveal-right {
+  animation:
+    revealRight
+    0.8s
+    ease-out
+    forwards;
+}
+
+
+/* =========================================================
+   REVEAL UP
+========================================================= */
+
+.animate-reveal-up {
+  animation:
+    revealUp
+    0.8s
+    ease-out
+    forwards;
+}
+
+
+/* =========================================================
+   IMAGE ZOOM
+========================================================= */
+
+.animate-image-zoom {
+  animation:
+    imageZoom
+    8s
+    ease-in-out
+    alternate
+    infinite;
+}
+
+
+/* =========================================================
+   GRADIENT FLOW
+========================================================= */
+
+.animate-gradient-flow {
+  background-size:
+    200% 200%;
+
+  animation:
+    gradientFlow
+    6s
+    ease
+    infinite;
+}
+
+
+/* =========================================================
+   ANIMATION DELAYS
+   Useful for cards and staggered content.
+========================================================= */
+
+.animate-delay-1 {
+  animation-delay: 100ms;
+}
+
+.animate-delay-2 {
+  animation-delay: 200ms;
+}
+
+.animate-delay-3 {
+  animation-delay: 300ms;
+}
+
+.animate-delay-4 {
+  animation-delay: 400ms;
+}
+
+.animate-delay-5 {
+  animation-delay: 500ms;
+}
+
+.animate-delay-6 {
+  animation-delay: 600ms;
+}
+
+
+/* =========================================================
+   ACCESSIBILITY
 ========================================================= */
 
 @media (prefers-reduced-motion: reduce) {
-*,
-*::before,
-*::after {
-animation-duration: 0.01ms !important;
-animation-iteration-count: 1 !important;
-animation-delay: 0ms !important;
-}
+
+  *,
+  *::before,
+  *::after {
+
+    animation-duration:
+      0.01ms !important;
+
+    animation-iteration-count:
+      1 !important;
+
+    animation-delay:
+      0ms !important;
+
+    scroll-behavior:
+      auto !important;
+  }
 }

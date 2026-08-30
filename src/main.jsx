@@ -7,5 +7,27 @@ import { ThemeProvider } from "./context/ThemeContext.jsx";
 
 import "./index.css";
 
-createRoot(document.getElementById("root")).render( <StrictMode> <BrowserRouter> <ThemeProvider> <App /> </ThemeProvider> </BrowserRouter> </StrictMode>
+
+const basename =
+  import.meta.env.BASE_URL.replace(/\/$/, "");
+
+
+createRoot(
+  document.getElementById("root")
+).render(
+
+  <StrictMode>
+
+    <BrowserRouter basename={basename}>
+
+      <ThemeProvider>
+
+        <App />
+
+      </ThemeProvider>
+
+    </BrowserRouter>
+
+  </StrictMode>
+
 );

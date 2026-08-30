@@ -1,9 +1,10 @@
+import AboutHero from "../components/About/AboutHero"
 
 
 function About() {
   return (
     <div>
-      <h1>PAGE@#$</h1>
+      <AboutHero/>
     </div>
   )
 }

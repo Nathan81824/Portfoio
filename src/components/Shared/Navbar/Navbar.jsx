@@ -1,153 +1,592 @@
-import { useEffect, useState } from "react";
-import { Menu, X, Sun, Moon, Download } from "lucide-react";
+/* =========================================================
+   NAVBAR
+   Nathan — Frontend Developer Portfolio
 
-import { useTheme } from "../../../context/ThemeContext";
-import { getData } from "../../../javascript/data/data";
-import Button from "../Button/Button";
+   Location:
+   src/components/Shared/Navbar/Navbar.jsx
+
+   Uses:
+   - useTheme
+   - react-router-dom
+   - lucide-react
+========================================================= */
+
+import {
+  Menu,
+  X,
+  Sun,
+  Moon,
+  Download,
+} from "lucide-react";
+
+import {
+  useState,
+} from "react";
+
+import {
+  Link,
+  useLocation,
+} from "react-router-dom";
+
+
+/* =========================================================
+   HOOKS
+========================================================= */
+
+import useTheme from
+  "../../../javascript/hooks/Theme/useTheme.js";
+
+/* =========================================================
+   NAVBAR
+========================================================= */
 
 export default function Navbar() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
 
-  const { theme, toggleTheme } = useTheme();
-  const { personalInfo, roles, navLinks } = getData();
+  /* =======================================================
+     MOBILE MENU
+  ======================================================= */
 
-  // Toggle a subtle "scrolled" style once the user scrolls past the hero area
-  useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 120);
+  const [
+    menuOpen,
+    setMenuOpen,
+  ] = useState(false);
 
-    handleScroll(); // set initial state on mount
-    window.addEventListener("scroll", handleScroll, { passive: true });
 
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  /* =======================================================
+     CURRENT ROUTE
+  ======================================================= */
 
-  const toggleMenu = () => setIsMenuOpen((prev) => !prev);
-  const closeMenu = () => setIsMenuOpen(false);
+  const location =
+    useLocation();
+
+
+  /* =======================================================
+     THEME
+  ======================================================= */
+
+  const {
+    isDark,
+    toggleTheme,
+  } = useTheme();
+
+
+  /* =======================================================
+     NAVIGATION LINKS
+  ======================================================= */
+
+  const navLinks = [
+
+    {
+      name: "Home",
+      href: "/",
+    },
+
+    {
+      name: "About",
+      href: "/about",
+    },
+
+    {
+      name: "Skills",
+      href: "/skills",
+    },
+
+    {
+      name: "Projects",
+      href: "/projects",
+    },
+
+    {
+      name: "Contact",
+      href: "/contact",
+    },
+
+  ];
+
+
+  /* =======================================================
+     CLOSE MOBILE MENU
+  ======================================================= */
+
+  const closeMenu = () => {
+
+    setMenuOpen(false);
+
+  };
+
+
+  /* =======================================================
+     NAVIGATION
+  ======================================================= */
+
+  const handleNavigation = () => {
+
+    closeMenu();
+
+  };
+
+
+  /* =======================================================
+     THEME
+  ======================================================= */
+
+  const handleThemeToggle = () => {
+
+    toggleTheme();
+
+  };
+
+
+  /* =======================================================
+     MOBILE MENU
+  ======================================================= */
+
+  const handleMenuToggle = () => {
+
+    setMenuOpen(
+      (previous) =>
+        !previous
+    );
+
+  };
+
+
+  /* =======================================================
+     ACTIVE ROUTE
+  ======================================================= */
+
+  const isActive = (
+    href
+  ) => {
+
+    if (href === "/") {
+
+      return (
+        location.pathname === "/"
+      );
+
+    }
+
+    return (
+      location.pathname === href
+    );
+
+  };
+
+
+  /* =======================================================
+     RENDER
+  ======================================================= */
 
   return (
-    <header className={`navbar ${isScrolled ? "navbar-scrolled" : ""}`}>
+
+    <header className="navbar">
+
+
+      {/* ===================================================
+          NAVBAR CONTAINER
+      =================================================== */}
+
       <div className="navbar-container">
-        {/* Logo */}
-        <a
-          href="#home"
+
+
+        {/* =================================================
+            LOGO
+        ================================================= */}
+
+        <Link
+
+          to="/"
+
           className="navbar-logo"
-          onClick={closeMenu}
+
+          onClick={
+            handleNavigation
+          }
+
           aria-label="Go to home"
         >
-          {personalInfo?.name?.charAt(0).toUpperCase()}
-        </a>
 
-        {/* Desktop navigation */}
-        <nav className="navbar-links" aria-label="Main navigation">
-          {navLinks?.map((link) => (
-            <a
-              key={link.id}
-              href={link.href}
-              className="navbar-link"
-              onClick={closeMenu}
-            >
-              {link.name}
-            </a>
-          ))}
+          N
+
+        </Link>
+
+
+        {/* =================================================
+            DESKTOP NAVIGATION
+        ================================================= */}
+
+        <nav
+
+          className="navbar-links"
+
+          aria-label="Main navigation"
+        >
+
+          {navLinks.map(
+            (link) => (
+
+              <Link
+
+                key={link.name}
+
+                to={link.href}
+
+                className={
+                  `navbar-link ${
+                    isActive(link.href)
+                      ? "active"
+                      : ""
+                  }`
+                }
+
+                onClick={
+                  handleNavigation
+                }
+              >
+
+                {link.name}
+
+              </Link>
+
+            )
+          )}
+
         </nav>
 
-        {/* Right side: theme toggle, resume, mobile menu trigger */}
+
+        {/* =================================================
+            RIGHT SIDE
+        ================================================= */}
+
         <div className="navbar-right">
+
+
+          {/* ===============================================
+              THEME BUTTON
+          =============================================== */}
+
           <button
+
             type="button"
+
             className="navbar-theme"
-            onClick={toggleTheme}
-            aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
-            title={theme === "dark" ? "Light mode" : "Dark mode"}
+
+            onClick={
+              handleThemeToggle
+            }
+
+            aria-label={
+              isDark
+                ? "Switch to light mode"
+                : "Switch to dark mode"
+            }
+
+            title={
+              isDark
+                ? "Switch to light mode"
+                : "Switch to dark mode"
+            }
           >
-            {theme === "dark" ? (
-              <Sun size={17} strokeWidth={1.8} />
+
+            {isDark ? (
+
+              <Sun
+                size={17}
+                strokeWidth={1.8}
+              />
+
             ) : (
-              <Moon size={17} strokeWidth={1.8} />
+
+              <Moon
+                size={17}
+                strokeWidth={1.8}
+              />
+
             )}
+
           </button>
 
-          <Button
-            href={personalInfo?.resume}
-            variant="primary"
-            size="sm"
-            icon={Download}
+
+          {/* ===============================================
+              DESKTOP RESUME
+          =============================================== */}
+
+          <a
+
+            href="/resume.pdf"
+
+            className="
+              navbar-resume
+              navbar-resume-desktop
+            "
+
             download
-            className="navbar-resume"
           >
-            Resume
-          </Button>
+
+            <span>
+              Resume
+            </span>
+
+            <span
+              className="navbar-resume-icon"
+            >
+
+              <Download
+                size={15}
+                strokeWidth={1.8}
+              />
+
+            </span>
+
+          </a>
+
+
+          {/* ===============================================
+              MOBILE MENU BUTTON
+          =============================================== */}
 
           <button
+
             type="button"
+
             className="navbar-menu-button"
-            onClick={toggleMenu}
-            aria-label={isMenuOpen ? "Close navigation menu" : "Open navigation menu"}
-            aria-expanded={isMenuOpen}
+
+            onClick={
+              handleMenuToggle
+            }
+
+            aria-label={
+              menuOpen
+                ? "Close navigation menu"
+                : "Open navigation menu"
+            }
+
+            aria-expanded={
+              menuOpen
+            }
           >
-            {isMenuOpen ? (
-              <X size={19} strokeWidth={1.8} />
+
+            {menuOpen ? (
+
+              <X
+                size={19}
+                strokeWidth={1.8}
+              />
+
             ) : (
-              <Menu size={19} strokeWidth={1.8} />
+
+              <Menu
+                size={19}
+                strokeWidth={1.8}
+              />
+
             )}
+
           </button>
+
         </div>
+
       </div>
 
-      {/* Mobile menu */}
-      {isMenuOpen && (
-        <div className="navbar-mobile-menu" role="dialog" aria-label="Mobile navigation">
-          <div className="navbar-mobile-header">
+
+      {/* ===================================================
+          MOBILE MENU
+      =================================================== */}
+
+      {menuOpen && (
+
+        <div
+
+          className="navbar-mobile-menu"
+
+          role="dialog"
+
+          aria-label="Mobile navigation"
+        >
+
+
+          {/* =============================================
+              MOBILE HEADER
+          ============================================= */}
+
+          <div
+            className="navbar-mobile-header"
+          >
+
             <div>
-              <span className="navbar-mobile-label">NAVIGATION</span>
-              <h3>Explore</h3>
+
+              <span
+                className="navbar-mobile-label"
+              >
+
+                Navigation
+
+              </span>
+
+              <h3>
+                Explore
+              </h3>
+
             </div>
 
+
+            {/* =========================================
+                CLOSE BUTTON
+            ========================================= */}
+
             <button
+
               type="button"
+
               className="navbar-mobile-close"
-              onClick={closeMenu}
+
+              onClick={
+                closeMenu
+              }
+
               aria-label="Close navigation menu"
             >
-              <X size={18} strokeWidth={2} />
+
+              <X
+                size={18}
+                strokeWidth={1.8}
+              />
+
             </button>
+
           </div>
 
-          <nav className="navbar-mobile-links" aria-label="Mobile navigation">
-            {navLinks?.map((link, index) => (
-              <a
-                key={link.id}
-                href={link.href}
-                className="navbar-mobile-link"
-                onClick={closeMenu}
-              >
-                <span className="navbar-mobile-number">
-                  {String(index + 1).padStart(2, "0")}
-                </span>
-                <span className="navbar-mobile-link-text">{link.name}</span>
-              </a>
-            ))}
+
+          {/* =============================================
+              MOBILE LINKS
+          ============================================= */}
+
+          <nav
+
+            className="navbar-mobile-links"
+
+            aria-label="Mobile navigation"
+          >
+
+            {navLinks.map(
+              (link, index) => (
+
+                <Link
+
+                  key={link.name}
+
+                  to={link.href}
+
+                  className={
+                    `navbar-mobile-link ${
+                      isActive(link.href)
+                        ? "active"
+                        : ""
+                    }`
+                  }
+
+                  onClick={
+                    handleNavigation
+                  }
+                >
+
+                  <span
+                    className="
+                      navbar-mobile-number
+                    "
+                  >
+
+                    {String(
+                      index + 1
+                    ).padStart(
+                      2,
+                      "0"
+                    )}
+
+                  </span>
+
+
+                  <span
+                    className="
+                      navbar-mobile-link-text
+                    "
+                  >
+
+                    {link.name}
+
+                  </span>
+
+                </Link>
+
+              )
+            )}
+
           </nav>
 
-          <Button
-            href={personalInfo?.resume}
-            variant="primary"
-            size="md"
-            icon={Download}
-            download
-            className="navbar-resume-mobile"
-          >
-            Resume
-          </Button>
 
-          <div className="navbar-mobile-footer">
-            <span>{personalInfo?.name?.toUpperCase()}</span>
-            <span className="navbar-mobile-dot" />
-            <span>{roles?.[0] || "Developer"}</span>
+          {/* =============================================
+              MOBILE RESUME
+          ============================================= */}
+
+          <a
+
+            href="/resume.pdf"
+
+            className="
+              navbar-resume
+              navbar-resume-mobile
+            "
+
+            download
+          >
+
+            <span>
+              Download Resume
+            </span>
+
+            <span
+              className="navbar-resume-icon"
+            >
+
+              <Download
+                size={16}
+                strokeWidth={1.8}
+              />
+
+            </span>
+
+          </a>
+
+
+          {/* =============================================
+              MOBILE FOOTER
+          ============================================= */}
+
+          <div
+            className="navbar-mobile-footer"
+          >
+
+            <span>
+              FRONTEND DEVELOPER
+            </span>
+
+            <span
+              className="navbar-mobile-dot"
+            />
+
+            <span>
+              NATHAN
+            </span>
+
           </div>
+
         </div>
+
       )}
+
     </header>
+
   );
+
 }

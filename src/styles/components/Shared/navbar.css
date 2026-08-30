@@ -1,441 +1,1016 @@
 /* =========================================================
    NAVBAR
-   Main navbar styling
-
-   Depends on:
-   - variables.css   (design tokens)
-   - shared.css      (shared utilities)
-   - typography.css  (font tokens)
-   - Button/button.css (resume button visuals)
 ========================================================= */
 
-/* ---------------------------------------------------------
-   Base
---------------------------------------------------------- */
-
 .navbar {
-  --navbar-height: 76px;
-  --navbar-padding-x: 2rem;
-  --navbar-link-gap: 2rem;
-  --navbar-transition: 450ms cubic-bezier(0.4, 0, 0.2, 1);
-
   position: absolute;
+
   top: 0;
   left: 0;
+
   width: 100%;
-  z-index: var(--z-sticky);
+
+  z-index: var(--z-sticky, 500);
+
   background: transparent;
+
   color: var(--text-primary);
+
   font-family: var(--font-body);
+
   pointer-events: none;
-  transition:
-    background-color var(--navbar-transition),
-    border-color var(--navbar-transition),
-    box-shadow var(--navbar-transition),
-    backdrop-filter var(--navbar-transition);
 }
 
-/* Top of page: fully transparent */
-.navbar:not(.navbar-scrolled) {
-  background: rgba(9, 9, 9, 0);
-  border-bottom: 1px solid transparent;
-  backdrop-filter: blur(0);
-  -webkit-backdrop-filter: blur(0);
-  box-shadow: 0 0 0 rgba(0, 0, 0, 0);
-}
 
-/* Scrolled: frosted glass */
-.navbar.navbar-scrolled {
-  position: fixed;
-  background: rgba(9, 9, 9, 0.72);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.18);
-}
+/* =========================================================
+   NAVBAR CONTAINER
+========================================================= */
 
 .navbar-container {
   position: relative;
+
   width: 100%;
-  height: var(--navbar-height);
-  padding: 0 var(--navbar-padding-x);
+
+  min-height: var(--navbar-height, 76px);
+
+  padding:
+    0
+    var(--navbar-padding-x, 2rem);
+
   margin: 0 auto;
+
   display: grid;
-  grid-template-columns: 1fr auto 1fr;
+
+  grid-template-columns:
+    1fr
+    auto
+    1fr;
+
   align-items: center;
+
   box-sizing: border-box;
-  background: transparent;
+
   pointer-events: auto;
 }
 
-/* ---------------------------------------------------------
-   Logo
---------------------------------------------------------- */
+
+/* =========================================================
+   LOGO
+========================================================= */
 
 .navbar-logo {
   justify-self: start;
-  width: 38px;
-  height: 38px;
+
+  width:
+    var(--navbar-button-size, 38px);
+
+  height:
+    var(--navbar-button-size, 38px);
+
   display: inline-flex;
+
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
-  border: 1px solid var(--border-primary);
-  border-radius: var(--radius-md);
-  color: var(--text-primary);
-  background: rgba(255, 255, 255, 0.035);
+
+  color:
+    var(--text-primary);
+
+  font-family:
+    var(--font-heading);
+
+  font-size:
+    1rem;
+
+  font-weight:
+    var(--font-weight-extrabold, 800);
+
+  letter-spacing:
+    -0.06em;
+
   text-decoration: none;
-  font-family: var(--font-heading);
-  font-size: 1.05rem;
-  font-weight: var(--font-weight-extrabold);
-  letter-spacing: -0.06em;
+
+  border:
+    1px solid
+    var(--border-primary);
+
+  border-radius:
+    var(--navbar-border-radius, 10px);
+
+  background:
+    rgba(255, 255, 255, 0.035);
+
+  backdrop-filter:
+    blur(12px);
+
+  -webkit-backdrop-filter:
+    blur(12px);
+
   transition:
-    transform var(--navbar-transition),
-    color var(--navbar-transition),
-    border-color var(--navbar-transition),
-    box-shadow var(--navbar-transition),
-    background var(--navbar-transition);
+    color var(--navbar-transition, 260ms ease),
+    border-color var(--navbar-transition, 260ms ease),
+    background var(--navbar-transition, 260ms ease),
+    transform var(--navbar-transition, 260ms ease),
+    box-shadow var(--navbar-transition, 260ms ease);
 }
 
 .navbar-logo:hover {
-  color: var(--accent-primary);
-  border-color: var(--border-accent);
-  background: rgba(255, 159, 0, 0.06);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px var(--accent-glow);
+  color:
+    var(--accent-primary);
+
+  border-color:
+    var(--border-accent);
+
+  background:
+    rgba(255, 159, 0, 0.06);
+
+  transform:
+    translateY(-2px);
+
+  box-shadow:
+    0 8px 25px
+    var(--accent-glow);
 }
 
-/* ---------------------------------------------------------
-   Desktop navigation
---------------------------------------------------------- */
+
+/* =========================================================
+   DESKTOP NAVIGATION
+========================================================= */
 
 .navbar-links {
-  height: 100%;
+  justify-self: center;
+
   display: flex;
+
   align-items: center;
+
   justify-content: center;
-  gap: var(--navbar-link-gap);
+
+  gap:
+    var(--navbar-link-gap, 1.5rem);
+
+  height: 100%;
 }
+
+
+/* =========================================================
+   NAV LINK
+========================================================= */
 
 .navbar-link {
   position: relative;
-  height: 100%;
+
   display: inline-flex;
+
   align-items: center;
-  padding: 0.25rem 0;
-  color: var(--text-secondary);
+  justify-content: center;
+
+  height: 100%;
+
+  padding:
+    0.25rem
+    0;
+
+  color:
+    var(--text-secondary);
+
+  font-family:
+    var(--font-body);
+
+  font-size:
+    var(--navbar-link-size, 0.82rem);
+
+  font-weight:
+    var(--navbar-link-weight, 500);
+
+  letter-spacing:
+    0.01em;
+
   text-decoration: none;
-  font-family: var(--font-body);
-  font-size: 0.82rem;
-  font-weight: var(--font-weight-medium);
-  letter-spacing: 0.01em;
-  transition: color var(--navbar-transition);
+
+  white-space: nowrap;
+
+  transition:
+    color var(--navbar-transition, 260ms ease);
 }
+
+
+/* =========================================================
+   HOVER / ACTIVE INDICATOR
+========================================================= */
 
 .navbar-link::after {
   content: "";
+
   position: absolute;
+
   left: 50%;
+
   bottom: 17px;
+
   width: 0;
+
   height: 2px;
-  border-radius: var(--radius-full);
-  transform: translateX(-50%);
-  background: var(--accent-gradient);
-  box-shadow: 0 0 10px var(--accent-glow);
-  transition: width var(--navbar-transition);
+
+  border-radius:
+    var(--radius-full, 999px);
+
+  transform:
+    translateX(-50%);
+
+  background:
+    var(--accent-gradient);
+
+  box-shadow:
+    0 0 10px
+    var(--accent-glow);
+
+  transition:
+    width var(--navbar-transition, 260ms ease);
 }
 
+
+/* =========================================================
+   HOVER
+========================================================= */
+
 .navbar-link:hover {
-  color: var(--text-primary);
+  color:
+    var(--text-primary);
 }
 
 .navbar-link:hover::after {
   width: 18px;
 }
 
-/* ---------------------------------------------------------
-   Right side: theme toggle -> resume -> mobile menu trigger
---------------------------------------------------------- */
+
+/* =========================================================
+   ACTIVE NAV LINK
+========================================================= */
+
+.navbar-link.active {
+  color:
+    var(--accent-primary);
+
+  font-weight:
+    var(--font-weight-semibold, 600);
+}
+
+.navbar-link.active::after {
+  width: 22px;
+
+  background:
+    var(--accent-gradient);
+
+  box-shadow:
+    0 0 12px
+    var(--accent-glow-strong);
+}
+
+
+/* =========================================================
+   ACTIVE + HOVER
+========================================================= */
+
+.navbar-link.active:hover {
+  color:
+    var(--accent-hover, var(--accent-primary));
+}
+
+.navbar-link.active:hover::after {
+  width: 28px;
+}
+
+
+/* =========================================================
+   RIGHT SIDE
+========================================================= */
 
 .navbar-right {
   justify-self: end;
+
   display: flex;
+
   align-items: center;
-  gap: 0.65rem;
+
+  gap:
+    var(--navbar-right-gap, 0.65rem);
 }
 
+
+/* =========================================================
+   THEME BUTTON
+========================================================= */
+
 .navbar-theme {
-  width: 36px;
-  height: 36px;
+  width:
+    var(--navbar-button-size, 38px);
+
+  height:
+    var(--navbar-button-size, 38px);
+
   display: inline-flex;
+
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
+
   padding: 0;
-  border: 1px solid var(--border-primary);
-  border-radius: var(--radius-md);
-  color: var(--text-secondary);
-  background: rgba(255, 255, 255, 0.035);
+
+  border:
+    1px solid
+    var(--border-primary);
+
+  border-radius:
+    var(--navbar-border-radius, 10px);
+
+  color:
+    var(--text-secondary);
+
+  background:
+    rgba(255, 255, 255, 0.035);
+
+  backdrop-filter:
+    blur(12px);
+
+  -webkit-backdrop-filter:
+    blur(12px);
+
   cursor: pointer;
+
   transition:
-    color var(--navbar-transition),
-    background var(--navbar-transition),
-    border-color var(--navbar-transition),
-    transform var(--navbar-transition);
+    color var(--navbar-transition, 260ms ease),
+    background var(--navbar-transition, 260ms ease),
+    border-color var(--navbar-transition, 260ms ease),
+    transform var(--navbar-transition, 260ms ease);
 }
 
 .navbar-theme:hover {
-  color: var(--accent-primary);
-  background: rgba(255, 159, 0, 0.07);
-  border-color: var(--border-accent);
-  transform: translateY(-1px);
+  color:
+    var(--accent-primary);
+
+  background:
+    rgba(255, 159, 0, 0.07);
+
+  border-color:
+    var(--border-accent);
+
+  transform:
+    translateY(-1px);
 }
 
-/* Resume button: visual styling comes from Button/button.css */
-.navbar-resume {
-  flex-shrink: 0;
-  width: auto;
-  min-height: var(--button-height-md);
+.navbar-theme:focus-visible {
+  outline:
+    2px solid
+    var(--accent-primary);
+
+  outline-offset: 3px;
 }
+
+
+/* =========================================================
+   RESUME BUTTON
+========================================================= */
+
+.navbar-resume {
+  display: inline-flex;
+
+  align-items: center;
+  justify-content: center;
+
+  gap:
+    var(--gap-sm, 0.5rem);
+
+  min-height:
+    var(--button-height-md, 44px);
+
+  padding:
+    0.55rem
+    0.9rem;
+
+  border:
+    1px solid
+    var(--border-accent);
+
+  border-radius:
+    var(--navbar-border-radius, 10px);
+
+  color:
+    var(--color-black, #090909);
+
+  background:
+    var(--accent-gradient);
+
+  text-decoration: none;
+
+  font-family:
+    var(--font-body);
+
+  font-size:
+    var(--navbar-resume-size, 0.78rem);
+
+  font-weight:
+    var(--font-weight-bold, 700);
+
+  letter-spacing:
+    -0.01em;
+
+  box-shadow:
+    0 7px 22px
+    var(--accent-glow);
+
+  transition:
+    transform var(--navbar-transition, 260ms ease),
+    box-shadow var(--navbar-transition, 260ms ease),
+    filter var(--navbar-transition, 260ms ease);
+}
+
+.navbar-resume:hover {
+  color:
+    var(--color-black, #090909);
+
+  transform:
+    translateY(-2px);
+
+  filter:
+    brightness(1.05);
+
+  box-shadow:
+    0 11px 30px
+    var(--accent-glow-strong);
+}
+
+.navbar-resume:active {
+  transform:
+    translateY(0);
+}
+
+
+/* =========================================================
+   RESUME ICON
+========================================================= */
+
+.navbar-resume-icon {
+  display: inline-flex;
+
+  align-items: center;
+  justify-content: center;
+
+  color:
+    var(--color-black, #090909);
+}
+
+.navbar-resume-icon svg {
+  flex-shrink: 0;
+
+  color:
+    var(--color-black, #090909);
+}
+
+
+/* =========================================================
+   MOBILE MENU BUTTON
+========================================================= */
 
 .navbar-menu-button {
   display: none;
-  width: 36px;
-  height: 36px;
+
+  width:
+    var(--navbar-button-size, 38px);
+
+  height:
+    var(--navbar-button-size, 38px);
+
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
+
   padding: 0;
-  border: 1px solid var(--border-primary);
-  border-radius: var(--radius-md);
-  color: var(--text-primary);
-  background: rgba(255, 255, 255, 0.035);
+
+  border:
+    1px solid
+    var(--border-primary);
+
+  border-radius:
+    var(--navbar-border-radius, 10px);
+
+  color:
+    var(--text-primary);
+
+  background:
+    rgba(255, 255, 255, 0.035);
+
+  backdrop-filter:
+    blur(12px);
+
+  -webkit-backdrop-filter:
+    blur(12px);
+
   cursor: pointer;
+
   transition:
-    color var(--navbar-transition),
-    background var(--navbar-transition),
-    border-color var(--navbar-transition),
-    transform var(--navbar-transition);
+    color var(--navbar-transition, 260ms ease),
+    background var(--navbar-transition, 260ms ease),
+    border-color var(--navbar-transition, 260ms ease),
+    transform var(--navbar-transition, 260ms ease);
 }
 
 .navbar-menu-button:hover {
-  color: var(--accent-primary);
-  background: rgba(255, 159, 0, 0.07);
-  border-color: var(--border-accent);
-  transform: translateY(-1px);
+  color:
+    var(--accent-primary);
+
+  background:
+    rgba(255, 159, 0, 0.07);
+
+  border-color:
+    var(--border-accent);
+
+  transform:
+    translateY(-1px);
 }
 
-/* ---------------------------------------------------------
-   Mobile menu panel
---------------------------------------------------------- */
+
+/* =========================================================
+   MOBILE MENU
+========================================================= */
 
 .navbar-mobile-menu {
   position: fixed;
-  top: calc(var(--navbar-height) + 0.7rem);
+
+  top:
+    calc(
+      var(--navbar-height, 76px)
+      + 0.7rem
+    );
+
   right: 0;
-  width: min(390px, 88vw);
-  max-height: calc(100svh - var(--navbar-height) - 1.4rem);
+
+  width:
+    var(--navbar-mobile-width, min(390px, 88vw));
+
+  max-height:
+    calc(
+      100svh
+      - var(--navbar-height, 76px)
+      - 1.4rem
+    );
+
   overflow-y: auto;
-  padding: 1.4rem 1.25rem 1.1rem;
+
+  padding:
+    1.4rem
+    1.25rem
+    1.1rem;
+
   display: flex;
+
   flex-direction: column;
-  background: linear-gradient(145deg, rgba(20, 20, 20, 0.88), rgba(9, 9, 9, 0.78));
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 0 0 var(--radius-xl) var(--radius-xl);
-  box-shadow: var(--shadow-xl);
-  backdrop-filter: blur(var(--blur-lg));
-  -webkit-backdrop-filter: blur(var(--blur-lg));
-  z-index: var(--z-dropdown);
-  scrollbar-width: thin;
-  pointer-events: auto;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(20, 20, 20, 0.88),
+      rgba(9, 9, 9, 0.78)
+    );
+
+  border-top:
+    1px solid
+    var(--border-primary);
+
+  border-left:
+    1px solid
+    var(--border-primary);
+
+  border-radius:
+    0
+    0
+    22px
+    22px;
+
+  box-shadow:
+    var(--shadow-xl);
+
+  backdrop-filter:
+    blur(22px);
+
+  -webkit-backdrop-filter:
+    blur(22px);
+
+  z-index:
+    var(--z-dropdown, 100);
+
+  scrollbar-width:
+    thin;
 }
+
+
+/* =========================================================
+   MOBILE MENU HEADER
+========================================================= */
 
 .navbar-mobile-header {
   display: flex;
+
   align-items: flex-start;
+
   justify-content: space-between;
-  padding-bottom: var(--gap-md);
-  border-bottom: 1px solid var(--border-muted);
+
+  padding-bottom:
+    1rem;
+
+  border-bottom:
+    1px solid
+    rgba(255, 255, 255, 0.07);
 }
 
 .navbar-mobile-label {
   display: block;
-  margin-bottom: var(--gap-xs);
-  color: var(--accent-primary);
-  font-family: var(--font-body);
-  font-size: 0.62rem;
-  font-weight: var(--font-weight-extrabold);
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
+
+  margin-bottom:
+    0.25rem;
+
+  color:
+    var(--accent-primary);
+
+  font-size:
+    0.62rem;
+
+  font-weight:
+    var(--font-weight-extrabold, 800);
+
+  letter-spacing:
+    0.18em;
+
+  text-transform:
+    uppercase;
 }
 
 .navbar-mobile-header h3 {
   margin: 0;
-  color: var(--text-primary);
-  font-family: var(--font-heading);
-  font-size: 1.15rem;
-  font-weight: var(--font-weight-bold);
-  letter-spacing: -0.035em;
+
+  color:
+    var(--text-primary);
+
+  font-family:
+    var(--font-heading);
+
+  font-size:
+    1.15rem;
+
+  font-weight:
+    var(--font-weight-bold, 700);
+
+  letter-spacing:
+    -0.035em;
 }
+
+
+/* =========================================================
+   MOBILE CLOSE BUTTON
+========================================================= */
 
 .navbar-mobile-close {
   width: 34px;
   height: 34px;
+
   display: inline-flex;
+
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
+
   padding: 0;
-  border: 1px solid var(--border-primary);
-  border-radius: var(--radius-sm);
-  color: var(--text-secondary);
-  background: rgba(255, 255, 255, 0.035);
+
+  border:
+    1px solid
+    var(--border-primary);
+
+  border-radius: 9px;
+
+  color:
+    var(--text-secondary);
+
+  background:
+    rgba(255, 255, 255, 0.035);
+
   cursor: pointer;
+
   transition:
-    color var(--navbar-transition),
-    background var(--navbar-transition),
-    border-color var(--navbar-transition),
-    transform var(--navbar-transition);
+    color var(--navbar-transition, 260ms ease),
+    background var(--navbar-transition, 260ms ease),
+    border-color var(--navbar-transition, 260ms ease),
+    transform var(--navbar-transition, 260ms ease);
 }
 
 .navbar-mobile-close:hover {
-  color: var(--accent-primary);
-  background: rgba(255, 159, 0, 0.07);
-  border-color: var(--border-accent);
-  transform: rotate(4deg);
+  color:
+    var(--accent-primary);
+
+  background:
+    rgba(255, 159, 0, 0.07);
+
+  border-color:
+    var(--border-accent);
+
+  transform:
+    rotate(4deg);
 }
+
+
+/* =========================================================
+   MOBILE LINKS
+========================================================= */
 
 .navbar-mobile-links {
   display: flex;
+
   flex-direction: column;
-  gap: 0.3rem;
-  margin-top: 0.9rem;
+
+  gap:
+    0.3rem;
+
+  margin-top:
+    0.9rem;
 }
+
+
+/* =========================================================
+   MOBILE LINK
+========================================================= */
 
 .navbar-mobile-link {
   position: relative;
+
   min-height: 52px;
+
   display: flex;
+
   align-items: center;
-  gap: var(--gap-md);
-  padding: 0.7rem 0.75rem;
-  border: 1px solid transparent;
-  border-radius: var(--radius-md);
-  color: var(--text-secondary);
-  text-decoration: none;
+
+  gap:
+    0.9rem;
+
+  padding:
+    0.7rem
+    0.75rem;
+
+  border:
+    1px solid
+    transparent;
+
+  border-radius:
+    10px;
+
+  color:
+    var(--text-secondary);
+
+  text-decoration:
+    none;
+
   transition:
-    color var(--navbar-transition),
-    background var(--navbar-transition),
-    border-color var(--navbar-transition),
-    transform var(--navbar-transition);
+    color var(--navbar-transition, 260ms ease),
+    background var(--navbar-transition, 260ms ease),
+    border-color var(--navbar-transition, 260ms ease),
+    transform var(--navbar-transition, 260ms ease);
 }
 
-.navbar-mobile-link:hover {
-  color: var(--text-primary);
-  background: rgba(255, 159, 0, 0.055);
-  border-color: rgba(255, 159, 0, 0.16);
-  transform: translateX(4px);
-}
+
+/* =========================================================
+   MOBILE LINK NUMBER
+========================================================= */
 
 .navbar-mobile-number {
-  min-width: 27px;
-  color: var(--accent-primary);
-  font-family: var(--font-mono);
-  font-size: 0.65rem;
-  font-weight: var(--font-weight-medium);
-  opacity: 0.75;
+  min-width:
+    27px;
+
+  color:
+    var(--accent-primary);
+
+  font-family:
+    var(--font-mono, monospace);
+
+  font-size:
+    0.65rem;
+
+  font-weight:
+    var(--font-weight-medium, 500);
+
+  opacity:
+    0.75;
 }
 
+
+/* =========================================================
+   MOBILE LINK TEXT
+========================================================= */
+
 .navbar-mobile-link-text {
-  font-family: var(--font-body);
-  font-size: 0.9rem;
-  font-weight: var(--font-weight-semibold);
-  letter-spacing: -0.015em;
+  font-family:
+    var(--font-body);
+
+  font-size:
+    0.9rem;
+
+  font-weight:
+    var(--font-weight-semibold, 600);
+
+  letter-spacing:
+    -0.015em;
 }
+
+
+/* =========================================================
+   MOBILE HOVER
+========================================================= */
+
+.navbar-mobile-link:hover {
+  color:
+    var(--text-primary);
+
+  background:
+    rgba(255, 159, 0, 0.055);
+
+  border-color:
+    rgba(255, 159, 0, 0.16);
+
+  transform:
+    translateX(4px);
+}
+
+
+/* =========================================================
+   MOBILE ACTIVE LINK
+========================================================= */
+
+.navbar-mobile-link.active {
+  color:
+    var(--accent-primary);
+
+  background:
+    rgba(255, 159, 0, 0.08);
+
+  border-color:
+    rgba(255, 159, 0, 0.22);
+}
+
+.navbar-mobile-link.active
+.navbar-mobile-number {
+  opacity: 1;
+
+  color:
+    var(--accent-light);
+}
+
+
+/* =========================================================
+   MOBILE RESUME
+========================================================= */
 
 .navbar-resume-mobile {
   width: 100%;
-  min-height: var(--button-height-md);
-  margin-top: var(--gap-md);
+
+  min-height: 44px;
+
+  margin-top:
+    1rem;
+
+  border-radius:
+    11px;
+
+  font-size:
+    0.82rem;
 }
+
+
+/* =========================================================
+   MOBILE FOOTER
+========================================================= */
 
 .navbar-mobile-footer {
   display: flex;
+
   align-items: center;
+
   justify-content: center;
-  gap: var(--gap-sm);
-  margin-top: var(--gap-md);
-  padding-top: var(--gap-md);
-  border-top: 1px solid var(--border-muted);
-  color: var(--text-muted);
-  font-family: var(--font-body);
-  font-size: 0.54rem;
-  font-weight: var(--font-weight-bold);
-  letter-spacing: 0.11em;
+
+  gap:
+    0.55rem;
+
+  margin-top:
+    1.1rem;
+
+  padding-top:
+    0.9rem;
+
+  border-top:
+    1px solid
+    rgba(255, 255, 255, 0.07);
+
+  color:
+    var(--text-muted);
+
+  font-size:
+    0.54rem;
+
+  font-weight:
+    var(--font-weight-bold, 700);
+
+  letter-spacing:
+    0.11em;
 }
 
 .navbar-mobile-dot {
   width: 3px;
   height: 3px;
-  border-radius: var(--radius-full);
-  background: var(--accent-primary);
-  box-shadow: 0 0 7px var(--accent-glow);
+
+  border-radius:
+    50%;
+
+  background:
+    var(--accent-primary);
+
+  box-shadow:
+    0 0 7px
+    var(--accent-glow);
 }
 
-/* ---------------------------------------------------------
-   Focus states
---------------------------------------------------------- */
+
+/* =========================================================
+   FOCUS STATES
+========================================================= */
 
 .navbar-link:focus-visible,
 .navbar-logo:focus-visible,
 .navbar-resume:focus-visible,
-.navbar-theme:focus-visible,
 .navbar-menu-button:focus-visible,
+.navbar-theme:focus-visible,
 .navbar-mobile-close:focus-visible,
 .navbar-mobile-link:focus-visible {
-  outline: 2px solid var(--accent-primary);
-  outline-offset: 3px;
+  outline:
+    2px solid
+    var(--accent-primary);
+
+  outline-offset:
+    3px;
 }
 
-/* ---------------------------------------------------------
-   Responsive
---------------------------------------------------------- */
 
-/* Tablet */
+/* =========================================================
+   TABLET
+========================================================= */
+
 @media (max-width: 1024px) {
-  .navbar {
-    --navbar-padding-x: 1.5rem;
+
+  .navbar-container {
+    padding:
+      0 1.5rem;
   }
 
   .navbar-links {
-    gap: 1.35rem;
+    gap:
+      1.25rem;
   }
 
   .navbar-link {
-    font-size: 0.78rem;
+    font-size:
+      0.78rem;
   }
+
 }
 
-/* Mobile */
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
 @media (max-width: 768px) {
+
   .navbar {
-    --navbar-height: 68px;
-    --navbar-padding-x: 1rem;
+    --navbar-height:
+      68px;
   }
 
   .navbar-container {
-    grid-template-columns: auto 1fr auto;
-    height: var(--navbar-height);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    grid-template-columns:
+      auto
+      1fr
+      auto;
+
+    height:
+      var(--navbar-height);
+
+    padding:
+      0 1rem;
+
+    border-bottom:
+      1px solid
+      rgba(255, 255, 255, 0.05);
   }
 
   .navbar-links {
-    display: none;
+    display:
+      none;
   }
 
   .navbar-right {
-    gap: 0.5rem;
+    gap:
+      0.5rem;
   }
 
   .navbar-theme {
@@ -444,31 +1019,56 @@
   }
 
   .navbar-resume {
-    min-height: var(--button-height-sm);
+    min-height: 35px;
+
+    padding:
+      0.5rem
+      0.75rem;
+
+    font-size:
+      0.74rem;
   }
 
   .navbar-menu-button {
-    display: inline-flex;
-    width: 35px;
-    height: 35px;
+    display:
+      inline-flex;
   }
 
   .navbar-mobile-menu {
-    top: calc(var(--navbar-height) + 0.65rem);
-    max-height: calc(100svh - var(--navbar-height) - 1.3rem);
+    top:
+      calc(
+        var(--navbar-height)
+        + 0.65rem
+      );
+
+    max-height:
+      calc(
+        100svh
+        - var(--navbar-height)
+        - 1.3rem
+      );
   }
+
 }
 
-/* Small mobile */
+
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
+
 @media (max-width: 480px) {
-  .navbar {
-    --navbar-padding-x: 0.8rem;
+
+  .navbar-container {
+    padding:
+      0 0.8rem;
   }
 
   .navbar-logo {
     width: 35px;
     height: 35px;
-    border-radius: var(--radius-md);
+
+    border-radius:
+      10px;
   }
 
   .navbar-theme,
@@ -478,23 +1078,50 @@
   }
 
   .navbar-resume {
-    min-height: var(--button-height-sm);
-    padding: 0 0.75rem;
+    min-height: 34px;
+
+    padding:
+      0.45rem
+      0.65rem;
+
+    font-size:
+      0.7rem;
   }
 
   .navbar-mobile-menu {
-    width: min(370px, 91vw);
-    padding: 1.2rem 1rem 1rem;
-    border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+    width:
+      min(370px, 91vw);
+
+    padding:
+      1.2rem
+      1rem
+      1rem;
+
+    border-radius:
+      0
+      0
+      20px
+      20px;
   }
+
 }
 
-/* Reduced motion */
+
+/* =========================================================
+   REDUCED MOTION
+========================================================= */
+
 @media (prefers-reduced-motion: reduce) {
+
   .navbar *,
   .navbar *::before,
   .navbar *::after {
-    transition: none !important;
-    animation: none !important;
+
+    transition:
+      none !important;
+
+    animation:
+      none !important;
   }
+
 }

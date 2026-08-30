@@ -1,4 +1,27 @@
-import { useEffect, useState } from "react";
+/* =========================================================
+   HERO
+   Nathan — Frontend Developer Portfolio
+
+   Location:
+   src/components/Home/Hero.jsx
+
+   Uses:
+   - Central website data
+   - Framer Motion
+   - Lucide React
+   - Reusable Button component
+   - Background video
+========================================================= */
+
+import {
+  useEffect,
+  useState,
+} from "react";
+
+
+/* =========================================================
+   ICONS
+========================================================= */
 
 import {
   ArrowDown,
@@ -6,48 +29,87 @@ import {
   Download,
 } from "lucide-react";
 
-import { motion } from "framer-motion";
+
+/* =========================================================
+   FRAMER MOTION
+========================================================= */
+
+import {
+  motion,
+  AnimatePresence,
+  useReducedMotion,
+} from "framer-motion";
+
+
+/* =========================================================
+   VIDEO
+========================================================= */
 
 import video from "../../assets/videos/hero-background.mp4";
 
-import Button from "../Shared/Button/Button";
 
-import { getData } from "../../javascript/data/data";
-import { formatName } from "../../javascript/utils/formaters";
+/* =========================================================
+   BUTTON
+========================================================= */
 
+import Button from "../Shared/Button/Button.jsx";
+
+
+/* =========================================================
+   CENTRAL JAVASCRIPT
+========================================================= */
+
+import {
+  getData,
+} from "../../javascript";
+
+
+
+/* =========================================================
+   HERO
+========================================================= */
 
 export default function Hero() {
 
   /* =======================================================
-     GET WEBSITE DATA
+     REDUCED MOTIONain
   ======================================================= */
 
-  const {
-    personalInfo,
-    roles,
-    siteText,
-  } = getData();
+  const shouldReduceMotion =
+    useReducedMotion();
 
 
   /* =======================================================
-     FORMAT NAME
+     WEBSITE DATA
   ======================================================= */
 
-  const formattedName =
-    formatName(personalInfo.name);
+  const {
+    personalInfo = {},
+    roles = [],
+    siteText = {},
+  } = getData();
 
 
   /* =======================================================
      ROLE ROTATION
   ======================================================= */
 
-  const [roleIndex, setRoleIndex] =
-    useState(0);
+  const [
+    roleIndex,
+    setRoleIndex,
+  ] = useState(0);
 
+
+  /* =======================================================
+     ROLE ROTATION EFFECT
+  ======================================================= */
 
   useEffect(() => {
 
-    if (!roles || roles.length <= 1) {
+    if (
+      shouldReduceMotion ||
+      roles.length <= 1
+    ) {
       return;
     }
 
@@ -55,14 +117,12 @@ export default function Hero() {
     const interval =
       setInterval(() => {
 
-        setRoleIndex((previousIndex) => {
-
-          return (
-            (previousIndex + 1) %
-            roles.length
-          );
-
-        });
+        setRoleIndex(
+          (previousIndex) =>
+            (
+              previousIndex + 1
+            ) % roles.length
+        );
 
       }, 3000);
 
@@ -71,7 +131,10 @@ export default function Hero() {
       clearInterval(interval);
     };
 
-  }, [roles]);
+  }, [
+    roles,
+    shouldReduceMotion,
+  ]);
 
 
   /* =======================================================
@@ -79,20 +142,33 @@ export default function Hero() {
   ======================================================= */
 
   const currentRole =
-    roles?.[roleIndex] ||
-    "Developer";
+    roles.length > 0
+      ? roles[
+          roleIndex % roles.length
+        ]
+      : "Frontend Developer";
 
 
   /* =======================================================
-     HOME CONTENT
+     HOME TEXT
   ======================================================= */
 
   const homeText =
-    siteText?.home || {};
+    siteText.home || {};
 
 
   /* =======================================================
-     HERO
+     DISPLAY NAME
+  ======================================================= */
+
+  const displayName =
+    personalInfo.displayName ||
+    personalInfo.name ||
+    "Nathan";
+
+
+  /* =======================================================
+     RENDER
   ======================================================= */
 
   return (
@@ -161,17 +237,26 @@ export default function Hero() {
         ================================================= */}
 
         <motion.div
+
           className="hero-content"
 
-          initial={{
-            opacity: 0,
-            y: 25,
-          }}
+          initial={
+            shouldReduceMotion
+              ? false
+              : {
+                  opacity: 0,
+                  y: 25,
+                }
+          }
 
-          animate={{
-            opacity: 1,
-            y: 0,
-          }}
+          animate={
+            shouldReduceMotion
+              ? {}
+              : {
+                  opacity: 1,
+                  y: 0,
+                }
+          }
 
           transition={{
             duration: 0.8,
@@ -181,32 +266,72 @@ export default function Hero() {
 
 
           {/* ===============================================
-              CURRENT ROLE
+              ROTATING ROLE
           =============================================== */}
 
-          <motion.span
-            key={currentRole}
+          <div
             className="hero-eyebrow"
-
-            initial={{
-              opacity: 0,
-              x: -20,
-            }}
-
-            animate={{
-              opacity: 1,
-              x: 0,
-            }}
-
-            transition={{
-              duration: 0.5,
-              ease: "easeOut",
-            }}
+            aria-live="polite"
           >
 
-            {currentRole}
+            <span
+              className="hero-eyebrow-dot animate-status"
+              aria-hidden="true"
+            />
 
-          </motion.span>
+
+            <AnimatePresence
+              mode="wait"
+              initial={false}
+            >
+
+              <motion.span
+                key={currentRole}
+
+                className="hero-eyebrow-text"
+
+                initial={
+                  shouldReduceMotion
+                    ? {
+                        opacity: 1,
+                        y: 0,
+                      }
+                    : {
+                        opacity: 0,
+                        y: 8,
+                      }
+                }
+
+                animate={{
+                  opacity: 1,
+                  y: 0,
+                }}
+
+                exit={
+                  shouldReduceMotion
+                    ? {
+                        opacity: 1,
+                        y: 0,
+                      }
+                    : {
+                        opacity: 0,
+                        y: -8,
+                      }
+                }
+
+                transition={{
+                  duration: 0.35,
+                  ease: "easeOut",
+                }}
+              >
+
+                {currentRole}
+
+              </motion.span>
+
+            </AnimatePresence>
+
+          </div>
 
 
           {/* ===============================================
@@ -214,26 +339,41 @@ export default function Hero() {
           =============================================== */}
 
           <motion.h1
-            initial={{
-              opacity: 0,
-              y: 25,
-            }}
 
-            animate={{
-              opacity: 1,
-              y: 0,
-            }}
+            initial={
+              shouldReduceMotion
+                ? false
+                : {
+                    opacity: 0,
+                    y: 25,
+                  }
+            }
+
+            animate={
+              shouldReduceMotion
+                ? {}
+                : {
+                    opacity: 1,
+                    y: 0,
+                  }
+            }
 
             transition={{
               duration: 0.7,
               delay: 0.3,
+              ease: "easeOut",
             }}
           >
 
-            {homeText.greeting || "Hi, I'm"}{" "}
+            {
+              homeText.greeting ||
+              "Hi, I'm"
+            }
+
+            {" "}
 
             <span className="hero-name">
-              {formattedName}.
+              {displayName}.
             </span>
 
           </motion.h1>
@@ -244,23 +384,36 @@ export default function Hero() {
           =============================================== */}
 
           <motion.h2
-            initial={{
-              opacity: 0,
-              y: 25,
-            }}
 
-            animate={{
-              opacity: 1,
-              y: 0,
-            }}
+            initial={
+              shouldReduceMotion
+                ? false
+                : {
+                    opacity: 0,
+                    y: 25,
+                  }
+            }
+
+            animate={
+              shouldReduceMotion
+                ? {}
+                : {
+                    opacity: 1,
+                    y: 0,
+                  }
+            }
 
             transition={{
               duration: 0.7,
-              delay: 0.4,
+              delay: 0.45,
+              ease: "easeOut",
             }}
           >
 
-            {homeText.subtitle1}
+            {
+              homeText.subtitle1 ||
+              "I build modern digital experiences."
+            }
 
           </motion.h2>
 
@@ -272,23 +425,36 @@ export default function Hero() {
           <motion.p
             className="hero-description"
 
-            initial={{
-              opacity: 0,
-              y: 20,
-            }}
+            initial={
+              shouldReduceMotion
+                ? false
+                : {
+                    opacity: 0,
+                    y: 20,
+                  }
+            }
 
-            animate={{
-              opacity: 1,
-              y: 0,
-            }}
+            animate={
+              shouldReduceMotion
+                ? {}
+                : {
+                    opacity: 1,
+                    y: 0,
+                  }
+            }
 
             transition={{
               duration: 0.7,
-              delay: 0.5,
+              delay: 0.55,
+              ease: "easeOut",
             }}
           >
 
-            {homeText.description1}
+            {
+              homeText.description1 ||
+              personalInfo.bio ||
+              "I create responsive, interactive and visually engaging websites using modern frontend technologies."
+            }
 
           </motion.p>
 
@@ -300,25 +466,34 @@ export default function Hero() {
           <motion.div
             className="hero-actions"
 
-            initial={{
-              opacity: 0,
-              y: 20,
-            }}
+            initial={
+              shouldReduceMotion
+                ? false
+                : {
+                    opacity: 0,
+                    y: 20,
+                  }
+            }
 
-            animate={{
-              opacity: 1,
-              y: 0,
-            }}
+            animate={
+              shouldReduceMotion
+                ? {}
+                : {
+                    opacity: 1,
+                    y: 0,
+                  }
+            }
 
             transition={{
               duration: 0.7,
-              delay: 0.6,
+              delay: 0.65,
+              ease: "easeOut",
             }}
           >
 
 
             {/* =============================================
-                PRIMARY BUTTON
+                VIEW MY WORK
             ============================================= */}
 
             <Button
@@ -327,28 +502,32 @@ export default function Hero() {
               size="lg"
               icon={ArrowRight}
             >
-
-              {homeText.button1}
-
+              {
+                homeText.button1 ||
+                "View My Work"
+              }
             </Button>
 
 
             {/* =============================================
-                SECONDARY BUTTON
+                DOWNLOAD RESUME
             ============================================= */}
 
             <Button
-              href={personalInfo.resume}
+              href={
+                personalInfo.resume ||
+                "/resume.pdf"
+              }
               variant="secondary"
               size="lg"
               icon={Download}
               download
             >
-
-              {homeText.button2}
-
+              {
+                homeText.button2 ||
+                "Download Resume"
+              }
             </Button>
-
 
           </motion.div>
 
@@ -362,14 +541,23 @@ export default function Hero() {
         <motion.a
           href="#about"
           className="hero-scroll"
+          aria-label="Scroll to About section"
 
-          initial={{
-            opacity: 0,
-          }}
+          initial={
+            shouldReduceMotion
+              ? false
+              : {
+                  opacity: 0,
+                }
+          }
 
-          animate={{
-            opacity: 1,
-          }}
+          animate={
+            shouldReduceMotion
+              ? {}
+              : {
+                  opacity: 1,
+                }
+          }
 
           transition={{
             delay: 1.2,
@@ -378,18 +566,31 @@ export default function Hero() {
         >
 
           <span>
-            {homeText.scroll}
+            {
+              homeText.scroll ||
+              "Scroll to explore"
+            }
           </span>
 
 
           <motion.div
-            animate={{
-              y: [0, 7, 0],
-            }}
+
+            animate={
+              shouldReduceMotion
+                ? {}
+                : {
+                    y: [0, 7, 0],
+                  }
+            }
 
             transition={{
               duration: 1.5,
-              repeat: Infinity,
+
+              repeat:
+                shouldReduceMotion
+                  ? 0
+                  : Infinity,
+
               ease: "easeInOut",
             }}
           >
@@ -403,9 +604,10 @@ export default function Hero() {
 
         </motion.a>
 
-
       </div>
 
     </section>
+
   );
 }
+

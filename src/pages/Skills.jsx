@@ -1,9 +1,10 @@
+import SkillsHero from "../components/Skills/SkillsHero"
 
 
 function About() {
   return (
     <div>
-      <h1>PAGE@#$</h1>
+      <SkillsHero/>
     </div>
   )
 }
