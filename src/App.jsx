@@ -10,6 +10,7 @@ import {
 import Navbar from "./components/Shared/Navbar/Navbar.jsx";
 import Footer from "./components/Shared/Footer/Footer.jsx";
 
+
 import Home from "./pages/Home.jsx";
 import About from "./pages/About.jsx";
 import Skills from "./pages/Skills.jsx";
@@ -17,7 +18,7 @@ import Projects from "./pages/Projects.jsx";
 import Contact from "./pages/Contact.jsx";
 
 import { getData } from "./javascript/data/data.js";
-import FloatingContact from "./components/Shared/Button/FloatingContact.jsx";
+import FloatingContact from "./components/Contact/FloatingContact.jsx";
 
 
 /* =========================================================
@@ -30,25 +31,44 @@ function NotFound() {
 
       <div className="container">
 
-        <span className="not-found-code">
+        <span
+          className="not-found-code"
+          aria-hidden="true"
+        >
           404
         </span>
+
+        <p className="not-found-label">
+          ERROR
+        </p>
 
         <h1>
           Page Not Found
         </h1>
 
-        <p>
-          The page you're looking for doesn't exist
-          or may have been moved.
+        <p className="not-found-description">
+          The page you're looking for doesn't exist,
+          may have been moved, or the URL may be incorrect.
         </p>
 
-        <Link
-          to="/"
-          className="btn btn-primary"
-        >
-          Back Home
-        </Link>
+        <div className="not-found-actions">
+
+          <Link
+            to="/"
+            className="btn btn-primary"
+          >
+            Back Home
+          </Link>
+
+          <button
+            type="button"
+            className="btn btn-secondary"
+            onClick={() => window.history.back()}
+          >
+            Go Back
+          </button>
+
+        </div>
 
       </div>
 
@@ -62,6 +82,7 @@ function NotFound() {
 ========================================================= */
 
 function PageTitle() {
+
   const location = useLocation();
 
   const {
@@ -72,19 +93,24 @@ function PageTitle() {
 
   useEffect(() => {
 
-    /* =====================================================
+    /* =======================================================
        FORMAT NAME
-    ===================================================== */
+    ======================================================= */
 
-    const formattedName = personalInfo.name
-      ? personalInfo.name.charAt(0).toUpperCase() +
-        personalInfo.name.slice(1).toLowerCase()
-      : "Portfolio";
+    const formattedName =
+      personalInfo.name
+        ? personalInfo.name
+            .charAt(0)
+            .toUpperCase() +
+          personalInfo.name
+            .slice(1)
+            .toLowerCase()
+        : "Portfolio";
 
 
-    /* =====================================================
+    /* =======================================================
        PAGE TITLES
-    ===================================================== */
+    ======================================================= */
 
     const pages = {
       "/": null,
@@ -95,9 +121,9 @@ function PageTitle() {
     };
 
 
-    /* =====================================================
+    /* =======================================================
        NON-HOME PAGES
-    ===================================================== */
+    ======================================================= */
 
     if (location.pathname !== "/") {
 
@@ -112,11 +138,14 @@ function PageTitle() {
     }
 
 
-    /* =====================================================
+    /* =======================================================
        HOME PAGE
-    ===================================================== */
+    ======================================================= */
 
-    if (!roles.length) {
+    if (
+      !Array.isArray(roles) ||
+      roles.length === 0
+    ) {
 
       document.title =
         `${formattedName} — Portfolio`;
@@ -125,9 +154,9 @@ function PageTitle() {
     }
 
 
-    /* =====================================================
-       ROLE ROTATION
-    ===================================================== */
+    /* =======================================================
+       ROTATING HOME TITLE
+    ======================================================= */
 
     let index = 0;
 
@@ -145,12 +174,13 @@ function PageTitle() {
     updateTitle();
 
 
-    /* Rotate every 3 seconds */
+    /* Rotate title */
 
     const interval = setInterval(() => {
 
       index =
-        (index + 1) % roles.length;
+        (index + 1) %
+        roles.length;
 
       updateTitle();
 
@@ -179,6 +209,7 @@ function PageTitle() {
 ========================================================= */
 
 export default function App() {
+
   return (
     <>
 
@@ -197,7 +228,7 @@ export default function App() {
 
 
       {/* ===================================================
-          ROUTES
+          MAIN ROUTES
       =================================================== */}
 
       <main>
@@ -210,7 +241,9 @@ export default function App() {
 
           <Route
             path="/"
-            element={<Home />}
+            element={
+              <Home />
+            }
           />
 
 
@@ -220,7 +253,9 @@ export default function App() {
 
           <Route
             path="/about"
-            element={<About />}
+            element={
+              <About />
+            }
           />
 
 
@@ -230,7 +265,9 @@ export default function App() {
 
           <Route
             path="/skills"
-            element={<Skills />}
+            element={
+              <Skills />
+            }
           />
 
 
@@ -240,7 +277,9 @@ export default function App() {
 
           <Route
             path="/projects"
-            element={<Projects />}
+            element={
+              <Projects />
+            }
           />
 
 
@@ -250,7 +289,9 @@ export default function App() {
 
           <Route
             path="/contact"
-            element={<Contact />}
+            element={
+              <Contact />
+            }
           />
 
 
@@ -260,12 +301,19 @@ export default function App() {
 
           <Route
             path="*"
-            element={<NotFound />}
+            element={
+              <NotFound />
+            }
           />
 
         </Routes>
 
       </main>
+
+
+      {/* ===================================================
+          FLOATING CONTACT
+      =================================================== */}
 
       <FloatingContact/>
 

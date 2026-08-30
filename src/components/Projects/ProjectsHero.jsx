@@ -16,7 +16,7 @@ import {
 
 import {
   projects as fallbackProjects,
-} from "../../javascript/data/projects/projects.js";
+} from "../../javascript/projects/projects";
 
 
 /* =========================================================

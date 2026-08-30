@@ -1,0 +1,1040 @@
+/* =========================================================
+   ERROR PAGES
+   Nathan — Frontend Developer Portfolio
+
+   Used by:
+   - NotFound.jsx
+   - NetworkError.jsx
+   - ServerError.jsx
+========================================================= */
+
+
+/* =========================================================
+   ERROR PAGE
+========================================================= */
+
+.error-page {
+  position: relative;
+
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100svh;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  padding:
+    6rem
+    1.5rem
+    3rem;
+
+  box-sizing: border-box;
+
+  overflow: hidden;
+
+  isolation: isolate;
+
+  background:
+    var(--bg-primary, #090909);
+
+  color:
+    var(--text-primary, #ffffff);
+}
+
+
+/* =========================================================
+   BACKGROUND
+========================================================= */
+
+.error-background {
+  position: absolute;
+
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+
+  overflow: hidden;
+
+  pointer-events: none;
+
+  z-index: -2;
+}
+
+
+/* =========================================================
+   BACKGROUND GRID
+========================================================= */
+
+.error-background::before {
+  content: "";
+
+  position: absolute;
+
+  inset: 0;
+
+  background-image:
+    linear-gradient(
+      rgba(255, 255, 255, 0.025) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.025) 1px,
+      transparent 1px
+    );
+
+  background-size:
+    60px 60px;
+
+  mask-image:
+    linear-gradient(
+      to bottom,
+      transparent,
+      black 20%,
+      black 80%,
+      transparent
+    );
+
+  -webkit-mask-image:
+    linear-gradient(
+      to bottom,
+      transparent,
+      black 20%,
+      black 80%,
+      transparent
+    );
+}
+
+
+/* =========================================================
+   BACKGROUND VIGNETTE
+========================================================= */
+
+.error-background::after {
+  content: "";
+
+  position: absolute;
+
+  inset: 0;
+
+  background:
+    radial-gradient(
+      circle at center,
+      transparent 0%,
+      rgba(9, 9, 9, 0.35) 55%,
+      rgba(9, 9, 9, 0.9) 100%
+    );
+}
+
+
+/* =========================================================
+   ORBS
+========================================================= */
+
+.error-orb {
+  position: absolute;
+
+  border-radius: 50%;
+
+  pointer-events: none;
+
+  filter:
+    blur(90px);
+
+  opacity: 0.14;
+}
+
+
+/* =========================================================
+   ORB ONE
+========================================================= */
+
+.error-orb-one {
+  width: 420px;
+  height: 420px;
+
+  top: -180px;
+  right: -120px;
+
+  background:
+    var(--color-orange, #ff8a00);
+
+  animation:
+    errorOrbFloatOne
+    8s
+    ease-in-out
+    infinite;
+}
+
+
+/* =========================================================
+   ORB TWO
+========================================================= */
+
+.error-orb-two {
+  width: 360px;
+  height: 360px;
+
+  bottom: -180px;
+  left: -120px;
+
+  background:
+    var(--color-yellow, #ffc400);
+
+  opacity: 0.08;
+
+  animation:
+    errorOrbFloatTwo
+    10s
+    ease-in-out
+    infinite;
+}
+
+
+/* =========================================================
+   ERROR CONTAINER
+========================================================= */
+
+.error-container {
+  position: relative;
+
+  width: 100%;
+  max-width: 680px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  text-align: center;
+
+  padding:
+    3rem
+    2rem;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.08);
+
+  border-radius:
+    var(--radius-xl, 24px);
+
+  background:
+    rgba(255, 255, 255, 0.025);
+
+  backdrop-filter:
+    blur(18px);
+
+  -webkit-backdrop-filter:
+    blur(18px);
+
+  box-shadow:
+    0 30px 80px
+    rgba(0, 0, 0, 0.35);
+
+  box-sizing: border-box;
+
+  animation:
+    errorContainerIn
+    700ms
+    ease-out
+    both;
+}
+
+
+/* =========================================================
+   CONTAINER TOP ACCENT
+========================================================= */
+
+.error-container::before {
+  content: "";
+
+  position: absolute;
+
+  top: 0;
+  left: 15%;
+
+  width: 70%;
+  height: 1px;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      var(--color-orange, #ff8a00),
+      var(--color-yellow, #ffc400),
+      transparent
+    );
+
+  opacity: 0.7;
+}
+
+
+/* =========================================================
+   ERROR ICON
+========================================================= */
+
+.error-icon {
+  width: 68px;
+  height: 68px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  margin-bottom: 1.5rem;
+
+  border:
+    1px solid
+    rgba(255, 159, 0, 0.3);
+
+  border-radius:
+    18px;
+
+  color:
+    var(--accent-primary, #ff9f00);
+
+  background:
+    rgba(255, 159, 0, 0.07);
+
+  box-shadow:
+    0 0 30px
+    rgba(255, 159, 0, 0.12);
+
+  animation:
+    errorIconPulse
+    3s
+    ease-in-out
+    infinite;
+}
+
+
+/* =========================================================
+   WARNING ICON
+========================================================= */
+
+.error-icon-warning {
+  color:
+    var(--accent-primary, #ff9f00);
+
+  border-color:
+    rgba(255, 159, 0, 0.35);
+
+  background:
+    rgba(255, 159, 0, 0.08);
+}
+
+
+/* =========================================================
+   DANGER ICON
+========================================================= */
+
+.error-icon-danger {
+  color:
+    #ff9f00;
+
+  border-color:
+    rgba(255, 159, 0, 0.4);
+
+  background:
+    rgba(255, 159, 0, 0.09);
+
+  box-shadow:
+    0 0 35px
+    rgba(255, 159, 0, 0.15);
+}
+
+
+/* =========================================================
+   ERROR CODE
+========================================================= */
+
+.error-code {
+  margin:
+    0 0 0.85rem;
+
+  color:
+    var(--accent-primary, #ff9f00);
+
+  font-family:
+    "JetBrains Mono",
+    "SFMono-Regular",
+    Consolas,
+    monospace;
+
+  font-size:
+    0.72rem;
+
+  font-weight:
+    700;
+
+  letter-spacing:
+    0.2em;
+
+  text-transform:
+    uppercase;
+}
+
+
+/* =========================================================
+   ERROR TITLE
+========================================================= */
+
+.error-title {
+  margin: 0;
+
+  color:
+    var(--text-primary, #ffffff);
+
+  font-family:
+    var(--font-heading, "Inter", sans-serif);
+
+  font-size:
+    clamp(
+      2.4rem,
+      6vw,
+      4.5rem
+    );
+
+  font-weight:
+    var(--font-weight-extrabold, 800);
+
+  line-height:
+    1;
+
+  letter-spacing:
+    -0.055em;
+}
+
+
+/* =========================================================
+   TITLE ACCENT
+========================================================= */
+
+.error-title span {
+  color:
+    var(--accent-primary, #ff9f00);
+
+  text-shadow:
+    0 0 20px
+    rgba(255, 159, 0, 0.4);
+}
+
+
+/* =========================================================
+   DESCRIPTION
+========================================================= */
+
+.error-description {
+  width: 100%;
+  max-width: 520px;
+
+  margin:
+    1.35rem auto 0;
+
+  color:
+    var(--text-secondary, #b8b8b8);
+
+  font-family:
+    var(--font-body, "Inter", sans-serif);
+
+  font-size:
+    0.98rem;
+
+  line-height:
+    1.75;
+
+  opacity:
+    0.9;
+}
+
+
+/* =========================================================
+   ACTIONS
+========================================================= */
+
+.error-actions {
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  flex-wrap: wrap;
+
+  gap:
+    0.75rem;
+
+  margin-top:
+    2rem;
+}
+
+
+/* =========================================================
+   BUTTON BASE
+========================================================= */
+
+.error-button {
+  min-height:
+    46px;
+
+  padding:
+    0.7rem
+    1.15rem;
+
+  display: inline-flex;
+
+  align-items: center;
+  justify-content: center;
+
+  gap:
+    0.55rem;
+
+  border-radius:
+    var(--radius-full, 999px);
+
+  font-family:
+    var(--font-body, "Inter", sans-serif);
+
+  font-size:
+    0.86rem;
+
+  font-weight:
+    650;
+
+  text-decoration:
+    none;
+
+  cursor:
+    pointer;
+
+  box-sizing:
+    border-box;
+
+  transition:
+    transform 220ms ease,
+    color 220ms ease,
+    background 220ms ease,
+    border-color 220ms ease,
+    box-shadow 220ms ease;
+}
+
+
+/* =========================================================
+   PRIMARY BUTTON
+========================================================= */
+
+.error-button-primary {
+  color:
+    #090909;
+
+  border:
+    1px solid
+    transparent;
+
+  background:
+    var(--accent-gradient);
+
+  box-shadow:
+    0 10px 28px
+    rgba(255, 159, 0, 0.2);
+}
+
+
+.error-button-primary:hover {
+  transform:
+    translateY(-3px);
+
+  box-shadow:
+    0 15px 38px
+    rgba(255, 159, 0, 0.32);
+}
+
+
+.error-button-primary:active {
+  transform:
+    translateY(-1px);
+}
+
+
+/* =========================================================
+   SECONDARY BUTTON
+========================================================= */
+
+.error-button-secondary {
+  color:
+    var(--text-primary, #ffffff);
+
+  border:
+    1px solid
+    var(--border-primary, rgba(255, 255, 255, 0.12));
+
+  background:
+    rgba(255, 255, 255, 0.045);
+
+  backdrop-filter:
+    blur(12px);
+
+  -webkit-backdrop-filter:
+    blur(12px);
+}
+
+
+.error-button-secondary:hover {
+  color:
+    var(--accent-primary, #ff9f00);
+
+  border-color:
+    var(--border-accent, rgba(255, 138, 0, 0.45));
+
+  background:
+    rgba(255, 159, 0, 0.07);
+
+  transform:
+    translateY(-3px);
+
+  box-shadow:
+    0 10px 28px
+    rgba(255, 159, 0, 0.1);
+}
+
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+.error-footer {
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  gap:
+    0.55rem;
+
+  margin-top:
+    2.25rem;
+
+  padding-top:
+    1rem;
+
+  border-top:
+    1px solid
+    rgba(255, 255, 255, 0.06);
+
+  width:
+    min(100%, 360px);
+
+  color:
+    var(--text-muted, #707070);
+
+  font-family:
+    "Inter",
+    sans-serif;
+
+  font-size:
+    0.55rem;
+
+  font-weight:
+    700;
+
+  letter-spacing:
+    0.13em;
+
+  text-transform:
+    uppercase;
+}
+
+
+/* =========================================================
+   FOOTER DOT
+========================================================= */
+
+.error-footer-dot {
+  width: 4px;
+  height: 4px;
+
+  flex-shrink: 0;
+
+  border-radius:
+    50%;
+
+  background:
+    var(--accent-primary, #ff9f00);
+
+  box-shadow:
+    0 0 10px
+    rgba(255, 159, 0, 0.65);
+
+  animation:
+    errorDotPulse
+    2s
+    ease-in-out
+    infinite;
+}
+
+
+/* =========================================================
+   FOCUS
+========================================================= */
+
+.error-button:focus-visible {
+  outline:
+    2px solid
+    var(--accent-primary, #ff9f00);
+
+  outline-offset:
+    4px;
+}
+
+
+/* =========================================================
+   ANIMATIONS
+========================================================= */
+
+@keyframes errorContainerIn {
+
+  from {
+    opacity: 0;
+
+    transform:
+      translateY(20px)
+      scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+
+    transform:
+      translateY(0)
+      scale(1);
+  }
+
+}
+
+
+@keyframes errorIconPulse {
+
+  0%,
+  100% {
+    transform:
+      scale(1);
+
+    box-shadow:
+      0 0 25px
+      rgba(255, 159, 0, 0.1);
+  }
+
+  50% {
+    transform:
+      scale(1.04);
+
+    box-shadow:
+      0 0 35px
+      rgba(255, 159, 0, 0.2);
+  }
+
+}
+
+
+@keyframes errorDotPulse {
+
+  0%,
+  100% {
+    opacity: 0.5;
+
+    transform:
+      scale(0.85);
+  }
+
+  50% {
+    opacity: 1;
+
+    transform:
+      scale(1.2);
+  }
+
+}
+
+
+@keyframes errorOrbFloatOne {
+
+  0%,
+  100% {
+    transform:
+      translate(0, 0);
+  }
+
+  50% {
+    transform:
+      translate(-35px, 25px);
+  }
+
+}
+
+
+@keyframes errorOrbFloatTwo {
+
+  0%,
+  100% {
+    transform:
+      translate(0, 0);
+  }
+
+  50% {
+    transform:
+      translate(30px, -25px);
+  }
+
+}
+
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 768px) {
+
+  .error-page {
+    padding:
+      5rem
+      1rem
+      2rem;
+  }
+
+
+  .error-container {
+    max-width:
+      620px;
+
+    padding:
+      2.5rem
+      1.5rem;
+  }
+
+
+  .error-title {
+    font-size:
+      clamp(
+        2.3rem,
+        9vw,
+        3.8rem
+      );
+  }
+
+
+  .error-description {
+    font-size:
+      0.92rem;
+  }
+
+
+  .error-orb-one {
+    width:
+      300px;
+
+    height:
+      300px;
+  }
+
+
+  .error-orb-two {
+    width:
+      260px;
+
+    height:
+      260px;
+  }
+
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 480px) {
+
+  .error-page {
+    min-height:
+      100svh;
+
+    padding:
+      4.5rem
+      0.75rem
+      1.5rem;
+  }
+
+
+  .error-container {
+    padding:
+      2.25rem
+      1.1rem;
+
+    border-radius:
+      var(--radius-lg, 16px);
+  }
+
+
+  .error-icon {
+    width:
+      58px;
+
+    height:
+      58px;
+
+    margin-bottom:
+      1.25rem;
+
+    border-radius:
+      15px;
+  }
+
+
+  .error-icon svg {
+    width:
+      26px;
+
+    height:
+      26px;
+  }
+
+
+  .error-code {
+    font-size:
+      0.62rem;
+
+    letter-spacing:
+      0.16em;
+  }
+
+
+  .error-title {
+    font-size:
+      clamp(
+        2rem,
+        10vw,
+        2.8rem
+      );
+
+    letter-spacing:
+      -0.045em;
+  }
+
+
+  .error-description {
+    font-size:
+      0.88rem;
+
+    line-height:
+      1.65;
+  }
+
+
+  .error-actions {
+    width:
+      100%;
+
+    flex-direction:
+      column;
+
+    gap:
+      0.65rem;
+  }
+
+
+  .error-button {
+    width:
+      100%;
+
+    min-height:
+      44px;
+
+    font-size:
+      0.82rem;
+  }
+
+
+  .error-footer {
+    margin-top:
+      1.75rem;
+
+    font-size:
+      0.5rem;
+
+    letter-spacing:
+      0.1em;
+  }
+
+}
+
+
+/* =========================================================
+   VERY SMALL MOBILE
+========================================================= */
+
+@media (max-width: 360px) {
+
+  .error-container {
+    padding:
+      2rem
+      0.9rem;
+  }
+
+
+  .error-icon {
+    width:
+      54px;
+
+    height:
+      54px;
+  }
+
+
+  .error-title {
+    font-size:
+      1.85rem;
+  }
+
+
+  .error-description {
+    font-size:
+      0.84rem;
+  }
+
+
+  .error-footer {
+    flex-wrap:
+      wrap;
+
+    line-height:
+      1.5;
+  }
+
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+  .error-container,
+  .error-icon,
+  .error-footer-dot,
+  .error-orb {
+    animation: none;
+  }
+
+
+  .error-button {
+    transition: none;
+  }
+
+}
+

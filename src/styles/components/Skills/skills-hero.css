@@ -1,97 +1,63 @@
 /* =========================================================
-   SKILLS HERO
+   SKILLS PAGE
    Nathan — Frontend Developer Portfolio
-
-   Uses:
-   - variables.css
-   - typography.css
-   - animation.css
-   - shared theme variables
 ========================================================= */
 
-
-/* =========================================================
-   SKILLS HERO
-========================================================= */
-
-.skills-hero {
+.skills-page {
   position: relative;
 
   width: 100%;
   min-height: 100vh;
 
-  display: flex;
-  align-items: center;
-
   overflow: hidden;
 
-  background:
-    var(--bg-primary);
+  background: var(--bg-primary);
 
-  isolation: isolate;
+  color: var(--text-primary);
 }
 
 
 /* =========================================================
-   AMBIENT BACKGROUND
+   MAIN SECTION
 ========================================================= */
 
-.skills-hero::before {
-  content: "";
+.skills-section {
+  position: relative;
 
-  position: absolute;
+  width: 100%;
 
-  width: 500px;
-  height: 500px;
+  padding:
+    8rem
+    var(--section-padding-x)
+    7rem;
 
-  top: 5%;
-  right: -180px;
-
-  border-radius: 50%;
-
-  background:
-    radial-gradient(
-      circle,
-      rgba(255, 159, 0, 0.13),
-      rgba(255, 159, 0, 0.04) 45%,
-      transparent 72%
-    );
-
-  filter:
-    blur(30px);
-
-  pointer-events: none;
-
-  z-index: -2;
+  overflow: hidden;
 }
 
 
-.skills-hero::after {
+/* =========================================================
+   BACKGROUND GLOW
+========================================================= */
+
+.skills-section::before {
   content: "";
 
   position: absolute;
 
-  width: 400px;
-  height: 400px;
+  top: 8%;
+  right: -180px;
 
-  left: -180px;
-  bottom: -180px;
+  width: 420px;
+  height: 420px;
 
   border-radius: 50%;
 
   background:
-    radial-gradient(
-      circle,
-      rgba(255, 196, 0, 0.08),
-      transparent 70%
-    );
+    rgba(255, 138, 0, 0.09);
 
-  filter:
-    blur(35px);
+  filter: blur(120px);
 
   pointer-events: none;
-
-  z-index: -2;
 }
 
 
@@ -99,48 +65,40 @@
    CONTAINER
 ========================================================= */
 
-.skills-hero-container {
+.skills-container {
   position: relative;
 
-  width:
-    min(
-      calc(100% - 4rem),
-      var(--container-width, 1280px)
-    );
+  width: 100%;
+  max-width: var(--container-width);
 
-  min-height: 100vh;
-
-  margin:
-    0 auto;
-
-  padding:
-    8rem 0 6rem;
+  margin: 0 auto;
 
   display: grid;
 
   grid-template-columns:
-    minmax(0, 1fr)
-    minmax(380px, 480px);
+    minmax(260px, 0.75fr)
+    minmax(0, 1.65fr);
 
-  align-items: center;
+  gap: 5rem;
 
-  gap: 6rem;
+  align-items: start;
 
-  box-sizing: border-box;
+  z-index: 1;
 }
 
 
 /* =========================================================
-   LEFT CONTENT
+   LEFT INTRO
 ========================================================= */
 
-.skills-hero-content {
-  position: relative;
+.skills-intro {
+  position: sticky;
 
-  width: 100%;
-  max-width: 680px;
+  top: 7rem;
 
-  z-index: 2;
+  max-width: 430px;
+
+  padding-top: 1rem;
 }
 
 
@@ -148,33 +106,42 @@
    EYEBROW
 ========================================================= */
 
-.skills-hero-eyebrow {
+.skills-eyebrow {
+  position: relative;
+
   display: inline-flex;
 
   align-items: center;
 
   gap: 0.65rem;
 
-  margin-bottom:
-    1.35rem;
+  margin-bottom: 1.25rem;
 
-  color:
-    var(--accent-primary);
+  color: var(--accent-primary);
 
-  font-size:
-    0.75rem;
+  font-size: 0.72rem;
 
-  font-weight:
-    var(--font-weight-bold);
+  font-weight: var(--font-weight-bold);
 
-  letter-spacing:
-    0.18em;
+  letter-spacing: 0.18em;
 
-  line-height:
-    1.4;
+  text-transform: uppercase;
+}
 
-  text-transform:
-    uppercase;
+.skills-eyebrow::before {
+  content: "";
+
+  width: 30px;
+  height: 2px;
+
+  flex-shrink: 0;
+
+  border-radius: var(--radius-full);
+
+  background: var(--accent-gradient);
+
+  box-shadow:
+    0 0 12px var(--accent-glow);
 }
 
 
@@ -182,44 +149,32 @@
    TITLE
 ========================================================= */
 
-.skills-hero-title {
-  max-width:
-    680px;
+.skills-title {
+  margin: 0;
 
-  margin:
-    0;
+  color: var(--text-primary);
 
-  color:
-    var(--text-primary);
-
-  font-family:
-    var(--font-heading);
+  font-family: var(--font-heading);
 
   font-size:
     clamp(
-      3.5rem,
-      6vw,
-      6rem
+      2.7rem,
+      4vw,
+      4.5rem
     );
 
-  font-weight:
-    var(--font-weight-extrabold);
+  font-weight: var(--font-weight-extrabold);
 
-  line-height:
-    0.98;
+  line-height: 0.98;
 
-  letter-spacing:
-    -0.055em;
+  letter-spacing: -0.055em;
 }
 
+.skills-title-accent {
+  color: var(--accent-primary);
 
-/* =========================================================
-   TITLE ACCENT
-========================================================= */
-
-.skills-hero-title::first-line {
-  /* Keeps the heading visually strong
-     without introducing another component. */
+  text-shadow:
+    0 0 20px var(--accent-glow);
 }
 
 
@@ -227,123 +182,62 @@
    DESCRIPTION
 ========================================================= */
 
-.skills-hero-description {
-  max-width:
-    590px;
+.skills-description {
+  max-width: 410px;
 
   margin:
-    1.6rem 0 0;
+    1.5rem 0 0;
 
-  color:
-    var(--text-secondary);
+  color: var(--text-secondary);
 
-  font-family:
-    var(--font-body);
+  font-size: 0.98rem;
 
-  font-size:
-    1.05rem;
-
-  font-weight:
-    var(--font-weight-regular);
-
-  line-height:
-    1.8;
-
-  opacity:
-    0.9;
+  line-height: 1.8;
 }
 
 
 /* =========================================================
-   ACTIONS
+   SKILL COUNT
 ========================================================= */
 
-.skills-hero-actions {
+.skills-count {
   display: flex;
 
-  align-items: center;
+  align-items: baseline;
 
-  flex-wrap: wrap;
+  gap: 0.7rem;
 
-  gap:
-    0.75rem;
+  margin-top: 2rem;
 
-  margin-top:
-    2.2rem;
+  padding-top: 1.25rem;
+
+  border-top:
+    1px solid var(--border-secondary);
 }
 
-
-/* =========================================================
-   PRIMARY BUTTON
-========================================================= */
-
-.skills-hero-button {
-  min-height:
-    var(--button-height-lg, 50px);
-
-  padding:
-    0.75rem 1.25rem;
-
-  display: inline-flex;
-
-  align-items: center;
-
-  justify-content: center;
-
-  gap:
-    0.55rem;
-
-  color:
-    var(--color-black, #090909);
-
-  background:
-    var(--accent-gradient);
-
-  border:
-    1px solid transparent;
-
-  border-radius:
-    var(--radius-full);
+.skills-count strong {
+  color: var(--accent-primary);
 
   font-family:
-    var(--font-body);
+    "JetBrains Mono",
+    monospace;
 
-  font-size:
-    0.9rem;
+  font-size: 2rem;
 
-  font-weight:
-    var(--font-weight-semibold);
+  font-weight: 700;
 
-  text-decoration:
-    none;
+  line-height: 1;
 
-  box-shadow:
-    0 10px 30px
-    var(--accent-glow);
-
-  transition:
-    transform var(--transition-normal),
-    box-shadow var(--transition-normal),
-    filter var(--transition-normal);
+  text-shadow:
+    0 0 18px var(--accent-glow);
 }
 
+.skills-count span {
+  color: var(--text-muted);
 
-.skills-hero-button:hover {
-  transform:
-    translateY(-3px);
+  font-size: 0.78rem;
 
-  filter:
-    brightness(1.05);
-
-  box-shadow:
-    0 15px 38px
-    var(--accent-glow-strong);
-}
-
-
-.skills-hero-button:active {
-  transform:
-    translateY(-1px);
+  letter-spacing: 0.04em;
 }
 
 
@@ -351,94 +245,190 @@
    SOUND BUTTON
 ========================================================= */
 
-.skills-hero-sound {
-  min-height:
-    var(--button-height-lg, 50px);
+.skills-sound-button {
+  margin-top: 1.25rem;
+
+  min-height: 38px;
 
   padding:
-    0.7rem 1rem;
+    0.55rem
+    0.85rem;
 
   display: inline-flex;
 
   align-items: center;
 
-  justify-content: center;
+  gap: 0.5rem;
 
-  gap:
-    0.5rem;
-
-  color:
-    var(--text-secondary);
+  color: var(--text-secondary);
 
   background:
-    rgba(255, 255, 255, 0.045);
+    var(--bg-surface);
 
   border:
-    1px solid
-    var(--border-primary);
+    1px solid var(--border-primary);
 
-  border-radius:
-    var(--radius-full);
+  border-radius: var(--radius-full);
 
-  font-family:
-    var(--font-body);
+  font-family: var(--font-body);
 
-  font-size:
-    0.82rem;
+  font-size: 0.76rem;
 
-  font-weight:
-    var(--font-weight-medium);
+  font-weight: var(--font-weight-semibold);
 
-  cursor:
-    pointer;
-
-  backdrop-filter:
-    blur(var(--blur-md));
-
-  -webkit-backdrop-filter:
-    blur(var(--blur-md));
+  cursor: pointer;
 
   transition:
     color var(--transition-normal),
     background var(--transition-normal),
     border-color var(--transition-normal),
-    transform var(--transition-normal);
+    transform var(--transition-fast),
+    box-shadow var(--transition-normal);
 }
 
-
-.skills-hero-sound:hover {
-  color:
-    var(--accent-primary);
+.skills-sound-button:hover {
+  color: var(--accent-primary);
 
   background:
-    rgba(255, 159, 0, 0.07);
+    rgba(255, 138, 0, 0.07);
 
-  border-color:
-    var(--border-accent);
+  border-color: var(--border-accent);
 
-  transform:
-    translateY(-2px);
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 8px 25px var(--accent-glow);
 }
 
 
 /* =========================================================
-   RIGHT CARD WRAPPER
+   CTA
 ========================================================= */
 
-.skills-hero-card-wrapper {
-  position: relative;
+.skills-cta {
+  margin-top: 1rem;
 
-  width: 100%;
-
-  display: flex;
-
-  flex-direction: column;
+  display: inline-flex;
 
   align-items: center;
 
-  justify-content: center;
+  gap: 0.6rem;
 
-  z-index: 2;
+  color: var(--accent-primary);
+
+  font-size: 0.82rem;
+
+  font-weight: var(--font-weight-semibold);
+
+  text-decoration: none;
+
+  transition:
+    gap var(--transition-normal),
+    color var(--transition-fast);
+}
+
+.skills-cta:hover {
+  gap: 0.9rem;
+
+  color: var(--accent-hover, var(--accent-primary));
+}
+
+
+/* =========================================================
+   RIGHT CONTENT
+========================================================= */
+
+.skills-content {
+  min-width: 0;
+}
+
+
+/* =========================================================
+   FILTERS
+========================================================= */
+
+.skills-filters {
+  display: flex;
+
+  align-items: center;
+
+  flex-wrap: wrap;
+
+  gap: 0.5rem;
+
+  margin-bottom: 1.5rem;
+}
+
+.skills-filter {
+  min-height: 34px;
+
+  padding:
+    0.45rem
+    0.8rem;
+
+  color: var(--text-tertiary);
+
+  background:
+    rgba(255, 255, 255, 0.025);
+
+  border:
+    1px solid var(--border-secondary);
+
+  border-radius: var(--radius-full);
+
+  font-family: var(--font-body);
+
+  font-size: 0.7rem;
+
+  font-weight: var(--font-weight-semibold);
+
+  cursor: pointer;
+
+  transition:
+    color var(--transition-fast),
+    background var(--transition-fast),
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast),
+    transform var(--transition-fast);
+}
+
+.skills-filter:hover {
+  color: var(--text-primary);
+
+  border-color: var(--border-accent);
+
+  background:
+    rgba(255, 138, 0, 0.06);
+
+  transform: translateY(-1px);
+}
+
+.skills-filter.active {
+  color: var(--text-dark);
+
+  border-color: transparent;
+
+  background: var(--accent-gradient);
+
+  box-shadow:
+    0 6px 20px var(--accent-glow);
+}
+
+
+/* =========================================================
+   SKILLS GRID
+========================================================= */
+
+.skills-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      2,
+      minmax(0, 1fr)
+    );
+
+  gap: 1rem;
 }
 
 
@@ -446,56 +436,77 @@
    SKILL CARD
 ========================================================= */
 
-.skills-hero-card {
+.skill-card {
   position: relative;
 
-  width: 100%;
+  min-width: 0;
 
-  min-height:
-    470px;
+  min-height: 260px;
 
-  padding:
-    1.6rem;
+  padding: 1.25rem;
 
   display: flex;
 
   flex-direction: column;
 
-  box-sizing: border-box;
-
   overflow: hidden;
-
-  border:
-    1px solid
-    rgba(255, 255, 255, 0.11);
-
-  border-radius:
-    var(--radius-xl);
 
   background:
     linear-gradient(
       145deg,
-      rgba(255, 255, 255, 0.075),
-      rgba(255, 255, 255, 0.025)
+      rgba(255, 255, 255, 0.045),
+      rgba(255, 255, 255, 0.018)
     );
 
-  backdrop-filter:
-    blur(22px);
+  border:
+    1px solid var(--border-secondary);
 
-  -webkit-backdrop-filter:
-    blur(22px);
+  border-radius: var(--radius-xl);
 
   box-shadow:
-    0 30px 80px
-    rgba(0, 0, 0, 0.35),
+    0 12px 35px
+    rgba(0, 0, 0, 0.18);
 
-    inset 0 1px 0
-    rgba(255, 255, 255, 0.06);
+  isolation: isolate;
 
   transition:
+    transform var(--transition-normal),
     border-color var(--transition-normal),
-    box-shadow var(--transition-normal),
-    background var(--transition-normal);
+    background var(--transition-normal),
+    box-shadow var(--transition-normal);
+}
+
+
+/* =========================================================
+   CARD GLOW
+========================================================= */
+
+.skill-card::before {
+  content: "";
+
+  position: absolute;
+
+  top: -100px;
+  right: -100px;
+
+  width: 210px;
+  height: 210px;
+
+  border-radius: 50%;
+
+  background:
+    var(--skill-color);
+
+  opacity: 0.035;
+
+  filter: blur(50px);
+
+  pointer-events: none;
+
+  z-index: -1;
+
+  transition:
+    opacity var(--transition-normal);
 }
 
 
@@ -503,329 +514,245 @@
    CARD TOP ACCENT
 ========================================================= */
 
-.skills-hero-card::before {
+.skill-card::after {
   content: "";
 
   position: absolute;
 
   top: 0;
-  left: 0;
+  left: 1.25rem;
+  right: 1.25rem;
 
-  width: 100%;
-  height: 2px;
-
-  background:
-    var(--accent-gradient);
-
-  opacity:
-    0.9;
-}
-
-
-/* =========================================================
-   CARD AMBIENT GLOW
-========================================================= */
-
-.skills-hero-card::after {
-  content: "";
-
-  position: absolute;
-
-  width: 220px;
-  height: 220px;
-
-  top: -100px;
-  right: -80px;
-
-  border-radius: 50%;
+  height: 1px;
 
   background:
-    radial-gradient(
-      circle,
-      rgba(255, 159, 0, 0.2),
-      transparent 70%
+    linear-gradient(
+      90deg,
+      transparent,
+      var(--skill-color),
+      transparent
     );
 
-  filter:
-    blur(20px);
-
-  pointer-events:
-    none;
+  opacity: 0.25;
 }
 
 
 /* =========================================================
-   CARD HEADER
+   CARD HOVER
 ========================================================= */
 
-.skills-hero-card-header {
-  position: relative;
+.skill-card:hover {
+  transform:
+    translateY(-7px);
 
+  border-color:
+    color-mix(
+      in srgb,
+      var(--skill-color) 35%,
+      var(--border-primary)
+    );
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.065),
+      rgba(255, 255, 255, 0.025)
+    );
+
+  box-shadow:
+    0 20px 55px
+    rgba(0, 0, 0, 0.3);
+}
+
+.skill-card:hover::before {
+  opacity: 0.1;
+}
+
+
+/* =========================================================
+   CARD TOP
+========================================================= */
+
+.skill-card-top {
   display: flex;
 
-  align-items: flex-start;
+  align-items: center;
 
   justify-content: space-between;
 
-  z-index: 2;
+  gap: 1rem;
 }
 
 
-.skills-hero-card-header > div {
+/* =========================================================
+   SKILL ICON
+========================================================= */
+
+.skill-icon {
+  width: 46px;
+  height: 46px;
+
   display: flex;
-
-  flex-direction: column;
-
-  gap:
-    0.3rem;
-}
-
-
-/* =========================================================
-   CARD LABEL
-========================================================= */
-
-.skills-hero-card-label {
-  color:
-    var(--text-muted);
-
-  font-size:
-    0.62rem;
-
-  font-weight:
-    var(--font-weight-bold);
-
-  letter-spacing:
-    0.16em;
-
-  text-transform:
-    uppercase;
-}
-
-
-/* =========================================================
-   CARD CATEGORY
-========================================================= */
-
-.skills-hero-card-category {
-  color:
-    var(--accent-primary);
-
-  font-size:
-    0.75rem;
-
-  font-weight:
-    var(--font-weight-semibold);
-
-  letter-spacing:
-    0.02em;
-}
-
-
-/* =========================================================
-   EXTERNAL LINK
-========================================================= */
-
-.skills-hero-card-link {
-  width: 36px;
-  height: 36px;
-
-  display: inline-flex;
 
   align-items: center;
   justify-content: center;
 
-  color:
-    var(--text-secondary);
+  flex-shrink: 0;
 
   border:
     1px solid
-    var(--border-primary);
+    color-mix(
+      in srgb,
+      var(--skill-color) 35%,
+      var(--border-primary)
+    );
 
-  border-radius:
-    var(--radius-md);
+  border-radius: 14px;
+
+  background:
+    color-mix(
+      in srgb,
+      var(--skill-color) 8%,
+      transparent
+    );
+
+  font-family:
+    var(--font-heading);
+
+  font-size: 1rem;
+
+  font-weight: var(--font-weight-bold);
+
+  transition:
+    transform var(--transition-normal),
+    box-shadow var(--transition-normal);
+}
+
+.skill-card:hover .skill-icon {
+  transform:
+    rotate(-4deg)
+    scale(1.06);
+
+  box-shadow:
+    0 0 22px
+    color-mix(
+      in srgb,
+      var(--skill-color) 25%,
+      transparent
+    );
+}
+
+
+/* =========================================================
+   LEVEL
+========================================================= */
+
+.skill-level {
+  padding:
+    0.3rem
+    0.55rem;
+
+  color: var(--text-muted);
 
   background:
     rgba(255, 255, 255, 0.035);
 
-  transition:
-    color var(--transition-normal),
-    border-color var(--transition-normal),
-    background var(--transition-normal),
-    transform var(--transition-normal);
-}
-
-
-.skills-hero-card-link:hover {
-  color:
-    var(--accent-primary);
-
-  border-color:
-    var(--border-accent);
-
-  background:
-    rgba(255, 159, 0, 0.07);
-
-  transform:
-    translateY(-2px);
-}
-
-
-/* =========================================================
-   ICON CONTAINER
-========================================================= */
-
-.skills-hero-card-icon {
-  width: 92px;
-  height: 92px;
-
-  margin:
-    3rem 0 1.5rem;
-
-  display: flex;
-
-  align-items: center;
-  justify-content: center;
-
   border:
-    1px solid
-    rgba(255, 159, 0, 0.2);
+    1px solid var(--border-muted);
 
-  border-radius:
-    24px;
+  border-radius: var(--radius-full);
 
-  background:
-    rgba(255, 159, 0, 0.055);
+  font-size: 0.62rem;
 
-  box-shadow:
-    0 15px 45px
-    rgba(255, 159, 0, 0.08);
+  font-weight: var(--font-weight-semibold);
 
-  backdrop-filter:
-    blur(12px);
-
-  -webkit-backdrop-filter:
-    blur(12px);
-}
-
-
-.skills-hero-card-icon-letter {
-  font-family:
-    var(--font-heading);
-
-  font-size:
-    2.5rem;
-
-  font-weight:
-    var(--font-weight-extrabold);
-
-  line-height:
-    1;
+  white-space: nowrap;
 }
 
 
 /* =========================================================
-   SKILL TITLE
+   CARD CONTENT
 ========================================================= */
 
-.skills-hero-card-title {
-  position: relative;
+.skill-card-content {
+  margin-top: 1.1rem;
+}
+
+.skill-card-content h2 {
+  margin: 0;
+
+  color: var(--text-primary);
+
+  font-family: var(--font-heading);
+
+  font-size: 1.15rem;
+
+  font-weight: var(--font-weight-bold);
+
+  letter-spacing: -0.03em;
+}
+
+.skill-card-content p {
+  min-height: 58px;
 
   margin:
-    0;
+    0.55rem 0 0;
 
-  color:
-    var(--text-primary);
+  color: var(--text-tertiary);
 
-  font-family:
-    var(--font-heading);
+  font-size: 0.78rem;
 
-  font-size:
-    clamp(
-      2rem,
-      4vw,
-      3rem
-    );
-
-  font-weight:
-    var(--font-weight-extrabold);
-
-  line-height:
-    1;
-
-  letter-spacing:
-    -0.045em;
-
-  z-index: 2;
+  line-height: 1.65;
 }
 
 
 /* =========================================================
-   SKILL DESCRIPTION
+   PROGRESS
 ========================================================= */
 
-.skills-hero-card-description {
-  position: relative;
+.skill-progress {
+  margin-top: auto;
 
-  max-width:
-    390px;
-
-  margin:
-    1rem 0 0;
-
-  color:
-    var(--text-secondary);
-
-  font-size:
-    0.9rem;
-
-  line-height:
-    1.7;
-
-  z-index: 2;
+  padding-top: 1rem;
 }
 
-
-/* =========================================================
-   CARD META
-========================================================= */
-
-.skills-hero-card-meta {
-  margin-top:
-    auto;
-
-  padding-top:
-    1.8rem;
-
+.skill-progress-header {
   display: flex;
 
   align-items: center;
 
   justify-content: space-between;
 
-  color:
-    var(--text-muted);
+  margin-bottom: 0.45rem;
 
-  font-size:
-    0.7rem;
+  color: var(--text-muted);
 
-  font-weight:
-    var(--font-weight-semibold);
+  font-size: 0.62rem;
 
-  letter-spacing:
-    0.05em;
+  font-weight: var(--font-weight-semibold);
+}
 
-  text-transform:
-    uppercase;
+.skill-progress-header span:last-child {
+  color: var(--skill-color);
 }
 
 
-.skills-hero-card-meta span:last-child {
-  color:
-    var(--accent-primary);
+/* =========================================================
+   PROGRESS TRACK
+========================================================= */
 
-  font-size:
-    0.85rem;
+.skill-progress-track {
+  position: relative;
+
+  width: 100%;
+  height: 4px;
+
+  overflow: hidden;
+
+  border-radius: var(--radius-full);
+
+  background:
+    rgba(255, 255, 255, 0.07);
 }
 
 
@@ -833,175 +760,146 @@
    PROGRESS BAR
 ========================================================= */
 
-.skills-hero-progress {
-  position: relative;
-
-  width: 100%;
-  height: 5px;
-
-  margin-top:
-    0.7rem;
-
-  overflow: hidden;
-
-  border-radius:
-    var(--radius-full);
-
-  background:
-    rgba(255, 255, 255, 0.07);
-}
-
-
-.skills-hero-progress span {
+.skill-progress-bar {
   display: block;
 
   height: 100%;
 
-  border-radius:
-    inherit;
+  border-radius: inherit;
 
   box-shadow:
     0 0 12px
-    currentColor;
+    var(--skill-color);
+
+  transform-origin: left;
+
+  animation:
+    skillProgress
+    1s
+    cubic-bezier(0.22, 1, 0.36, 1)
+    both;
 }
 
 
 /* =========================================================
-   NEXT SKILL
+   PROGRESS ANIMATION
 ========================================================= */
 
-.skills-hero-next {
-  margin-top:
-    1.3rem;
+@keyframes skillProgress {
 
-  padding-top:
-    0.9rem;
+  from {
+    transform:
+      scaleX(0);
+  }
 
+  to {
+    transform:
+      scaleX(1);
+  }
+
+}
+
+
+/* =========================================================
+   CARD FOOTER
+========================================================= */
+
+.skill-card-footer {
   display: flex;
 
   align-items: center;
 
   justify-content: space-between;
 
+  gap: 1rem;
+
+  margin-top: 1rem;
+
+  padding-top: 0.8rem;
+
   border-top:
-    1px solid
-    rgba(255, 255, 255, 0.07);
+    1px solid var(--border-muted);
 
-  color:
-    var(--text-muted);
+  color: var(--text-muted);
 
-  font-size:
-    0.65rem;
+  font-size: 0.62rem;
 
-  font-weight:
-    var(--font-weight-semibold);
-
-  letter-spacing:
-    0.1em;
-
-  text-transform:
-    uppercase;
+  font-weight: var(--font-weight-semibold);
 }
 
+.skill-official-link {
+  width: 30px;
+  height: 30px;
 
-.skills-hero-next span:last-child {
-  color:
-    var(--text-secondary);
+  display: inline-flex;
 
-  letter-spacing:
-    0.02em;
+  align-items: center;
+  justify-content: center;
 
-  text-transform:
-    none;
+  color: var(--text-tertiary);
+
+  border:
+    1px solid var(--border-muted);
+
+  border-radius: 9px;
+
+  background:
+    rgba(255, 255, 255, 0.025);
+
+  text-decoration: none;
+
+  transition:
+    color var(--transition-fast),
+    border-color var(--transition-fast),
+    background var(--transition-fast),
+    transform var(--transition-fast);
+}
+
+.skill-official-link:hover {
+  color: var(--skill-color);
+
+  border-color:
+    color-mix(
+      in srgb,
+      var(--skill-color) 40%,
+      var(--border-primary)
+    );
+
+  background:
+    color-mix(
+      in srgb,
+      var(--skill-color) 8%,
+      transparent
+    );
+
+  transform:
+    translateY(-2px);
 }
 
 
 /* =========================================================
-   INDICATORS
+   EMPTY STATE
 ========================================================= */
 
-.skills-hero-indicators {
+.skills-empty {
+  min-height: 200px;
+
   display: flex;
 
   align-items: center;
-
   justify-content: center;
 
-  flex-wrap: wrap;
+  border:
+    1px solid var(--border-secondary);
 
-  gap:
-    0.4rem;
-
-  max-width:
-    420px;
-
-  margin-top:
-    1.2rem;
-}
-
-
-.skills-hero-indicator {
-  width: 7px;
-  height: 7px;
-
-  padding: 0;
-
-  border: none;
-
-  border-radius:
-    50%;
+  border-radius: var(--radius-xl);
 
   background:
-    rgba(255, 255, 255, 0.2);
+    rgba(255, 255, 255, 0.025);
 
-  cursor:
-    pointer;
+  color: var(--text-muted);
 
-  transition:
-    transform var(--transition-fast),
-    background var(--transition-fast),
-    box-shadow var(--transition-fast);
-}
-
-
-.skills-hero-indicator:hover {
-  background:
-    rgba(255, 159, 0, 0.65);
-
-  transform:
-    scale(1.35);
-}
-
-
-.skills-hero-indicator.active {
-  width: 22px;
-
-  border-radius:
-    var(--radius-full);
-
-  background:
-    var(--accent-gradient);
-
-  box-shadow:
-    0 0 12px
-    var(--accent-glow);
-}
-
-
-/* =========================================================
-   FOCUS STATES
-========================================================= */
-
-.skills-hero-button:focus-visible,
-.skills-hero-sound:focus-visible,
-.skills-hero-card-link:focus-visible,
-.skills-hero-indicator:focus-visible {
-  outline:
-    2px solid
-    var(--accent-primary);
-
-  outline-offset:
-    3px;
+  font-size: 0.85rem;
 }
 
 
@@ -1011,49 +909,27 @@
 
 @media (max-width: 1024px) {
 
-  .skills-hero-container {
-    width:
-      min(
-        calc(100% - 3rem),
-        900px
-      );
-
-    grid-template-columns:
-      1fr;
-
-    gap:
-      4rem;
-
+  .skills-section {
     padding:
-      7rem 0 5rem;
+      7rem
+      1.5rem
+      6rem;
   }
 
+  .skills-container {
+    grid-template-columns:
+      minmax(220px, 0.7fr)
+      minmax(0, 1.3fr);
 
-  .skills-hero-content {
-    max-width:
-      720px;
+    gap: 3rem;
   }
 
-
-  .skills-hero-title {
-    font-size:
-      clamp(
-        3.2rem,
-        8vw,
-        5.2rem
-      );
+  .skills-intro {
+    top: 6rem;
   }
 
-
-  .skills-hero-card-wrapper {
-    width:
-      min(
-        100%,
-        500px
-      );
-
-    margin:
-      0 auto;
+  .skills-grid {
+    gap: 0.8rem;
   }
 
 }
@@ -1065,106 +941,46 @@
 
 @media (max-width: 768px) {
 
-  .skills-hero {
-    min-height:
-      100svh;
-  }
-
-
-  .skills-hero-container {
-    width:
-      calc(100% - 2rem);
-
-    min-height:
-      auto;
-
+  .skills-section {
     padding:
-      6.5rem 0 4rem;
-
-    gap:
-      3rem;
+      6rem
+      1rem
+      4rem;
   }
 
+  .skills-container {
+    grid-template-columns: 1fr;
 
-  .skills-hero-eyebrow {
-    font-size:
-      0.68rem;
-
-    margin-bottom:
-      1rem;
+    gap: 3rem;
   }
 
+  .skills-intro {
+    position: relative;
 
-  .skills-hero-title {
+    top: auto;
+
+    max-width: 100%;
+  }
+
+  .skills-title {
     font-size:
       clamp(
-        2.7rem,
-        12vw,
+        2.6rem,
+        11vw,
         4rem
       );
-
-    letter-spacing:
-      -0.045em;
   }
 
-
-  .skills-hero-description {
-    margin-top:
-      1.25rem;
-
-    font-size:
-      0.92rem;
-
-    line-height:
-      1.7;
+  .skills-description {
+    max-width: 650px;
   }
 
-
-  .skills-hero-actions {
-    margin-top:
-      1.6rem;
-  }
-
-
-  .skills-hero-card {
-    min-height:
-      430px;
-
-    padding:
-      1.3rem;
-
-    border-radius:
-      var(--radius-lg);
-  }
-
-
-  .skills-hero-card-icon {
-    width: 78px;
-    height: 78px;
-
-    margin-top:
-      2.2rem;
-
-    border-radius:
-      20px;
-  }
-
-
-  .skills-hero-card-title {
-    font-size:
-      2rem;
-  }
-
-
-  .skills-hero-card-description {
-    font-size:
-      0.86rem;
-  }
-
-
-  .skills-hero-indicators {
-    max-width:
-      320px;
+  .skills-grid {
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(0, 1fr)
+      );
   }
 
 }
@@ -1174,108 +990,27 @@
    SMALL MOBILE
 ========================================================= */
 
-@media (max-width: 480px) {
+@media (max-width: 540px) {
 
-  .skills-hero-container {
-    width:
-      calc(100% - 1.5rem);
-
+  .skills-section {
     padding:
-      5.5rem 0 3rem;
-
-    gap:
-      2.5rem;
+      5rem
+      0.8rem
+      3rem;
   }
 
-
-  .skills-hero-title {
-    font-size:
-      clamp(
-        2.4rem,
-        13vw,
-        3.4rem
-      );
+  .skills-grid {
+    grid-template-columns: 1fr;
   }
 
+  .skill-card {
+    min-height: 240px;
 
-  .skills-hero-actions {
-    width:
-      100%;
-
-    flex-direction:
-      column;
-
-    align-items:
-      stretch;
+    padding: 1.1rem;
   }
 
-
-  .skills-hero-button,
-  .skills-hero-sound {
-    width:
-      100%;
-  }
-
-
-  .skills-hero-card {
-    min-height:
-      400px;
-
-    padding:
-      1.15rem;
-  }
-
-
-  .skills-hero-card-icon {
-    width: 70px;
-    height: 70px;
-
-    margin:
-      1.8rem 0 1.25rem;
-  }
-
-
-  .skills-hero-card-title {
-    font-size:
-      1.8rem;
-  }
-
-
-  .skills-hero-card-description {
-    font-size:
-      0.82rem;
-  }
-
-
-  .skills-hero-next {
-    font-size:
-      0.58rem;
-  }
-
-}
-
-
-/* =========================================================
-   VERY SMALL SCREENS
-========================================================= */
-
-@media (max-width: 360px) {
-
-  .skills-hero-container {
-    width:
-      calc(100% - 1rem);
-  }
-
-
-  .skills-hero-card {
-    min-height:
-      380px;
-  }
-
-
-  .skills-hero-card-title {
-    font-size:
-      1.6rem;
+  .skill-card-content p {
+    min-height: auto;
   }
 
 }
@@ -1287,9 +1022,18 @@
 
 @media (prefers-reduced-motion: reduce) {
 
-  .skills-hero-card {
-    animation:
-      none !important;
+  .skill-card,
+  .skill-icon,
+  .skills-filter,
+  .skills-sound-button,
+  .skills-cta,
+  .skill-official-link {
+    transition: none;
+  }
+
+  .skill-progress-bar {
+    animation: none;
   }
 
 }
+

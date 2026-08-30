@@ -1,148 +1,65 @@
+
 /* =========================================================
    FLOATING CONTACT
-   Nathan — Frontend Developer Portfolio
-
-   Uses:
-   - variables.css
-   - animation.css
-   - global theme variables
+   Orange / Amber / Yellow theme
 ========================================================= */
-
-
-/* =========================================================
-   FLOATING CONTACT WRAPPER
-========================================================= */
-
-.floating-contact {
-  position: fixed;
-
-  right: 1.5rem;
-  bottom: 1.5rem;
-
-  z-index: var(--z-toast, 2000);
-
-  display: flex;
-
-  flex-direction: column;
-
-  align-items: flex-end;
-
-  gap: 0.8rem;
-
-  pointer-events: none;
-}
 
 
 /* =========================================================
    FLOATING CONTACT BUTTON
 ========================================================= */
 
-.floating-contact-button {
-  position: relative;
+.floating-contact__button {
+  position: fixed;
+
+  right: 1.5rem;
+  bottom: 1.5rem;
 
   width: 58px;
   height: 58px;
 
-  display: inline-flex;
-
+  display: flex;
   align-items: center;
   justify-content: center;
 
   padding: 0;
 
-  border:
-    1px solid
-    var(--border-accent);
+  z-index: 2000;
 
-  border-radius:
-    var(--radius-full);
+  border: 1px solid rgba(255, 190, 70, 0.5);
 
-  color:
-    var(--color-black, #090909);
+  border-radius: 50%;
 
-  background:
-    var(--accent-gradient);
+  color: #090909;
 
-  box-shadow:
-    0 10px 30px
-    var(--accent-glow),
-
-    0 0 0
-    rgba(255, 159, 0, 0);
-
-  cursor: pointer;
-
-  pointer-events: auto;
-
-  transition:
-    transform var(--transition-normal),
-    box-shadow var(--transition-normal),
-    filter var(--transition-normal);
-}
-
-
-/* =========================================================
-   BUTTON OUTER GLOW
-========================================================= */
-
-.floating-contact-button::before {
-  content: "";
-
-  position: absolute;
-
-  inset: -5px;
-
-  border-radius:
-    var(--radius-full);
-
-  border:
-    1px solid
-    rgba(255, 159, 0, 0.22);
-
-  pointer-events: none;
-
-  opacity: 0.7;
-}
-
-
-/* =========================================================
-   BUTTON INNER SHINE
-========================================================= */
-
-.floating-contact-button::after {
-  content: "";
-
-  position: absolute;
-
-  inset: 1px;
-
-  border-radius:
-    var(--radius-full);
+  /*
+    THIS is what makes the button yellow/orange.
+  */
 
   background:
     linear-gradient(
       135deg,
-      rgba(255, 255, 255, 0.24),
-      transparent 45%
+      #ffd166 0%,
+      #ff9f00 50%,
+      #ff7a00 100%
     );
 
-  pointer-events: none;
-}
+  box-shadow:
+    0 10px 30px
+    rgba(255, 159, 0, 0.28),
 
+    0 0 25px
+    rgba(255, 159, 0, 0.14);
 
-/* =========================================================
-   ICON
-========================================================= */
+  cursor: pointer;
 
-.floating-contact-button svg {
-  position: relative;
-
-  z-index: 2;
-
-  flex-shrink: 0;
+  overflow: visible;
 
   transition:
-    transform var(--transition-normal);
+    background 260ms ease,
+    box-shadow 260ms ease,
+    transform 260ms ease,
+    border-color 260ms ease;
 }
 
 
@@ -150,100 +67,132 @@
    BUTTON HOVER
 ========================================================= */
 
-.floating-contact-button:hover {
-  transform:
-    translateY(-4px)
-    scale(1.04);
+.floating-contact__button:hover {
+  border-color:
+    rgba(255, 209, 102, 0.8);
 
-  filter:
-    brightness(1.06);
-
-  box-shadow:
-    0 14px 40px
-    var(--accent-glow-strong),
-
-    0 0 30px
-    rgba(255, 159, 0, 0.2);
-}
-
-
-.floating-contact-button:hover svg {
-  transform:
-    rotate(-6deg)
-    scale(1.05);
-}
-
-
-/* =========================================================
-   BUTTON ACTIVE
-========================================================= */
-
-.floating-contact-button:active {
-  transform:
-    translateY(-1px)
-    scale(0.98);
-}
-
-
-/* =========================================================
-   OPEN STATE
-========================================================= */
-
-.floating-contact-button.is-open {
-  box-shadow:
-    0 10px 30px
-    var(--accent-glow-strong);
-}
-
-
-.floating-contact-button.is-open svg {
-  transform:
-    rotate(0deg);
-}
-
-
-/* =========================================================
-   CONTACT PANEL
-========================================================= */
-
-.floating-contact-panel {
-  position: relative;
-
-  width:
-    min(
-      380px,
-      calc(100vw - 2rem)
+  background:
+    linear-gradient(
+      135deg,
+      #ffe08a 0%,
+      #ffb52e 50%,
+      #ff8a00 100%
     );
 
+  box-shadow:
+    0 14px 38px
+    rgba(255, 159, 0, 0.38),
+
+    0 0 35px
+    rgba(255, 159, 0, 0.22);
+}
+
+
+/* =========================================================
+   OPEN BUTTON
+========================================================= */
+
+.floating-contact__button--open {
+  color: #ffffff;
+
+  background:
+    linear-gradient(
+      135deg,
+      #ff9f00,
+      #e88700
+    );
+
+  border-color:
+    rgba(255, 209, 102, 0.55);
+
+  box-shadow:
+    0 10px 30px
+    rgba(255, 159, 0, 0.3);
+}
+
+
+/* =========================================================
+   NOTIFICATION DOT
+========================================================= */
+
+.floating-contact__dot {
+  position: absolute;
+
+  top: 3px;
+  right: 3px;
+
+  width: 12px;
+  height: 12px;
+
+  border-radius: 50%;
+
+  background:
+    #ffd166;
+
+  border:
+    2px solid
+    #090909;
+
+  box-shadow:
+    0 0 8px
+    rgba(255, 209, 102, 0.9),
+
+    0 0 18px
+    rgba(255, 159, 0, 0.55);
+
+  animation:
+    floatingContactDot
+    2s
+    ease-in-out
+    infinite;
+}
+
+
+/* =========================================================
+   CONTACT CARD
+========================================================= */
+
+.floating-contact__card {
+  position: fixed;
+
+  right: 1.5rem;
+  bottom: 5.9rem;
+
+  width: min(
+    390px,
+    calc(100vw - 2rem)
+  );
+
   max-height:
-    calc(100vh - 8rem);
+    calc(100svh - 7rem);
 
   overflow-y: auto;
 
-  padding:
-    1.25rem;
+  padding: 1.35rem;
 
-  border:
-    1px solid
-    var(--border-primary);
+  z-index: 1999;
 
-  border-radius:
-    var(--radius-xl);
+  color: var(--text-primary, #ffffff);
 
   background:
     linear-gradient(
       145deg,
-      rgba(24, 24, 24, 0.94),
-      rgba(10, 10, 10, 0.92)
+      rgba(25, 25, 25, 0.97),
+      rgba(10, 10, 10, 0.96)
     );
 
-  color:
-    var(--text-primary);
+  border:
+    1px solid
+    rgba(255, 159, 0, 0.24);
+
+  border-radius:
+    20px;
 
   box-shadow:
-    var(--shadow-xl),
+    0 25px 70px
+    rgba(0, 0, 0, 0.5),
 
-    0 0 45px
+    0 0 35px
     rgba(255, 159, 0, 0.08);
 
   backdrop-filter:
@@ -251,232 +200,162 @@
 
   -webkit-backdrop-filter:
     blur(24px);
-
-  pointer-events: auto;
-
-  scrollbar-width: thin;
-
-  animation:
-    scaleIn
-    260ms
-    ease-out
-    forwards;
 }
 
 
 /* =========================================================
-   PANEL TOP ACCENT
+   CARD TOP ACCENT
 ========================================================= */
 
-.floating-contact-panel::before {
+.floating-contact__card::before {
   content: "";
 
   position: absolute;
 
   top: 0;
-  left: 1.25rem;
-  right: 1.25rem;
+  left: 1.35rem;
+  right: 1.35rem;
 
-  height: 1px;
+  height: 2px;
+
+  border-radius: 999px;
 
   background:
-    var(--accent-gradient);
+    linear-gradient(
+      90deg,
+      #ff7a00,
+      #ff9f00,
+      #ffd166
+    );
 
-  opacity: 0.75;
+  box-shadow:
+    0 0 15px
+    rgba(255, 159, 0, 0.35);
 
   pointer-events: none;
 }
 
 
 /* =========================================================
-   PANEL HEADER
+   HEADER
 ========================================================= */
 
-.floating-contact-header {
+.floating-contact__header {
   display: flex;
 
-  align-items: center;
-
+  align-items: flex-start;
   justify-content: space-between;
 
   gap: 1rem;
 
-  padding-bottom:
-    1rem;
-
-  border-bottom:
-    1px solid
-    var(--border-muted);
+  margin-bottom: 1.2rem;
 }
 
 
 /* =========================================================
-   HEADING GROUP
+   EYEBROW
 ========================================================= */
 
-.floating-contact-heading {
-  display: flex;
-
-  align-items: center;
-
-  gap: 0.75rem;
-
-  min-width: 0;
-}
-
-
-/* =========================================================
-   AVATAR
-========================================================= */
-
-.floating-contact-avatar {
-  width: 40px;
-  height: 40px;
-
-  flex-shrink: 0;
-
-  display: inline-flex;
-
-  align-items: center;
-  justify-content: center;
-
-  border:
-    1px solid
-    rgba(255, 159, 0, 0.3);
-
-  border-radius:
-    12px;
-
-  color:
-    var(--accent-primary);
-
-  background:
-    rgba(255, 159, 0, 0.08);
-
-  box-shadow:
-    0 0 20px
-    rgba(255, 159, 0, 0.08);
-}
-
-
-/* =========================================================
-   HEADING
-========================================================= */
-
-.floating-contact-heading strong {
+.floating-contact__eyebrow {
   display: block;
 
+  margin-bottom: 0.35rem;
+
+  color:
+    #ffb52e;
+
+  font-size: 0.65rem;
+
+  font-weight: 800;
+
+  letter-spacing: 0.16em;
+}
+
+
+/* =========================================================
+   HEADER TITLE
+========================================================= */
+
+.floating-contact__header h2 {
   margin: 0;
 
   color:
-    var(--text-primary);
+    #ffffff;
 
-  font-family:
-    var(--font-heading);
+  font-size: 1.3rem;
 
-  font-size:
-    0.98rem;
+  font-weight: 700;
 
-  font-weight:
-    var(--font-weight-bold);
-
-  line-height:
-    1.2;
+  letter-spacing: -0.035em;
 }
 
 
 /* =========================================================
-   AVAILABILITY
-   Uses animation.css → .animate-status
+   HEADER DESCRIPTION
 ========================================================= */
 
-.floating-contact-status {
-  display: flex;
+.floating-contact__header p {
+  margin:
+    0.4rem 0 0;
 
-  align-items: center;
-
-  gap: 0.45rem;
-
-  margin-top: 0.3rem;
+  max-width: 270px;
 
   color:
-    var(--text-muted);
+    rgba(255, 255, 255, 0.55);
 
-  font-family:
-    var(--font-body);
+  font-size: 0.78rem;
 
-  font-size:
-    0.68rem;
-
-  font-weight:
-    var(--font-weight-medium);
-
-  line-height:
-    1.2;
+  line-height: 1.5;
 }
-
-
-/*
-  We intentionally do NOT define another
-  status animation here.
-
-  The dot uses:
-
-  .animate-status
-
-  from animation.css.
-*/
 
 
 /* =========================================================
    CLOSE BUTTON
 ========================================================= */
 
-.floating-contact-close {
+.floating-contact__close {
   width: 34px;
   height: 34px;
 
   flex-shrink: 0;
 
-  display: inline-flex;
+  display: flex;
 
   align-items: center;
   justify-content: center;
 
   padding: 0;
 
-  border:
-    1px solid
-    var(--border-primary);
-
-  border-radius:
-    var(--radius-md);
-
   color:
-    var(--text-secondary);
+    rgba(255, 255, 255, 0.65);
 
   background:
-    rgba(255, 255, 255, 0.035);
+    rgba(255, 255, 255, 0.05);
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.1);
+
+  border-radius: 10px;
 
   cursor: pointer;
 
   transition:
-    color var(--transition-fast),
-    background var(--transition-fast),
-    border-color var(--transition-fast),
-    transform var(--transition-fast);
+    color 200ms ease,
+    background 200ms ease,
+    border-color 200ms ease,
+    transform 200ms ease;
 }
 
-
-.floating-contact-close:hover {
+.floating-contact__close:hover {
   color:
-    var(--accent-primary);
+    #ffd166;
 
   background:
-    rgba(255, 159, 0, 0.07);
+    rgba(255, 159, 0, 0.1);
 
   border-color:
-    var(--border-accent);
+    rgba(255, 159, 0, 0.4);
 
   transform:
     rotate(5deg);
@@ -484,42 +363,15 @@
 
 
 /* =========================================================
-   INTRO
-========================================================= */
-
-.floating-contact-intro {
-  padding:
-    1rem 0 0.75rem;
-}
-
-
-.floating-contact-intro p {
-  margin: 0;
-
-  color:
-    var(--text-secondary);
-
-  font-family:
-    var(--font-body);
-
-  font-size:
-    0.78rem;
-
-  line-height:
-    1.65;
-}
-
-
-/* =========================================================
    FORM
 ========================================================= */
 
-.floating-contact-form {
+.floating-contact__form {
   display: flex;
 
   flex-direction: column;
 
-  gap: 0.8rem;
+  gap: 0.9rem;
 }
 
 
@@ -527,12 +379,12 @@
    FIELD
 ========================================================= */
 
-.floating-contact-field {
+.floating-contact__field {
   display: flex;
 
   flex-direction: column;
 
-  gap: 0.35rem;
+  gap: 0.4rem;
 }
 
 
@@ -540,115 +392,56 @@
    LABEL
 ========================================================= */
 
-.floating-contact-field label {
+.floating-contact__field label {
   color:
-    var(--text-secondary);
+    rgba(255, 255, 255, 0.65);
 
-  font-family:
-    var(--font-body);
+  font-size: 0.72rem;
 
-  font-size:
-    0.7rem;
-
-  font-weight:
-    var(--font-weight-semibold);
-
-  letter-spacing:
-    0.02em;
+  font-weight: 600;
 }
 
 
 /* =========================================================
-   INPUTS
+   INPUT WRAPPER
 ========================================================= */
 
-.floating-contact-field input,
-.floating-contact-field textarea {
-  width: 100%;
+.floating-contact__input {
+  min-height: 44px;
 
-  box-sizing: border-box;
+  display: flex;
+
+  align-items: center;
+
+  gap: 0.6rem;
+
+  padding:
+    0 0.8rem;
+
+  color:
+    rgba(255, 255, 255, 0.4);
+
+  background:
+    rgba(255, 255, 255, 0.045);
 
   border:
     1px solid
-    var(--border-primary);
+    rgba(255, 255, 255, 0.09);
 
-  border-radius:
-    var(--radius-md);
-
-  color:
-    var(--text-primary);
-
-  background:
-    rgba(255, 255, 255, 0.035);
-
-  font-family:
-    var(--font-body);
-
-  font-size:
-    0.8rem;
-
-  outline: none;
+  border-radius: 11px;
 
   transition:
-    border-color var(--transition-fast),
-    background var(--transition-fast),
-    box-shadow var(--transition-fast);
+    border-color 200ms ease,
+    background 200ms ease,
+    box-shadow 200ms ease;
 }
 
-
-/* =========================================================
-   INPUT
-========================================================= */
-
-.floating-contact-field input {
-  min-height: 42px;
-
-  padding:
-    0.65rem 0.75rem;
-}
-
-
-/* =========================================================
-   TEXTAREA
-========================================================= */
-
-.floating-contact-field textarea {
-  min-height: 110px;
-
-  padding:
-    0.7rem 0.75rem;
-
-  resize: vertical;
-
-  line-height:
-    1.55;
-}
-
-
-/* =========================================================
-   PLACEHOLDER
-========================================================= */
-
-.floating-contact-field input::placeholder,
-.floating-contact-field textarea::placeholder {
-  color:
-    var(--text-muted);
-
-  opacity: 0.75;
-}
-
-
-/* =========================================================
-   INPUT FOCUS
-========================================================= */
-
-.floating-contact-field input:focus,
-.floating-contact-field textarea:focus {
+.floating-contact__input:focus-within {
   border-color:
-    var(--border-accent);
+    rgba(255, 159, 0, 0.55);
 
   background:
-    rgba(255, 159, 0, 0.045);
+    rgba(255, 159, 0, 0.06);
 
   box-shadow:
     0 0 0 3px
@@ -657,76 +450,169 @@
 
 
 /* =========================================================
-   DISABLED
+   INPUT
 ========================================================= */
 
-.floating-contact-field input:disabled,
-.floating-contact-field textarea:disabled {
-  cursor:
-    not-allowed;
+.floating-contact__input input {
+  width: 100%;
 
-  opacity:
-    0.6;
-}
+  min-width: 0;
 
+  border: none;
 
-/* =========================================================
-   META / CHARACTER COUNT
-========================================================= */
+  outline: none;
 
-.floating-contact-meta {
-  display: flex;
+  background: transparent;
 
-  justify-content: flex-end;
-
-  margin-top: -0.35rem;
-}
-
-
-.floating-contact-meta span {
   color:
-    var(--text-muted);
+    #ffffff;
 
-  font-size:
-    0.62rem;
+  font: inherit;
+}
 
-  font-family:
-    var(--font-body);
+.floating-contact__input input::placeholder {
+  color:
+    rgba(255, 255, 255, 0.32);
 }
 
 
 /* =========================================================
-   ERROR
+   TEXTAREA
 ========================================================= */
 
-.floating-contact-error {
-  display: flex;
+.floating-contact__textarea {
+  padding: 0.75rem;
 
-  align-items: flex-start;
-
-  gap: 0.5rem;
-
-  padding:
-    0.7rem 0.75rem;
+  background:
+    rgba(255, 255, 255, 0.045);
 
   border:
     1px solid
-    rgba(239, 68, 68, 0.22);
+    rgba(255, 255, 255, 0.09);
 
-  border-radius:
-    var(--radius-md);
+  border-radius: 11px;
 
-  color:
-    #fca5a5;
+  transition:
+    border-color 200ms ease,
+    background 200ms ease,
+    box-shadow 200ms ease;
+}
+
+.floating-contact__textarea:focus-within {
+  border-color:
+    rgba(255, 159, 0, 0.55);
 
   background:
-    rgba(239, 68, 68, 0.06);
+    rgba(255, 159, 0, 0.06);
 
-  font-size:
-    0.72rem;
+  box-shadow:
+    0 0 0 3px
+    rgba(255, 159, 0, 0.08);
+}
 
-  line-height:
-    1.45;
+.floating-contact__textarea textarea {
+  width: 100%;
+
+  min-height: 90px;
+
+  resize: vertical;
+
+  border: none;
+
+  outline: none;
+
+  background: transparent;
+
+  color:
+    #ffffff;
+
+  font: inherit;
+
+  line-height: 1.5;
+}
+
+.floating-contact__textarea textarea::placeholder {
+  color:
+    rgba(255, 255, 255, 0.32);
+}
+
+
+/* =========================================================
+   LABEL ROW
+========================================================= */
+
+.floating-contact__label-row {
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+}
+
+.floating-contact__label-row span {
+  color:
+    rgba(255, 255, 255, 0.3);
+
+  font-size: 0.62rem;
+}
+
+
+/* =========================================================
+   SUBMIT BUTTON
+========================================================= */
+
+.floating-contact__submit {
+  width: 100%;
+
+  min-height: 46px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 0.55rem;
+
+  margin-top: 0.25rem;
+
+  border: 1px solid
+    rgba(255, 190, 70, 0.5);
+
+  border-radius: 12px;
+
+  color:
+    #090909;
+
+  background:
+    linear-gradient(
+      135deg,
+      #ffd166 0%,
+      #ff9f00 50%,
+      #ff7a00 100%
+    );
+
+  font-size: 0.8rem;
+
+  font-weight: 700;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 8px 24px
+    rgba(255, 159, 0, 0.2);
+
+  transition:
+    transform 200ms ease,
+    box-shadow 200ms ease,
+    filter 200ms ease;
+}
+
+.floating-contact__submit:hover {
+  filter: brightness(1.05);
+
+  box-shadow:
+    0 12px 30px
+    rgba(255, 159, 0, 0.32);
 }
 
 
@@ -734,378 +620,170 @@
    SUCCESS
 ========================================================= */
 
-.floating-contact-success {
+.floating-contact__success {
   display: flex;
 
   align-items: center;
 
-  gap: 0.5rem;
+  gap: 0.7rem;
+
+  margin-bottom: 0.9rem;
 
   padding:
-    0.7rem 0.75rem;
+    0.75rem;
+
+  color:
+    #ffd166;
+
+  background:
+    rgba(255, 159, 0, 0.08);
 
   border:
     1px solid
-    rgba(34, 197, 94, 0.22);
+    rgba(255, 159, 0, 0.22);
 
-  border-radius:
-    var(--radius-md);
+  border-radius: 11px;
+}
+
+.floating-contact__success strong {
+  display: block;
 
   color:
-    #86efac;
+    #ffffff;
 
-  background:
-    rgba(34, 197, 94, 0.06);
+  font-size: 0.78rem;
+}
 
-  font-size:
-    0.72rem;
+.floating-contact__success span {
+  display: block;
 
-  line-height:
-    1.45;
+  margin-top: 0.15rem;
+
+  color:
+    rgba(255, 255, 255, 0.5);
+
+  font-size: 0.68rem;
 }
 
 
 /* =========================================================
-   SEND BUTTON
+   ERROR
 ========================================================= */
 
-.floating-contact-send {
-  width: 100%;
+.floating-contact__error {
+  display: flex;
 
-  min-height:
-    var(--button-height-md);
+  align-items: center;
 
-  margin-top:
-    0.2rem;
+  gap: 0.55rem;
+
+  margin-bottom: 0.9rem;
 
   padding:
-    0.7rem 1rem;
+    0.7rem;
 
-  display: inline-flex;
+  color:
+    #ffb52e;
+
+  background:
+    rgba(255, 100, 80, 0.07);
+
+  border:
+    1px solid
+    rgba(255, 100, 80, 0.2);
+
+  border-radius: 11px;
+
+  font-size: 0.7rem;
+}
+
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+.floating-contact__footer {
+  display: flex;
 
   align-items: center;
   justify-content: center;
 
-  gap: 0.55rem;
+  gap: 0.4rem;
 
-  border:
-    1px solid
-    var(--border-accent);
-
-  border-radius:
-    var(--radius-md);
+  margin-top: 0.9rem;
+  padding-top: 0.8rem;
 
   color:
-    var(--color-black, #090909);
+    rgba(255, 255, 255, 0.3);
 
-  background:
-    var(--accent-gradient);
+  border-top:
+    1px solid
+    rgba(255, 255, 255, 0.07);
 
-  font-family:
-    var(--font-body);
-
-  font-size:
-    0.8rem;
-
-  font-weight:
-    var(--font-weight-bold);
-
-  cursor: pointer;
-
-  box-shadow:
-    0 8px 24px
-    var(--accent-glow);
-
-  transition:
-    transform var(--transition-normal),
-    filter var(--transition-normal),
-    box-shadow var(--transition-normal),
-    opacity var(--transition-fast);
-}
-
-
-.floating-contact-send:hover:not(:disabled) {
-  transform:
-    translateY(-2px);
-
-  filter:
-    brightness(1.05);
-
-  box-shadow:
-    0 12px 32px
-    var(--accent-glow-strong);
-}
-
-
-.floating-contact-send:active:not(:disabled) {
-  transform:
-    translateY(0);
+  font-size: 0.6rem;
 }
 
 
 /* =========================================================
-   SEND BUTTON DISABLED
+   ANIMATION
 ========================================================= */
 
-.floating-contact-send:disabled {
-  opacity: 0.45;
+@keyframes floatingContactDot {
 
-  cursor:
-    not-allowed;
+  0%,
+  100% {
+    transform: scale(0.85);
 
-  box-shadow:
-    none;
-
-  filter:
-    saturate(0.7);
-}
-
-
-/* =========================================================
-   SPINNER
-========================================================= */
-
-.floating-contact-spinner {
-  animation:
-    rotate
-    0.9s
-    linear
-    infinite;
-}
-
-
-/* =========================================================
-   PANEL SCROLLBAR
-========================================================= */
-
-.floating-contact-panel::-webkit-scrollbar {
-  width: 5px;
-}
-
-
-.floating-contact-panel::-webkit-scrollbar-track {
-  background:
-    transparent;
-}
-
-
-.floating-contact-panel::-webkit-scrollbar-thumb {
-  background:
-    rgba(255, 159, 0, 0.25);
-
-  border-radius:
-    var(--radius-full);
-}
-
-
-/* =========================================================
-   FOCUS STATES
-========================================================= */
-
-.floating-contact-button:focus-visible,
-.floating-contact-close:focus-visible,
-.floating-contact-send:focus-visible,
-.floating-contact-field input:focus-visible,
-.floating-contact-field textarea:focus-visible {
-  outline:
-    2px solid
-    var(--accent-primary);
-
-  outline-offset:
-    3px;
-}
-
-
-/* =========================================================
-   TABLET
-========================================================= */
-
-@media (max-width: 768px) {
-
-  .floating-contact {
-    right: 1rem;
-
-    bottom: 1rem;
+    box-shadow:
+      0 0 5px
+      rgba(255, 209, 102, 0.6);
   }
 
+  50% {
+    transform: scale(1.15);
 
-  .floating-contact-button {
+    box-shadow:
+      0 0 8px
+      rgba(255, 209, 102, 1),
+
+      0 0 18px
+      rgba(255, 159, 0, 0.7);
+  }
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 600px) {
+
+  .floating-contact__button {
+    right: 1rem;
+    bottom: 1rem;
+
     width: 54px;
     height: 54px;
   }
 
-
-  .floating-contact-panel {
-    width:
-      min(
-        360px,
-        calc(100vw - 2rem)
-      );
-
-    max-height:
-      calc(100svh - 7rem);
-
-    padding:
-      1.1rem;
-  }
-
-}
-
-
-/* =========================================================
-   SMALL MOBILE
-========================================================= */
-
-@media (max-width: 480px) {
-
-  .floating-contact {
+  .floating-contact__card {
     right: 0.75rem;
+    bottom: 5.4rem;
 
-    bottom: 0.75rem;
-
-    gap: 0.65rem;
-  }
-
-
-  .floating-contact-button {
-    width: 52px;
-    height: 52px;
-  }
-
-
-  .floating-contact-panel {
     width:
       calc(100vw - 1.5rem);
 
-    padding:
-      1rem;
+    max-height:
+      calc(100svh - 6.5rem);
 
-    border-radius:
-      var(--radius-lg);
+    padding: 1.1rem;
+
+    border-radius: 17px;
   }
 
-
-  .floating-contact-avatar {
-    width: 36px;
-    height: 36px;
-
-    border-radius:
-      10px;
+  .floating-contact__header h2 {
+    font-size: 1.15rem;
   }
-
-
-  .floating-contact-heading strong {
-    font-size:
-      0.92rem;
-  }
-
-
-  .floating-contact-status {
-    font-size:
-      0.62rem;
-  }
-
-
-  .floating-contact-field input {
-    min-height:
-      40px;
-  }
-
-
-  .floating-contact-field textarea {
-    min-height:
-      100px;
-  }
-
-}
-
-
-/* =========================================================
-   VERY SMALL SCREENS
-========================================================= */
-
-@media (max-width: 360px) {
-
-  .floating-contact {
-    right: 0.6rem;
-
-    bottom: 0.6rem;
-  }
-
-
-  .floating-contact-button {
-    width: 50px;
-    height: 50px;
-  }
-
-
-  .floating-contact-panel {
-    width:
-      calc(100vw - 1.2rem);
-
-    padding:
-      0.85rem;
-  }
-
-
-  .floating-contact-intro p {
-    font-size:
-      0.72rem;
-  }
-
-
-  .floating-contact-form {
-    gap:
-      0.65rem;
-  }
-
-
-  .floating-contact-field textarea {
-    min-height:
-      90px;
-  }
-
-}
-
-
-/* =========================================================
-   LIGHT THEME
-========================================================= */
-
-.light-theme .floating-contact-panel {
-  background:
-    linear-gradient(
-      145deg,
-      rgba(255, 255, 255, 0.96),
-      rgba(255, 250, 240, 0.94)
-    );
-
-  border-color:
-    rgba(23, 18, 11, 0.1);
-
-  box-shadow:
-    0 25px 60px
-    rgba(23, 18, 11, 0.16);
-}
-
-
-.light-theme .floating-contact-field input,
-.light-theme .floating-contact-field textarea {
-  color:
-    var(--text-primary);
-
-  background:
-    rgba(23, 18, 11, 0.035);
-
-  border-color:
-    rgba(23, 18, 11, 0.1);
-}
-
-
-.light-theme .floating-contact-field input:focus,
-.light-theme .floating-contact-field textarea:focus {
-  background:
-    rgba(232, 135, 0, 0.045);
 }
 
 
@@ -1115,13 +793,12 @@
 
 @media (prefers-reduced-motion: reduce) {
 
-  .floating-contact *,
-  .floating-contact *::before,
-  .floating-contact *::after {
+  .floating-contact__button,
+  .floating-contact__card,
+  .floating-contact__close,
+  .floating-contact__submit,
+  .floating-contact__dot {
     animation: none !important;
-
     transition: none !important;
   }
-
 }
-

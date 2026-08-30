@@ -9,7 +9,7 @@ import {
 import {
   visibleSkills,
   skillCategories,
-} from "../../javascript/data/skills/skills";
+} from "../../javascript/skills/skills";
 
 
 
