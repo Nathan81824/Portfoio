@@ -12,50 +12,158 @@ const supabaseAnonKey =
   import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 
+/* =========================================================
+   ENVIRONMENT VALIDATION
+========================================================= */
+
 if (!supabaseUrl) {
+
   throw new Error(
     "Missing VITE_SUPABASE_URL."
   );
+
 }
 
 
 if (!supabaseAnonKey) {
+
   throw new Error(
     "Missing VITE_SUPABASE_ANON_KEY."
   );
+
 }
 
 
 /* =========================================================
    ADMIN SUPABASE CLIENT
-   ONE AUTHENTICATED CLIENT FOR THE ENTIRE ADMIN APP
 ========================================================= */
 
-export const supabase = createClient(
-  supabaseUrl,
-  supabaseAnonKey,
-  {
-    auth: {
-      persistSession: true,
+export const supabase =
+  createClient(
+    supabaseUrl,
+    supabaseAnonKey,
+    {
+      auth: {
 
-      autoRefreshToken: true,
+        /*
+          Admin authentication is allowed
+          to persist between page refreshes.
+        */
 
-      detectSessionInUrl: true,
+        persistSession:
+          true,
 
-      storageKey:
-        "portfolio-admin-session",
-    },
-  }
-);
+        autoRefreshToken:
+          true,
+
+        detectSessionInUrl:
+          true,
+
+        storageKey:
+          "portfolio-admin-session",
+
+      },
+    }
+  );
 
 
 /* =========================================================
    VISITOR CHAT CLIENT
 ========================================================= */
 
-let chatClient = null;
+/*
+  Visitor chat does NOT use the admin
+  authentication session.
 
-let chatToken = "";
+  Instead, every visitor conversation
+  has its own conversation token.
+
+  The token is sent through:
+
+    x-conversation-token
+
+  Your Supabase RLS / database policies
+  can use that header to identify the
+  conversation.
+*/
+
+let chatClient =
+  null;
+
+let chatToken =
+  "";
+
+
+/* =========================================================
+   CREATE VISITOR CHAT CLIENT
+========================================================= */
+
+function createVisitorChatClient(
+  conversationToken
+) {
+
+  const token =
+    String(
+      conversationToken || ""
+    ).trim();
+
+
+  return createClient(
+    supabaseUrl,
+    supabaseAnonKey,
+    {
+
+      /* ===================================================
+         GLOBAL HEADERS
+      =================================================== */
+
+      global: {
+
+        headers: {
+
+          "x-conversation-token":
+            token,
+
+        },
+
+      },
+
+
+      /* ===================================================
+         AUTH
+      =================================================== */
+
+      auth: {
+
+        /*
+          Do NOT share the admin session
+          with the visitor client.
+        */
+
+        persistSession:
+          false,
+
+        autoRefreshToken:
+          false,
+
+        detectSessionInUrl:
+          false,
+
+        /*
+          Separate storage key so this
+          client can never overwrite the
+          admin authentication session.
+        */
+
+        storageKey:
+          "portfolio-visitor-chat-client",
+
+      },
+
+    }
+  );
+
+}
 
 
 /* =========================================================
@@ -73,8 +181,48 @@ export function getChatClient(
 
 
   /*
-    Reuse the visitor client when
-    the token has not changed.
+    No token means there is no
+    authenticated conversation context.
+  */
+
+  if (!token) {
+
+    /*
+      Still return a client so normal
+      public operations can function.
+
+      IMPORTANT:
+      Protected conversation operations
+      should still fail through RLS if
+      no token is supplied.
+    */
+
+    if (
+      chatClient &&
+      chatToken === ""
+    ) {
+
+      return chatClient;
+
+    }
+
+
+    chatClient =
+      createVisitorChatClient(
+        ""
+      );
+
+    chatToken =
+      "";
+
+    return chatClient;
+
+  }
+
+
+  /*
+    Reuse the existing client when
+    the conversation token has not changed.
   */
 
   if (
@@ -88,45 +236,17 @@ export function getChatClient(
 
 
   /*
-    IMPORTANT:
-
-    Visitor chat does NOT use
-    Supabase Auth sessions.
-
-    It therefore must NOT participate
-    in the admin refresh-token cycle.
+    Create a new visitor client
+    for the new conversation token.
   */
 
-  chatClient = createClient(
-    supabaseUrl,
-    supabaseAnonKey,
-    {
-      global: {
-        headers: {
-          "x-conversation-token":
-            token,
-        },
-      },
+  chatClient =
+    createVisitorChatClient(
+      token
+    );
 
-      auth: {
-        persistSession: false,
-
-        autoRefreshToken: false,
-
-        detectSessionInUrl: false,
-
-        /*
-          Unique storage key anyway.
-        */
-
-        storageKey:
-          "portfolio-visitor-chat-client",
-      },
-    }
-  );
-
-
-  chatToken = token;
+  chatToken =
+    token;
 
 
   return chatClient;
@@ -140,8 +260,56 @@ export function getChatClient(
 
 export function resetChatClient() {
 
-  chatClient = null;
+  chatClient =
+    null;
 
-  chatToken = "";
+  chatToken =
+    "";
 
 }
+
+
+/* =========================================================
+   GET CURRENT CHAT TOKEN
+========================================================= */
+
+export function getChatToken() {
+
+  return chatToken;
+
+}
+
+
+/* =========================================================
+   CHECK CHAT CLIENT
+========================================================= */
+
+export function hasChatClient() {
+
+  return Boolean(
+    chatClient
+  );
+
+}
+
+
+/* =========================================================
+   DEFAULT EXPORT
+========================================================= */
+
+const supabaseClients = {
+
+  supabase,
+
+  getChatClient,
+
+  resetChatClient,
+
+  getChatToken,
+
+  hasChatClient,
+
+};
+
+
+export default supabaseClients;

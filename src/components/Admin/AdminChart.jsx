@@ -11,9 +11,20 @@ import {
   Smile,
   Search,
   X,
+  Mic,
+  Square,
+  Trash2,
+  Play,
+  Pause,
+  Volume2,
+  VolumeX,
 } from "lucide-react";
 
 import { supabase } from "../../javascript/supabase/supabaseClient";
+
+import {
+  createAudioSignedUrl,
+} from "../../javascript/contact/chat";
 
 import {
   getEmojiCategories,
@@ -22,12 +33,18 @@ import {
 } from "../../javascript/utils/emojis/emojis";
 
 
+
+
+/* =========================================================
+   ADMIN CHAT
+========================================================= */
+
 export default function AdminChart({
   selectedConversation,
 }) {
 
   /* =======================================================
-     STATE
+     MESSAGE STATE
   ======================================================= */
 
   const [messages, setMessages] =
@@ -61,6 +78,49 @@ export default function AdminChart({
 
 
   /* =======================================================
+     VOICE RECORDING STATE
+  ======================================================= */
+
+  const [recording, setRecording] =
+    useState(false);
+
+  const [recordingSeconds, setRecordingSeconds] =
+    useState(0);
+
+  const [audioBlob, setAudioBlob] =
+    useState(null);
+
+  const [audioPreviewUrl, setAudioPreviewUrl] =
+    useState("");
+
+  const [audioPlaying, setAudioPlaying] =
+    useState(false);
+
+  const [voiceSending, setVoiceSending] =
+    useState(false);
+
+  const [voiceError, setVoiceError] =
+    useState("");
+
+
+  /* =======================================================
+     VOICE MESSAGE PLAYER STATE
+  ======================================================= */
+
+  const [playingAudioId, setPlayingAudioId] =
+    useState(null);
+
+  const [mutedAudioId, setMutedAudioId] =
+    useState(null);
+
+  const [audioProgress, setAudioProgress] =
+    useState({});
+
+  const [audioDuration, setAudioDuration] =
+    useState({});
+
+
+  /* =======================================================
      REFS
   ======================================================= */
 
@@ -69,6 +129,27 @@ export default function AdminChart({
 
   const inputRef =
     useRef(null);
+
+  const mediaRecorderRef =
+    useRef(null);
+
+  const mediaStreamRef =
+    useRef(null);
+
+  const audioChunksRef =
+    useRef([]);
+
+  const recordingTimerRef =
+    useRef(null);
+
+  const audioPreviewRef =
+    useRef(null);
+
+  const discardRecordingRef =
+    useRef(false);
+
+  const audioRefs =
+    useRef({});
 
 
   /* =======================================================
@@ -103,7 +184,9 @@ export default function AdminChart({
     }
 
 
-    if (emojiCategory === "All") {
+    if (
+      emojiCategory === "All"
+    ) {
 
       return getEmojiCategories()
         .flatMap(
@@ -128,12 +211,802 @@ export default function AdminChart({
 
 
   /* =======================================================
-     FETCH MESSAGES
+     FORMAT RECORDING TIME
+  ======================================================= */
+
+  const formatRecordingTime =
+    (seconds) => {
+
+      const minutes =
+        Math.floor(
+          seconds / 60
+        );
+
+      const remainingSeconds =
+        seconds % 60;
+
+
+      return `${String(
+        minutes
+      ).padStart(2, "0")}:${String(
+        remainingSeconds
+      ).padStart(2, "0")}`;
+
+    };
+
+
+  /* =======================================================
+     FORMAT AUDIO TIME
+  ======================================================= */
+
+  const formatAudioTime =
+    (seconds) => {
+
+      if (
+        !Number.isFinite(
+          seconds
+        )
+      ) {
+
+        return "0:00";
+
+      }
+
+
+      const total =
+        Math.max(
+          0,
+          Math.floor(seconds)
+        );
+
+
+      const minutes =
+        Math.floor(
+          total / 60
+        );
+
+      const secondsPart =
+        total % 60;
+
+
+      return `${minutes}:${String(
+        secondsPart
+      ).padStart(2, "0")}`;
+
+    };
+
+
+  /* =======================================================
+     CLEAR RECORDING TIMER
+  ======================================================= */
+
+  const clearRecordingTimer =
+    () => {
+
+      if (
+        recordingTimerRef.current
+      ) {
+
+        clearInterval(
+          recordingTimerRef.current
+        );
+
+        recordingTimerRef.current =
+          null;
+
+      }
+
+    };
+
+
+  /* =======================================================
+     STOP MEDIA STREAM
+  ======================================================= */
+
+  const stopMediaStream =
+    () => {
+
+      if (
+        mediaStreamRef.current
+      ) {
+
+        mediaStreamRef.current
+          .getTracks()
+          .forEach(
+            (track) =>
+              track.stop()
+          );
+
+        mediaStreamRef.current =
+          null;
+
+      }
+
+    };
+
+
+  /* =======================================================
+     CLEAR AUDIO PREVIEW
+  ======================================================= */
+
+  const clearAudioPreview =
+    () => {
+
+      if (
+        audioPreviewUrl
+      ) {
+
+        URL.revokeObjectURL(
+          audioPreviewUrl
+        );
+
+      }
+
+      setAudioPreviewUrl("");
+
+      setAudioBlob(null);
+
+      setAudioPlaying(false);
+
+    };
+
+
+  /* =======================================================
+     STOP AUDIO PREVIEW
+  ======================================================= */
+
+  const stopAudioPreview =
+    () => {
+
+      if (
+        audioPreviewRef.current
+      ) {
+
+        audioPreviewRef.current.pause();
+
+        audioPreviewRef.current.currentTime =
+          0;
+
+      }
+
+      setAudioPlaying(false);
+
+    };
+
+
+  /* =======================================================
+     CANCEL RECORDING
+  ======================================================= */
+
+  const cancelRecording =
+    () => {
+
+      discardRecordingRef.current =
+        true;
+
+
+      clearRecordingTimer();
+
+      stopMediaStream();
+
+
+      const recorder =
+        mediaRecorderRef.current;
+
+
+      if (
+        recorder &&
+        recorder.state !==
+          "inactive"
+      ) {
+
+        recorder.stop();
+
+      }
+
+
+      mediaRecorderRef.current =
+        null;
+
+
+      setRecording(false);
+
+      setRecordingSeconds(0);
+
+      setAudioPlaying(false);
+
+    };
+
+
+  /* =======================================================
+     START RECORDING
+  ======================================================= */
+
+  const startRecording =
+    async () => {
+
+      if (
+        recording ||
+        voiceSending ||
+        sending ||
+        !selectedConversation?.id
+      ) {
+
+        return;
+
+      }
+
+
+      try {
+
+        setVoiceError("");
+
+        clearAudioPreview();
+
+        discardRecordingRef.current =
+          false;
+
+
+        if (
+          !navigator.mediaDevices ||
+          !navigator.mediaDevices.getUserMedia
+        ) {
+
+          throw new Error(
+            "Voice recording is not supported by this browser."
+          );
+
+        }
+
+
+        const stream =
+          await navigator.mediaDevices
+            .getUserMedia({
+              audio: true,
+            });
+
+
+        mediaStreamRef.current =
+          stream;
+
+
+        const supportedTypes = [
+          "audio/webm;codecs=opus",
+          "audio/webm",
+          "audio/mp4",
+          "audio/ogg",
+        ];
+
+
+        const supportedMimeType =
+          supportedTypes.find(
+            (type) =>
+              typeof MediaRecorder !==
+                "undefined" &&
+              MediaRecorder.isTypeSupported(
+                type
+              )
+          );
+
+
+        const recorder =
+          supportedMimeType
+            ? new MediaRecorder(
+                stream,
+                {
+                  mimeType:
+                    supportedMimeType,
+                }
+              )
+            : new MediaRecorder(
+                stream
+              );
+
+
+        mediaRecorderRef.current =
+          recorder;
+
+        audioChunksRef.current =
+          [];
+
+
+        recorder.ondataavailable =
+          (event) => {
+
+            if (
+              event.data &&
+              event.data.size > 0
+            ) {
+
+              audioChunksRef.current.push(
+                event.data
+              );
+
+            }
+
+          };
+
+
+        recorder.onstop =
+          () => {
+
+            clearRecordingTimer();
+
+            stopMediaStream();
+
+
+            if (
+              discardRecordingRef.current
+            ) {
+
+              audioChunksRef.current =
+                [];
+
+              discardRecordingRef.current =
+                false;
+
+              return;
+
+            }
+
+
+            const mimeType =
+              recorder.mimeType ||
+              "audio/webm";
+
+
+            const blob =
+              new Blob(
+                audioChunksRef.current,
+                {
+                  type: mimeType,
+                }
+              );
+
+
+            audioChunksRef.current =
+              [];
+
+
+            if (
+              blob.size <= 0
+            ) {
+
+              setVoiceError(
+                "The recording was empty."
+              );
+
+              return;
+
+            }
+
+
+            const previewUrl =
+              URL.createObjectURL(
+                blob
+              );
+
+
+            setAudioBlob(blob);
+
+            setAudioPreviewUrl(
+              previewUrl
+            );
+
+            setAudioPlaying(false);
+
+          };
+
+
+        recorder.onerror =
+          () => {
+
+            clearRecordingTimer();
+
+            stopMediaStream();
+
+            setRecording(false);
+
+            setVoiceError(
+              "Unable to record audio."
+            );
+
+          };
+
+
+        recorder.start();
+
+        setRecording(true);
+
+        setRecordingSeconds(0);
+
+
+        recordingTimerRef.current =
+          setInterval(
+            () => {
+
+              setRecordingSeconds(
+                (current) =>
+                  current + 1
+              );
+
+            },
+            1000
+          );
+
+      } catch (err) {
+
+        console.error(
+          "Admin voice recording error:",
+          err
+        );
+
+        stopMediaStream();
+
+        setRecording(false);
+
+        setVoiceError(
+          err?.message ||
+          "Microphone access was denied."
+        );
+
+      }
+
+    };
+
+
+  /* =======================================================
+     STOP RECORDING
+  ======================================================= */
+
+  const stopRecording =
+    () => {
+
+      const recorder =
+        mediaRecorderRef.current;
+
+
+      if (
+        !recorder ||
+        recorder.state ===
+          "inactive"
+      ) {
+
+        return;
+
+      }
+
+
+      recorder.stop();
+
+      setRecording(false);
+
+      clearRecordingTimer();
+
+      stopMediaStream();
+
+    };
+
+
+  /* =======================================================
+     RECORDING TOGGLE
+  ======================================================= */
+
+  const handleRecordingToggle =
+    () => {
+
+      if (recording) {
+
+        stopRecording();
+
+      } else {
+
+        startRecording();
+
+      }
+
+    };
+
+
+  /* =======================================================
+     PLAY PREVIEW
+  ======================================================= */
+
+  const toggleAudioPreview =
+    async () => {
+
+      if (
+        !audioPreviewRef.current ||
+        !audioPreviewUrl
+      ) {
+
+        return;
+
+      }
+
+
+      const audio =
+        audioPreviewRef.current;
+
+
+      try {
+
+        if (
+          audio.paused
+        ) {
+
+          await audio.play();
+
+          setAudioPlaying(true);
+
+        } else {
+
+          audio.pause();
+
+          setAudioPlaying(false);
+
+        }
+
+      } catch (err) {
+
+        console.error(
+          "Audio preview error:",
+          err
+        );
+
+        setAudioPlaying(false);
+
+      }
+
+    };
+
+
+  /* =======================================================
+     DELETE PREVIEW
+  ======================================================= */
+
+  const handleDeleteRecording =
+    () => {
+
+      stopAudioPreview();
+
+      clearAudioPreview();
+
+      setVoiceError("");
+
+    };
+
+
+  /* =======================================================
+     SEND VOICE MESSAGE
+  ======================================================= */
+
+  const handleSendVoice =
+    async () => {
+
+      if (
+        !audioBlob ||
+        voiceSending ||
+        !selectedConversation?.id
+      ) {
+
+        return;
+
+      }
+
+
+      try {
+
+        setVoiceSending(true);
+
+        setVoiceError("");
+
+        setError("");
+
+
+        const extension =
+          audioBlob.type.includes("mp4")
+            ? "mp4"
+            : audioBlob.type.includes("ogg")
+              ? "ogg"
+              : "webm";
+
+
+        const fileName =
+          `admin-${crypto.randomUUID()}.${extension}`;
+
+
+        const filePath =
+          `${selectedConversation.id}/${fileName}`;
+
+
+        const {
+          error:
+            uploadError,
+        } =
+          await supabase.storage
+
+            .from(
+              "chat-audio"
+            )
+
+            .upload(
+              filePath,
+              audioBlob,
+              {
+                cacheControl:
+                  "3600",
+
+                contentType:
+                  audioBlob.type ||
+                  "audio/webm",
+
+                upsert:
+                  false,
+              }
+            );
+
+
+        if (
+          uploadError
+        ) {
+
+          throw uploadError;
+
+        }
+
+
+        const {
+          data,
+          error:
+            messageError,
+        } =
+          await supabase
+
+            .from(
+              "messages"
+            )
+
+            .insert({
+
+              conversation_id:
+                selectedConversation.id,
+
+              message:
+                "",
+
+              sender:
+                "admin",
+
+              message_type:
+                "audio",
+
+              audio_url:
+                filePath,
+
+            })
+
+            .select(`
+              id,
+              conversation_id,
+              message,
+              sender,
+              message_type,
+              audio_url,
+              created_at
+            `)
+
+            .single();
+
+
+        if (
+          messageError
+        ) {
+
+          await supabase.storage
+            .from(
+              "chat-audio"
+            )
+            .remove([
+              filePath,
+            ]);
+
+          throw messageError;
+
+        }
+
+
+        let signedUrl =
+          "";
+
+
+        try {
+
+          signedUrl =
+            await createAudioSignedUrl(
+              filePath
+            );
+
+        } catch (urlError) {
+
+          console.warn(
+            "Could not create signed admin audio URL:",
+            urlError
+          );
+
+        }
+
+
+        const result = {
+
+          ...data,
+
+          audio_url:
+            signedUrl ||
+            filePath,
+
+        };
+
+
+        setMessages(
+          (current) => {
+
+            const exists =
+              current.some(
+                (item) =>
+                  item.id ===
+                  result.id
+              );
+
+
+            if (exists) {
+
+              return current;
+
+            }
+
+
+            return [
+              ...current,
+              result,
+            ];
+
+          }
+        );
+
+
+        handleDeleteRecording();
+
+      } catch (err) {
+
+        console.error(
+          "Admin voice message error:",
+          err
+        );
+
+        setVoiceError(
+          err?.message ||
+          "Unable to send voice message."
+        );
+
+      } finally {
+
+        setVoiceSending(false);
+
+      }
+
+    };
+
+
+  /* =======================================================
+     FETCH MESSAGES + REALTIME
   ======================================================= */
 
   useEffect(() => {
 
-    if (!selectedConversation?.id) {
+    if (
+      !selectedConversation?.id
+    ) {
 
       setMessages([]);
 
@@ -147,81 +1020,137 @@ export default function AdminChart({
     let mounted = true;
 
 
-    const fetchMessages = async () => {
+    const fetchMessages =
+      async () => {
 
-      setLoading(true);
+        setLoading(true);
 
-      setError("");
-
-
-      const {
-        data,
-        error: fetchError,
-      } = await supabase
-
-        .from("messages")
-
-        .select(`
-          id,
-          conversation_id,
-          message,
-          sender,
-          created_at
-        `)
-
-        .eq(
-          "conversation_id",
-          selectedConversation.id
-        )
-
-        .order(
-          "created_at",
-          {
-            ascending: true,
-          }
-        );
+        setError("");
 
 
-      if (!mounted) {
-        return;
-      }
+        const {
+          data,
+          error:
+            fetchError,
+        } =
+          await supabase
+
+            .from(
+              "messages"
+            )
+
+            .select(`
+              id,
+              conversation_id,
+              message,
+              sender,
+              message_type,
+              audio_url,
+              created_at
+            `)
+
+            .eq(
+              "conversation_id",
+              selectedConversation.id
+            )
+
+            .order(
+              "created_at",
+              {
+                ascending: true,
+              }
+            );
 
 
-      if (fetchError) {
+        if (!mounted) {
+          return;
+        }
 
-        console.error(
-          "Error fetching messages:",
+
+        if (
           fetchError
-        );
+        ) {
 
-        setError(
-          "Unable to load this conversation."
-        );
+          console.error(
+            "Error fetching messages:",
+            fetchError
+          );
 
-        setMessages([]);
+          setError(
+            "Unable to load this conversation."
+          );
+
+          setMessages([]);
+
+          setLoading(false);
+
+          return;
+
+        }
+
+
+        const resolvedMessages =
+          await Promise.all(
+
+            (data || []).map(
+              async (item) => {
+
+                if (
+                  item.message_type !==
+                    "audio" ||
+                  !item.audio_url
+                ) {
+
+                  return item;
+
+                }
+
+
+                try {
+
+                  const signedUrl =
+                    await createAudioSignedUrl(
+                      item.audio_url
+                    );
+
+
+                  return {
+
+                    ...item,
+
+                    audio_url:
+                      signedUrl,
+
+                  };
+
+                } catch {
+
+                  return item;
+
+                }
+
+              }
+            )
+
+          );
+
+
+        if (!mounted) {
+          return;
+        }
+
+
+        setMessages(
+          resolvedMessages
+        );
 
         setLoading(false);
 
-        return;
-
-      }
-
-
-      setMessages(
-        data || []
-      );
-
-      setLoading(false);
-
-    };
+      };
 
 
     fetchMessages();
 
-
-    /* =====================================================
-       REALTIME
-    ===================================================== */
 
     const channel =
       supabase
@@ -240,16 +1169,44 @@ export default function AdminChart({
               `conversation_id=eq.${selectedConversation.id}`,
           },
 
-          (payload) => {
-
-            /* =============================================
-               INSERT
-            ============================================= */
+          async (payload) => {
 
             if (
               payload.eventType ===
               "INSERT"
             ) {
+
+              let nextMessage =
+                payload.new;
+
+
+              if (
+                nextMessage.message_type ===
+                  "audio" &&
+                nextMessage.audio_url
+              ) {
+
+                try {
+
+                  const signedUrl =
+                    await createAudioSignedUrl(
+                      nextMessage.audio_url
+                    );
+
+
+                  nextMessage = {
+
+                    ...nextMessage,
+
+                    audio_url:
+                      signedUrl,
+
+                  };
+
+                } catch {}
+
+              }
+
 
               setMessages(
                 (current) => {
@@ -258,7 +1215,7 @@ export default function AdminChart({
                     current.some(
                       (item) =>
                         item.id ===
-                        payload.new.id
+                        nextMessage.id
                     );
 
 
@@ -269,7 +1226,7 @@ export default function AdminChart({
 
                   return [
                     ...current,
-                    payload.new,
+                    nextMessage,
                   ];
 
                 }
@@ -277,10 +1234,6 @@ export default function AdminChart({
 
             }
 
-
-            /* =============================================
-               UPDATE
-            ============================================= */
 
             if (
               payload.eventType ===
@@ -300,10 +1253,6 @@ export default function AdminChart({
 
             }
 
-
-            /* =============================================
-               DELETE
-            ============================================= */
 
             if (
               payload.eventType ===
@@ -343,7 +1292,7 @@ export default function AdminChart({
 
 
   /* =======================================================
-     RESET EMOJI PICKER
+     RESET
   ======================================================= */
 
   useEffect(() => {
@@ -356,9 +1305,66 @@ export default function AdminChart({
 
     setMessageText("");
 
+    cancelRecording();
+
+    clearAudioPreview();
+
+    setVoiceError("");
+
+    setPlayingAudioId(null);
+
+    setMutedAudioId(null);
+
+    setAudioProgress({});
+
+    setAudioDuration({});
+
   }, [
     selectedConversation?.id,
   ]);
+
+
+  /* =======================================================
+     CLEANUP
+  ======================================================= */
+
+  useEffect(() => {
+
+    return () => {
+
+      clearRecordingTimer();
+
+      stopMediaStream();
+
+
+      if (
+        audioPreviewUrl
+      ) {
+
+        URL.revokeObjectURL(
+          audioPreviewUrl
+        );
+
+      }
+
+
+      Object.values(
+        audioRefs.current
+      ).forEach(
+        (audio) => {
+
+          if (audio) {
+
+            audio.pause();
+
+          }
+
+        }
+      );
+
+    };
+
+  }, []);
 
 
   /* =======================================================
@@ -377,27 +1383,28 @@ export default function AdminChart({
 
 
   /* =======================================================
-     FORMAT TIME
+     MESSAGE TIME
   ======================================================= */
 
-  const formatTime = (date) => {
+  const formatTime =
+    (date) => {
 
-    if (!date) {
-      return "";
-    }
-
-
-    return new Date(
-      date
-    ).toLocaleTimeString(
-      [],
-      {
-        hour: "numeric",
-        minute: "2-digit",
+      if (!date) {
+        return "";
       }
-    );
 
-  };
+
+      return new Date(
+        date
+      ).toLocaleTimeString(
+        [],
+        {
+          hour: "numeric",
+          minute: "2-digit",
+        }
+      );
+
+    };
 
 
   /* =======================================================
@@ -427,6 +1434,275 @@ export default function AdminChart({
 
 
   /* =======================================================
+     AUDIO REF
+  ======================================================= */
+
+  const setAudioRef =
+    (id, element) => {
+
+      if (element) {
+
+        audioRefs.current[id] =
+          element;
+
+      } else {
+
+        delete audioRefs.current[id];
+
+      }
+
+    };
+
+
+  /* =======================================================
+     TOGGLE AUDIO
+  ======================================================= */
+
+  const toggleMessageAudio =
+    async (message) => {
+
+      const audio =
+        audioRefs.current[
+          message.id
+        ];
+
+
+      if (!audio) {
+        return;
+      }
+
+
+      try {
+
+        if (
+          playingAudioId ===
+          message.id
+        ) {
+
+          audio.pause();
+
+          setPlayingAudioId(null);
+
+          return;
+
+        }
+
+
+        Object.entries(
+          audioRefs.current
+        ).forEach(
+          ([id, item]) => {
+
+            if (
+              item &&
+              id !==
+                String(
+                  message.id
+                )
+            ) {
+
+              item.pause();
+
+              item.currentTime =
+                0;
+
+            }
+
+          }
+        );
+
+
+        await audio.play();
+
+        setPlayingAudioId(
+          message.id
+        );
+
+      } catch (err) {
+
+        console.error(
+          "Admin audio playback error:",
+          err
+        );
+
+      }
+
+    };
+
+
+  /* =======================================================
+     TOGGLE MUTE
+  ======================================================= */
+
+  const toggleMessageMute =
+    (message) => {
+
+      const audio =
+        audioRefs.current[
+          message.id
+        ];
+
+
+      if (!audio) {
+        return;
+      }
+
+
+      const nextMuted =
+        !audio.muted;
+
+
+      audio.muted =
+        nextMuted;
+
+
+      setMutedAudioId(
+        nextMuted
+          ? message.id
+          : null
+      );
+
+    };
+
+
+  /* =======================================================
+     AUDIO EVENTS
+  ======================================================= */
+
+  const handleAudioLoaded =
+    (messageId, event) => {
+
+      const duration =
+        event.currentTarget.duration;
+
+
+      if (
+        Number.isFinite(
+          duration
+        )
+      ) {
+
+        setAudioDuration(
+          (current) => ({
+            ...current,
+            [messageId]:
+              duration,
+          })
+        );
+
+      }
+
+    };
+
+
+  const handleAudioTimeUpdate =
+    (messageId, event) => {
+
+      const audio =
+        event.currentTarget;
+
+
+      if (
+        !audio.duration ||
+        !Number.isFinite(
+          audio.duration
+        )
+      ) {
+
+        return;
+
+      }
+
+
+      setAudioProgress(
+        (current) => ({
+          ...current,
+          [messageId]:
+            audio.currentTime /
+            audio.duration,
+        })
+      );
+
+    };
+
+
+  const handleAudioEnded =
+    (messageId) => {
+
+      setPlayingAudioId(null);
+
+      setAudioProgress(
+        (current) => ({
+          ...current,
+          [messageId]:
+            0,
+        })
+      );
+
+    };
+
+
+  /* =======================================================
+     SEEK AUDIO
+  ======================================================= */
+
+  const handleSeekAudio =
+    (messageId, event) => {
+
+      const audio =
+        audioRefs.current[
+          messageId
+        ];
+
+
+      if (
+        !audio ||
+        !Number.isFinite(
+          audio.duration
+        )
+      ) {
+
+        return;
+
+      }
+
+
+      const rect =
+        event.currentTarget
+          .getBoundingClientRect();
+
+
+      const percent =
+        Math.min(
+          1,
+          Math.max(
+            0,
+            (
+              event.clientX -
+              rect.left
+            ) /
+              rect.width
+          )
+        );
+
+
+      audio.currentTime =
+        percent *
+        audio.duration;
+
+
+      setAudioProgress(
+        (current) => ({
+          ...current,
+          [messageId]:
+            percent,
+        })
+      );
+
+    };
+
+
+  /* =======================================================
      INSERT EMOJI
   ======================================================= */
 
@@ -445,11 +1721,22 @@ export default function AdminChart({
 
 
   /* =======================================================
-     TOGGLE EMOJI PICKER
+     TOGGLE EMOJI
   ======================================================= */
 
   const handleToggleEmoji =
     () => {
+
+      if (
+        recording ||
+        voiceSending ||
+        sending
+      ) {
+
+        return;
+
+      }
+
 
       setEmojiOpen(
         (current) =>
@@ -460,7 +1747,7 @@ export default function AdminChart({
 
 
   /* =======================================================
-     CLOSE EMOJI PICKER
+     CLOSE EMOJI
   ======================================================= */
 
   const handleCloseEmoji =
@@ -474,123 +1761,137 @@ export default function AdminChart({
 
 
   /* =======================================================
-     SEND MESSAGE
+     SEND TEXT
   ======================================================= */
 
-  const handleSend = async () => {
+  const handleSend =
+    async () => {
 
-    const text =
-      messageText.trim();
-
-
-    if (
-      !text ||
-      sending ||
-      !selectedConversation?.id
-    ) {
-
-      return;
-
-    }
+      const text =
+        messageText.trim();
 
 
-    setSending(true);
+      if (
+        !text ||
+        sending ||
+        voiceSending ||
+        recording ||
+        !selectedConversation?.id
+      ) {
 
-    setError("");
+        return;
 
-    setEmojiOpen(false);
-
-
-    const {
-      data,
-      error: sendError,
-    } = await supabase
-
-      .from("messages")
-
-      .insert({
-        conversation_id:
-          selectedConversation.id,
-
-        message:
-          text,
-
-        sender:
-          "admin",
-      })
-
-      .select(`
-        id,
-        conversation_id,
-        message,
-        sender,
-        created_at
-      `)
-
-      .single();
+      }
 
 
-    if (sendError) {
+      setSending(true);
 
-      console.error(
-        "Error sending message:",
+      setError("");
+
+      setEmojiOpen(false);
+
+
+      const {
+        data,
+        error:
+          sendError,
+      } =
+        await supabase
+
+          .from(
+            "messages"
+          )
+
+          .insert({
+
+            conversation_id:
+              selectedConversation.id,
+
+            message:
+              text,
+
+            sender:
+              "admin",
+
+            message_type:
+              "text",
+
+            audio_url:
+              null,
+
+          })
+
+          .select(`
+            id,
+            conversation_id,
+            message,
+            sender,
+            message_type,
+            audio_url,
+            created_at
+          `)
+
+          .single();
+
+
+      if (
         sendError
-      );
+      ) {
 
-      setError(
-        "Unable to send your message."
-      );
+        console.error(
+          "Error sending message:",
+          sendError
+        );
+
+        setError(
+          "Unable to send your message."
+        );
+
+        setSending(false);
+
+        return;
+
+      }
+
+
+      if (data) {
+
+        setMessages(
+          (current) => {
+
+            const exists =
+              current.some(
+                (item) =>
+                  item.id ===
+                  data.id
+              );
+
+
+            if (exists) {
+              return current;
+            }
+
+
+            return [
+              ...current,
+              data,
+            ];
+
+          }
+        );
+
+      }
+
+
+      setMessageText("");
+
+      setEmojiSearch("");
 
       setSending(false);
 
-      return;
+      inputRef.current?.focus();
 
-    }
-
-
-    /* =====================================================
-       IMMEDIATE UI UPDATE
-    ===================================================== */
-
-    if (data) {
-
-      setMessages(
-        (current) => {
-
-          const exists =
-            current.some(
-              (item) =>
-                item.id ===
-                data.id
-            );
-
-
-          if (exists) {
-            return current;
-          }
-
-
-          return [
-            ...current,
-            data,
-          ];
-
-        }
-      );
-
-    }
-
-
-    setMessageText("");
-
-    setEmojiSearch("");
-
-    setSending(false);
-
-
-    inputRef.current?.focus();
-
-  };
+    };
 
 
   /* =======================================================
@@ -616,10 +1917,12 @@ export default function AdminChart({
 
 
   /* =======================================================
-     NO CONVERSATION SELECTED
+     EMPTY STATE
   ======================================================= */
 
-  if (!selectedConversation) {
+  if (
+    !selectedConversation
+  ) {
 
     return (
 
@@ -632,9 +1935,7 @@ export default function AdminChart({
             <div className="admin-chart-empty-content">
 
               <div
-                className="
-                  admin-chart-empty-icon
-                "
+                className="admin-chart-empty-icon"
                 aria-hidden="true"
               >
 
@@ -682,7 +1983,7 @@ export default function AdminChart({
 
 
         {/* =================================================
-            CHAT HEADER
+            HEADER
         ================================================= */}
 
         <header className="admin-chart-header">
@@ -732,9 +2033,7 @@ export default function AdminChart({
           <div className="admin-chart-status">
 
             <span
-              className="
-                admin-chart-status-dot
-              "
+              className="admin-chart-status-dot"
               aria-hidden="true"
             />
 
@@ -787,7 +2086,6 @@ export default function AdminChart({
 
           <>
 
-
             {/* =============================================
                 MESSAGES
             ============================================= */}
@@ -805,9 +2103,7 @@ export default function AdminChart({
                   <div className="admin-chart-empty-content">
 
                     <div
-                      className="
-                        admin-chart-empty-icon
-                      "
+                      className="admin-chart-empty-icon"
                       aria-hidden="true"
                     >
 
@@ -851,9 +2147,31 @@ export default function AdminChart({
                         );
 
 
+                      const progress =
+                        audioProgress[
+                          item.id
+                        ] || 0;
+
+
+                      const duration =
+                        audioDuration[
+                          item.id
+                        ] || 0;
+
+
+                      const isPlaying =
+                        playingAudioId ===
+                        item.id;
+
+
+                      const isMuted =
+                        mutedAudioId ===
+                        item.id;
+
+
                       return (
 
-                        <div
+                        <article
                           key={item.id}
                           className={`
                             admin-chart-message
@@ -865,23 +2183,286 @@ export default function AdminChart({
                           `}
                         >
 
-                          <span
-                            className="
-                              admin-chart-message-username
-                            "
-                          >
-                            {username}
-                          </span>
-
+                          {/* =============================
+                              USERNAME
+                          ============================== */}
 
                           <div
                             className="
-                              admin-chart-message-bubble
+                              admin-chart-message-meta
                             "
                           >
-                            {item.message}
+
+                            <span
+                              className="
+                                admin-chart-message-username
+                              "
+                            >
+                              {username}
+                            </span>
+
+                            <span
+                              className="
+                                admin-chart-message-role
+                              "
+                            >
+                              {isAdmin
+                                ? "Admin"
+                                : "Visitor"}
+                            </span>
+
                           </div>
 
+
+                          {/* =============================
+                              MESSAGE
+                          ============================== */}
+
+                          {item.message_type ===
+                          "audio" ? (
+
+                            <div
+                              className="
+                                admin-chart-voice-message
+                              "
+                            >
+
+                              <audio
+                                ref={(element) =>
+                                  setAudioRef(
+                                    item.id,
+                                    element
+                                  )
+                                }
+                                src={
+                                  item.audio_url
+                                }
+                                preload="metadata"
+                                onLoadedMetadata={(
+                                  event
+                                ) =>
+                                  handleAudioLoaded(
+                                    item.id,
+                                    event
+                                  )
+                                }
+                                onTimeUpdate={(
+                                  event
+                                ) =>
+                                  handleAudioTimeUpdate(
+                                    item.id,
+                                    event
+                                  )
+                                }
+                                onEnded={() =>
+                                  handleAudioEnded(
+                                    item.id
+                                  )
+                                }
+                                onPause={() => {
+
+                                  if (
+                                    playingAudioId ===
+                                    item.id
+                                  ) {
+
+                                    setPlayingAudioId(
+                                      null
+                                    );
+
+                                  }
+
+                                }}
+                              />
+
+
+                              <button
+                                type="button"
+                                className="
+                                  admin-chart-audio-play
+                                "
+                                onClick={() =>
+                                  toggleMessageAudio(
+                                    item
+                                  )
+                                }
+                                aria-label={
+                                  isPlaying
+                                    ? "Pause voice message"
+                                    : "Play voice message"
+                                }
+                              >
+
+                                {isPlaying ? (
+
+                                  <Pause
+                                    size={17}
+                                    strokeWidth={2}
+                                  />
+
+                                ) : (
+
+                                  <Play
+                                    size={17}
+                                    strokeWidth={2}
+                                  />
+
+                                )}
+
+                              </button>
+
+
+                              <div
+                                className="
+                                  admin-chart-audio-content
+                                "
+                              >
+
+                                {/* =======================
+                                    VOICE TOP
+                                ======================== */}
+
+                                <div
+                                  className="
+                                    admin-chart-audio-top
+                                  "
+                                >
+
+                                  <span
+                                    className="
+                                      admin-chart-audio-label
+                                    "
+                                  >
+                                    Voice message
+                                  </span>
+
+
+                                  <span
+                                    className="
+                                      admin-chart-audio-duration
+                                    "
+                                  >
+                                    {formatAudioTime(
+                                      duration
+                                    )}
+                                  </span>
+
+                                </div>
+
+
+                                {/* =======================
+                                    PROGRESS
+                                ======================== */}
+
+                                <button
+                                  type="button"
+                                  className="
+                                    admin-chart-audio-progress
+                                  "
+                                  onClick={(event) =>
+                                    handleSeekAudio(
+                                      item.id,
+                                      event
+                                    )
+                                  }
+                                  aria-label="Seek voice message"
+                                >
+
+                                  <span
+                                    className="
+                                      admin-chart-audio-progress-fill
+                                    "
+                                    style={{
+                                      width:
+                                        `${
+                                          progress *
+                                          100
+                                        }%`,
+                                    }}
+                                  />
+
+                                </button>
+
+
+                                {/* =======================
+                                    VOICE BOTTOM
+                                ======================== */}
+
+                                <div
+                                  className="
+                                    admin-chart-audio-bottom
+                                  "
+                                >
+
+                                  <span
+                                    className="
+                                      admin-chart-audio-current
+                                    "
+                                  >
+                                    {formatAudioTime(
+                                      progress *
+                                      duration
+                                    )}
+                                  </span>
+
+
+                                  <button
+                                    type="button"
+                                    className="
+                                      admin-chart-audio-mute
+                                    "
+                                    onClick={() =>
+                                      toggleMessageMute(
+                                        item
+                                      )
+                                    }
+                                    aria-label={
+                                      isMuted
+                                        ? "Unmute voice message"
+                                        : "Mute voice message"
+                                    }
+                                  >
+
+                                    {isMuted ? (
+
+                                      <VolumeX
+                                        size={14}
+                                        strokeWidth={2}
+                                      />
+
+                                    ) : (
+
+                                      <Volume2
+                                        size={14}
+                                        strokeWidth={2}
+                                      />
+
+                                    )}
+
+                                  </button>
+
+                                </div>
+
+                              </div>
+
+                            </div>
+
+                          ) : (
+
+                            <div
+                              className="
+                                admin-chart-message-bubble
+                              "
+                            >
+                              {item.message}
+                            </div>
+
+                          )}
+
+
+                          {/* =============================
+                              MESSAGE TIMESTAMP
+                          ============================== */}
 
                           <time
                             className="
@@ -893,7 +2474,7 @@ export default function AdminChart({
                             )}
                           </time>
 
-                        </div>
+                        </article>
 
                       );
 
@@ -914,300 +2495,534 @@ export default function AdminChart({
 
 
             {/* =============================================
-                REPLY AREA
+                REPLY
             ============================================= */}
 
             <form
               className="admin-chart-reply"
-
               onSubmit={(event) => {
 
                 event.preventDefault();
 
-                handleSend();
+                if (
+                  audioBlob
+                ) {
+
+                  handleSendVoice();
+
+                } else {
+
+                  handleSend();
+
+                }
 
               }}
             >
 
-
-              {/* =========================================
-                  EMOJI PICKER
-              ========================================= */}
-
-              {emojiOpen && (
+              {recording ? (
 
                 <div
                   className="
-                    admin-chart-emoji-picker
+                    admin-chart-recording
                   "
-                  role="dialog"
-                  aria-label="Emoji picker"
                 >
 
-                  {/* =====================================
-                      SEARCH
-                  ===================================== */}
-
                   <div
                     className="
-                      admin-chart-emoji-header
+                      admin-chart-recording-indicator
                     "
-                  >
+                  />
 
-                    <div
-                      className="
-                        admin-chart-emoji-search-wrap
-                      "
-                    >
-
-                      <Search
-                        size={14}
-                        strokeWidth={1.8}
-                        aria-hidden="true"
-                      />
-
-                      <input
-                        type="text"
-                        className="
-                          admin-chart-emoji-search
-                        "
-                        value={emojiSearch}
-                        onChange={(event) =>
-                          setEmojiSearch(
-                            event.target.value
-                          )
-                        }
-                        placeholder="
-                          Search emojis...
-                        "
-                        aria-label="
-                          Search emojis
-                        "
-                      />
-
-                    </div>
-
-
-                    <button
-                      type="button"
-                      className="
-                        admin-chart-emoji-close
-                      "
-                      onClick={
-                        handleCloseEmoji
-                      }
-                      aria-label="
-                        Close emoji picker
-                      "
-                    >
-
-                      <X
-                        size={15}
-                        strokeWidth={1.8}
-                      />
-
-                    </button>
-
-                  </div>
-
-
-                  {/* =====================================
-                      CATEGORIES
-                  ===================================== */}
-
-                  <div
+                  <span
                     className="
-                      admin-chart-emoji-categories
+                      admin-chart-recording-time
                     "
                   >
-
-                    {emojiCategories.map(
-                      (category) => (
-
-                        <button
-                          key={category}
-                          type="button"
-                          className={`
-                            admin-chart-emoji-category
-                            ${
-                              emojiCategory ===
-                              category
-                                ? "active"
-                                : ""
-                            }
-                          `}
-                          onClick={() => {
-
-                            setEmojiCategory(
-                              category
-                            );
-
-                            setEmojiSearch("");
-
-                          }}
-                        >
-                          {category}
-                        </button>
-
-                      )
+                    {formatRecordingTime(
+                      recordingSeconds
                     )}
+                  </span>
 
-                  </div>
 
-
-                  {/* =====================================
-                      EMOJI GRID
-                  ===================================== */}
-
-                  <div
+                  <span
                     className="
-                      admin-chart-emoji-grid
+                      admin-chart-recording-label
                     "
                   >
+                    Recording...
+                  </span>
 
-                    {visibleEmojis.length ===
-                    0 ? (
 
-                      <div
-                        className="
-                          admin-chart-emoji-empty
-                        "
-                      >
-                        No emojis found.
-                      </div>
+                  <button
+                    type="button"
+                    className="
+                      admin-chart-recording-stop
+                    "
+                    onClick={
+                      stopRecording
+                    }
+                    aria-label="Stop recording"
+                  >
 
-                    ) : (
+                    <Square
+                      size={14}
+                      fill="currentColor"
+                      strokeWidth={1.8}
+                    />
 
-                      visibleEmojis.map(
-                        (emoji, index) => (
+                  </button>
 
-                          <button
-                            key={`
-                              ${emoji}-${index}
-                            `}
-                            type="button"
-                            className="
-                              admin-chart-emoji
-                            "
-                            onClick={() =>
-                              handleEmojiClick(
-                                emoji
-                              )
-                            }
-                            aria-label={`
-                              Insert ${emoji}
-                            `}
-                          >
-                            {emoji}
-                          </button>
 
-                        )
-                      )
+                  <button
+                    type="button"
+                    className="
+                      admin-chart-recording-cancel
+                    "
+                    onClick={
+                      cancelRecording
+                    }
+                    aria-label="Cancel recording"
+                  >
 
-                    )}
+                    <X
+                      size={15}
+                      strokeWidth={1.8}
+                    />
 
-                  </div>
+                  </button>
 
                 </div>
 
+              ) : audioPreviewUrl ? (
+
+                <div
+                  className="
+                    admin-chart-recording-preview
+                  "
+                >
+
+                  <button
+                    type="button"
+                    className="
+                      admin-chart-recording-preview-button
+                    "
+                    onClick={
+                      toggleAudioPreview
+                    }
+                    aria-label={
+                      audioPlaying
+                        ? "Pause recording"
+                        : "Play recording"
+                    }
+                  >
+
+                    {audioPlaying ? (
+
+                      <Pause
+                        size={16}
+                        strokeWidth={1.8}
+                      />
+
+                    ) : (
+
+                      <Play
+                        size={16}
+                        strokeWidth={1.8}
+                      />
+
+                    )}
+
+                  </button>
+
+
+                  <audio
+                    ref={
+                      audioPreviewRef
+                    }
+                    src={
+                      audioPreviewUrl
+                    }
+                    preload="metadata"
+                    onPlay={() =>
+                      setAudioPlaying(
+                        true
+                      )
+                    }
+                    onPause={() =>
+                      setAudioPlaying(
+                        false
+                      )
+                    }
+                    onEnded={() =>
+                      setAudioPlaying(
+                        false
+                      )
+                    }
+                  />
+
+
+                  <span
+                    className="
+                      admin-chart-recording-preview-label
+                    "
+                  >
+                    Voice message ready
+                  </span>
+
+
+                  <button
+                    type="button"
+                    className="
+                      admin-chart-recording-delete
+                    "
+                    onClick={
+                      handleDeleteRecording
+                    }
+                    disabled={
+                      voiceSending
+                    }
+                    aria-label="Delete recording"
+                  >
+
+                    <Trash2
+                      size={16}
+                      strokeWidth={1.8}
+                    />
+
+                  </button>
+
+
+                  <button
+                    type="button"
+                    className="
+                      admin-chart-recording-send
+                    "
+                    onClick={
+                      handleSendVoice
+                    }
+                    disabled={
+                      voiceSending
+                    }
+                    aria-label="Send voice message"
+                  >
+
+                    {voiceSending ? (
+
+                      <RefreshCw
+                        size={16}
+                        className="
+                          admin-chart-spin
+                        "
+                      />
+
+                    ) : (
+
+                      <Send
+                        size={16}
+                        strokeWidth={1.8}
+                      />
+
+                    )}
+
+                  </button>
+
+                </div>
+
+              ) : (
+
+                <>
+
+                  {/* =======================================
+                      EMOJI PICKER
+                  ======================================= */}
+
+                  {emojiOpen && (
+
+                    <div
+                      className="
+                        admin-chart-emoji-picker
+                      "
+                      role="dialog"
+                      aria-label="Emoji picker"
+                    >
+
+                      <div
+                        className="
+                          admin-chart-emoji-header
+                        "
+                      >
+
+                        <div
+                          className="
+                            admin-chart-emoji-search-wrap
+                          "
+                        >
+
+                          <Search
+                            size={14}
+                            strokeWidth={1.8}
+                            aria-hidden="true"
+                          />
+
+                          <input
+                            type="text"
+                            className="
+                              admin-chart-emoji-search
+                            "
+                            value={
+                              emojiSearch
+                            }
+                            onChange={(event) =>
+                              setEmojiSearch(
+                                event.target.value
+                              )
+                            }
+                            placeholder="Search emojis..."
+                            aria-label="Search emojis"
+                          />
+
+                        </div>
+
+
+                        <button
+                          type="button"
+                          className="
+                            admin-chart-emoji-close
+                          "
+                          onClick={
+                            handleCloseEmoji
+                          }
+                          aria-label="Close emoji picker"
+                        >
+
+                          <X
+                            size={15}
+                            strokeWidth={1.8}
+                          />
+
+                        </button>
+
+                      </div>
+
+
+                      <div
+                        className="
+                          admin-chart-emoji-categories
+                        "
+                      >
+
+                        {emojiCategories.map(
+                          (category) => (
+
+                            <button
+                              key={
+                                category
+                              }
+                              type="button"
+                              className={`admin-chart-emoji-category ${
+                                emojiCategory ===
+                                category
+                                  ? "active"
+                                  : ""
+                              }`}
+                              onClick={() => {
+
+                                setEmojiCategory(
+                                  category
+                                );
+
+                                setEmojiSearch(
+                                  ""
+                                );
+
+                              }}
+                            >
+                              {category}
+                            </button>
+
+                          )
+                        )}
+
+                      </div>
+
+
+                      <div
+                        className="
+                          admin-chart-emoji-grid
+                        "
+                      >
+
+                        {visibleEmojis.length ===
+                        0 ? (
+
+                          <div
+                            className="
+                              admin-chart-emoji-empty
+                            "
+                          >
+                            No emojis found.
+                          </div>
+
+                        ) : (
+
+                          visibleEmojis.map(
+                            (
+                              emoji,
+                              index
+                            ) => (
+
+                              <button
+                                key={`${emoji}-${index}`}
+                                type="button"
+                                className="
+                                  admin-chart-emoji
+                                "
+                                onClick={() =>
+                                  handleEmojiClick(
+                                    emoji
+                                  )
+                                }
+                                aria-label={`Insert ${emoji}`}
+                              >
+                                {emoji}
+                              </button>
+
+                            )
+                          )
+
+                        )}
+
+                      </div>
+
+                    </div>
+
+                  )}
+
+
+                  <button
+                    type="button"
+                    className="
+                      admin-chart-emoji-button
+                    "
+                    onClick={
+                      handleToggleEmoji
+                    }
+                    disabled={
+                      sending
+                    }
+                    aria-label="Open emoji picker"
+                    aria-expanded={
+                      emojiOpen
+                    }
+                  >
+
+                    <Smile
+                      size={18}
+                      strokeWidth={1.8}
+                    />
+
+                  </button>
+
+
+                  <textarea
+                    ref={
+                      inputRef
+                    }
+                    value={
+                      messageText
+                    }
+                    onChange={(event) =>
+                      setMessageText(
+                        event.target.value
+                      )
+                    }
+                    onKeyDown={
+                      handleKeyDown
+                    }
+                    placeholder="Write a reply..."
+                    aria-label="Write a reply"
+                    rows={1}
+                    disabled={
+                      sending
+                    }
+                  />
+
+
+                  <button
+                    type="button"
+                    className="
+                      admin-chart-mic-button
+                    "
+                    onClick={
+                      handleRecordingToggle
+                    }
+                    disabled={
+                      sending ||
+                      voiceSending
+                    }
+                    aria-label="Record voice message"
+                  >
+
+                    <Mic
+                      size={17}
+                      strokeWidth={1.8}
+                    />
+
+                  </button>
+
+
+                  <button
+                    type="submit"
+                    className="
+                      admin-chart-send
+                    "
+                    disabled={
+                      sending ||
+                      !messageText.trim()
+                    }
+                    aria-label="Send message"
+                  >
+
+                    {sending ? (
+
+                      <RefreshCw
+                        className="
+                          admin-chart-spin
+                        "
+                        size={17}
+                        strokeWidth={1.8}
+                      />
+
+                    ) : (
+
+                      <Send
+                        size={17}
+                        strokeWidth={1.8}
+                      />
+
+                    )}
+
+                  </button>
+
+                </>
+
               )}
 
-
-              {/* =========================================
-                  EMOJI BUTTON
-              ========================================= */}
-
-              <button
-                type="button"
-                className="
-                  admin-chart-emoji-button
-                "
-                onClick={
-                  handleToggleEmoji
-                }
-                disabled={sending}
-                aria-label="
-                  Open emoji picker
-                "
-                aria-expanded={
-                  emojiOpen
-                }
-              >
-
-                <Smile
-                  size={18}
-                  strokeWidth={1.8}
-                />
-
-              </button>
-
-
-              {/* =========================================
-                  MESSAGE INPUT
-              ========================================= */}
-
-              <textarea
-                ref={inputRef}
-                value={messageText}
-                onChange={(event) =>
-                  setMessageText(
-                    event.target.value
-                  )
-                }
-                onKeyDown={
-                  handleKeyDown
-                }
-                placeholder="
-                  Write a reply...
-                "
-                aria-label="
-                  Write a reply
-                "
-                rows={1}
-                disabled={sending}
-              />
-
-
-              {/* =========================================
-                  SEND BUTTON
-              ========================================= */}
-
-              <button
-                type="submit"
-                className="
-                  admin-chart-send
-                "
-                disabled={
-                  sending ||
-                  !messageText.trim()
-                }
-                aria-label="
-                  Send message
-                "
-              >
-
-                {sending ? (
-
-                  <RefreshCw
-                    className="
-                      admin-chart-spin
-                    "
-                    size={17}
-                    strokeWidth={1.8}
-                  />
-
-                ) : (
-
-                  <Send
-                    size={17}
-                    strokeWidth={1.8}
-                  />
-
-                )}
-
-              </button>
-
             </form>
+
+
+            {voiceError && (
+
+              <div
+                className="
+                  admin-chart-voice-error
+                "
+                role="alert"
+              >
+                {voiceError}
+              </div>
+
+            )}
 
           </>
 

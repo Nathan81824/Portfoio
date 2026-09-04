@@ -11,26 +11,48 @@
   left: 320px;
 
   width: auto;
-  height: calc(100dvh - 72px);
+  height: auto;
 
-  margin: 0;
-  padding: 1rem;
+  min-width: 0;
+  min-height: 0;
 
-  box-sizing: border-box;
+  padding: 0.6rem;
+
+  display: flex;
 
   overflow: hidden;
+
+  box-sizing: border-box;
 
   background: #090909;
 
   color: #ffffff;
+
+  font-family:
+    var(--font-body, "Inter", system-ui, sans-serif);
+
+  isolation: isolate;
 }
 
 
 /* =========================================================
-   MAIN CHAT CONTAINER
+   RESET
+========================================================= */
+
+.admin-chart *,
+.admin-chart *::before,
+.admin-chart *::after {
+  box-sizing: border-box;
+}
+
+
+/* =========================================================
+   MAIN CONTAINER
 ========================================================= */
 
 .admin-chart-container {
+  position: relative;
+
   width: 100%;
   height: 100%;
 
@@ -38,42 +60,119 @@
   min-height: 0;
 
   display: flex;
+
   flex-direction: column;
 
   overflow: hidden;
 
   border:
     1px solid
-    rgba(255, 255, 255, 0.09);
+    rgba(255, 255, 255, 0.08);
 
-  border-radius: 18px;
+  border-radius: 16px;
 
-  background:
-    rgba(17, 17, 17, 0.92);
+  background: #101010;
 
   box-shadow:
     0 20px 60px
-    rgba(0, 0, 0, 0.28);
+    rgba(0, 0, 0, 0.3);
 
-  backdrop-filter:
-    blur(18px);
-
-  -webkit-backdrop-filter:
-    blur(18px);
+  isolation: isolate;
 }
 
 
 /* =========================================================
-   CHAT HEADER
+   EMPTY STATE
+========================================================= */
+
+.admin-chart-empty {
+  width: 100%;
+  height: 100%;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: center;
+
+  padding: 2rem;
+
+  text-align: center;
+}
+
+
+.admin-chart-empty-icon {
+  width: 70px;
+  height: 70px;
+
+  margin-bottom: 1rem;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border:
+    1px solid
+    rgba(255, 159, 0, 0.22);
+
+  border-radius: 20px;
+
+  color: #ffad32;
+
+  background:
+    rgba(255, 138, 0, 0.07);
+
+  box-shadow:
+    0 0 35px
+    rgba(255, 138, 0, 0.08);
+}
+
+
+.admin-chart-empty h2 {
+  margin: 0 0 0.5rem;
+
+  color: #ffffff;
+
+  font-size: 1.1rem;
+
+  font-weight: 700;
+}
+
+
+.admin-chart-empty p {
+  max-width: 420px;
+
+  margin: 0;
+
+  color: #707070;
+
+  font-size: 0.8rem;
+
+  line-height: 1.65;
+}
+
+
+/* =========================================================
+   VISITOR HEADER
 ========================================================= */
 
 .admin-chart-header {
-  min-height: 68px;
+  position: relative;
 
-  flex-shrink: 0;
+  flex:
+    0 0 72px;
+
+  width: 100%;
+
+  min-width: 0;
+
+  min-height: 72px;
 
   padding:
-    0 1.25rem;
+    0 1.1rem;
 
   display: flex;
 
@@ -83,20 +182,60 @@
 
   gap: 1rem;
 
+  overflow: hidden;
+
   border-bottom:
     1px solid
     rgba(255, 255, 255, 0.08);
 
   background:
-    rgba(255, 255, 255, 0.015);
+    linear-gradient(
+      180deg,
+      #141414 0%,
+      #101010 100%
+    );
+
+  z-index: 30;
 }
 
 
 /* =========================================================
-   VISITOR HEADER
+   SUBTLE HEADER GLOW
 ========================================================= */
 
-.admin-chart-visitor {
+.admin-chart-header::before {
+  content: "";
+
+  position: absolute;
+
+  top: -80px;
+  left: 25%;
+
+  width: 220px;
+  height: 160px;
+
+  border-radius: 50%;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(255, 159, 0, 0.08),
+      transparent 70%
+    );
+
+  filter: blur(25px);
+
+  pointer-events: none;
+}
+
+
+/* =========================================================
+   VISITOR USER AREA
+========================================================= */
+
+.admin-chart-user {
+  position: relative;
+
   min-width: 0;
 
   display: flex;
@@ -104,6 +243,8 @@
   align-items: center;
 
   gap: 0.75rem;
+
+  z-index: 2;
 }
 
 
@@ -112,10 +253,13 @@
 ========================================================= */
 
 .admin-chart-avatar {
-  width: 40px;
-  height: 40px;
+  position: relative;
 
-  flex-shrink: 0;
+  width: 42px;
+  height: 42px;
+
+  flex:
+    0 0 42px;
 
   display: flex;
 
@@ -124,7 +268,7 @@
 
   border:
     1px solid
-    rgba(255, 159, 0, 0.28);
+    rgba(255, 174, 50, 0.4);
 
   border-radius: 50%;
 
@@ -133,61 +277,122 @@
   background:
     linear-gradient(
       135deg,
-      #ffad32 0%,
-      #ff8a00 52%,
-      #ffc400 100%
+      #ffb52e 0%,
+      #ff9f00 50%,
+      #ff7a00 100%
     );
 
-  font-size: 0.85rem;
+  box-shadow:
+    0 7px 22px
+    rgba(255, 138, 0, 0.18);
+}
 
-  font-weight: 800;
+
+/* ONLINE DOT */
+
+.admin-chart-avatar::after {
+  content: "";
+
+  position: absolute;
+
+  right: -1px;
+  bottom: -1px;
+
+  width: 10px;
+  height: 10px;
+
+  border:
+    2px solid
+    #101010;
+
+  border-radius: 50%;
+
+  background: #22c55e;
 
   box-shadow:
-    0 0 20px
-    rgba(255, 138, 0, 0.12);
+    0 0 9px
+    rgba(34, 197, 94, 0.55);
 }
 
 
 /* =========================================================
-   VISITOR INFORMATION
+   USER INFORMATION
 ========================================================= */
 
-.admin-chart-visitor-info {
+.admin-chart-user-info {
   min-width: 0;
 
   display: flex;
 
   flex-direction: column;
 
-  gap: 0.2rem;
+  gap: 0.25rem;
 }
 
-.admin-chart-visitor-info h2 {
+
+/* VISITOR NAME */
+
+.admin-chart-user-info h2 {
+  max-width: 420px;
+
   margin: 0;
 
   overflow: hidden;
 
   color: #ffffff;
 
-  font-size: 0.92rem;
+  font-family:
+    var(--font-heading, "Inter", sans-serif);
+
+  font-size: 0.95rem;
 
   font-weight: 700;
 
-  letter-spacing: -0.02em;
+  line-height: 1.2;
+
+  letter-spacing: -0.025em;
 
   text-overflow: ellipsis;
 
   white-space: nowrap;
 }
 
-.admin-chart-visitor-info p {
-  margin: 0;
 
-  overflow: hidden;
+/* =========================================================
+   EMAIL
+========================================================= */
 
-  color: #707070;
+.admin-chart-email {
+  min-width: 0;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 0.35rem;
+
+  color: #7a7a7a;
 
   font-size: 0.68rem;
+
+  line-height: 1;
+}
+
+
+.admin-chart-email svg {
+  flex:
+    0 0 auto;
+
+  color: #ffad32;
+
+  opacity: 0.75;
+}
+
+
+.admin-chart-email span {
+  max-width: 340px;
+
+  overflow: hidden;
 
   text-overflow: ellipsis;
 
@@ -200,7 +405,15 @@
 ========================================================= */
 
 .admin-chart-status {
-  flex-shrink: 0;
+  position: relative;
+
+  flex:
+    0 0 auto;
+
+  min-height: 28px;
+
+  padding:
+    0 0.65rem;
 
   display: flex;
 
@@ -208,37 +421,37 @@
 
   gap: 0.4rem;
 
-  padding:
-    0.35rem
-    0.65rem;
-
   border:
     1px solid
-    rgba(34, 197, 94, 0.16);
+    rgba(34, 197, 94, 0.18);
 
   border-radius: 999px;
 
-  color: #8f8f8f;
+  color: #7fba91;
 
   background:
-    rgba(34, 197, 94, 0.035);
+    rgba(34, 197, 94, 0.055);
 
-  font-size: 0.65rem;
+  font-size: 0.63rem;
 
   font-weight: 600;
 }
 
+
 .admin-chart-status-dot {
   width: 6px;
   height: 6px;
+
+  flex:
+    0 0 6px;
 
   border-radius: 50%;
 
   background: #22c55e;
 
   box-shadow:
-    0 0 10px
-    rgba(34, 197, 94, 0.6);
+    0 0 8px
+    rgba(34, 197, 94, 0.65);
 }
 
 
@@ -247,14 +460,14 @@
 ========================================================= */
 
 .admin-chart-error {
-  flex-shrink: 0;
+  flex:
+    0 0 auto;
 
   margin:
-    0.65rem 1rem 0;
+    0.6rem 0.8rem 0;
 
   padding:
-    0.65rem
-    0.8rem;
+    0.65rem 0.8rem;
 
   display: flex;
 
@@ -262,7 +475,7 @@
 
   justify-content: space-between;
 
-  gap: 0.75rem;
+  gap: 0.7rem;
 
   border:
     1px solid
@@ -275,8 +488,9 @@
   background:
     rgba(239, 68, 68, 0.06);
 
-  font-size: 0.72rem;
+  font-size: 0.7rem;
 }
+
 
 .admin-chart-error button {
   flex-shrink: 0;
@@ -292,117 +506,40 @@
 
   color: #fca5a5;
 
-  background:
-    rgba(239, 68, 68, 0.06);
+  background: transparent;
 
   cursor: pointer;
 }
 
 
 /* =========================================================
-   LOADING
-========================================================= */
-
-.admin-chart-loading {
-  flex: 1;
-
-  min-height: 0;
-
-  display: flex;
-
-  align-items: center;
-  justify-content: center;
-
-  flex-direction: column;
-
-  gap: 0.6rem;
-
-  color: #707070;
-
-  font-size: 0.75rem;
-}
-
-
-/* =========================================================
-   MESSAGE AREA
+   MESSAGES
    ONLY THIS AREA SCROLLS
 ========================================================= */
 
 .admin-chart-messages {
-  flex: 1;
+  flex:
+    1 1 auto;
+
+  width: 100%;
 
   min-width: 0;
   min-height: 0;
 
-  overflow-y: auto;
   overflow-x: hidden;
+  overflow-y: auto;
 
   padding:
-    1.25rem
-    1.25rem
     1rem;
 
-  display: flex;
+  background:
+    #0b0b0b;
 
-  flex-direction: column;
+  scrollbar-width: thin;
 
-  gap: 0.9rem;
-
-  scroll-behavior: smooth;
-
-  overscroll-behavior: contain;
-}
-
-
-/* =========================================================
-   NO MESSAGES
-========================================================= */
-
-.admin-chart-no-messages {
-  flex: 1;
-
-  min-height: 220px;
-
-  display: flex;
-
-  align-items: center;
-  justify-content: center;
-
-  flex-direction: column;
-
-  gap: 0.45rem;
-
-  color: #707070;
-
-  text-align: center;
-}
-
-.admin-chart-no-messages svg {
-  margin-bottom: 0.25rem;
-
-  color: #ffad32;
-
-  opacity: 0.7;
-}
-
-.admin-chart-no-messages p {
-  margin: 0;
-
-  color: #b8b8b8;
-
-  font-size: 0.8rem;
-
-  font-weight: 600;
-}
-
-.admin-chart-no-messages span {
-  max-width: 260px;
-
-  color: #606060;
-
-  font-size: 0.68rem;
-
-  line-height: 1.5;
+  scrollbar-color:
+    rgba(255, 255, 255, 0.12)
+    transparent;
 }
 
 
@@ -413,13 +550,13 @@
 .admin-chart-message-list {
   width: 100%;
 
+  min-width: 0;
+
   display: flex;
 
   flex-direction: column;
 
-  gap: 0.9rem;
-
-  margin-top: auto;
+  gap: 0.75rem;
 }
 
 
@@ -428,20 +565,27 @@
 ========================================================= */
 
 .admin-chart-message {
+  width: fit-content;
+
   max-width:
     min(72%, 620px);
+
+  min-width: 0;
 
   display: flex;
 
   flex-direction: column;
 
-  gap: 0.2rem;
+  gap: 0.25rem;
 }
 
 
-/* =========================================================
-   VISITOR MESSAGE
-========================================================= */
+.admin-chart-message-admin {
+  align-self: flex-end;
+
+  align-items: flex-end;
+}
+
 
 .admin-chart-message-visitor {
   align-self: flex-start;
@@ -451,59 +595,18 @@
 
 
 /* =========================================================
-   ADMIN MESSAGE
+   MESSAGE LABEL
 ========================================================= */
 
-.admin-chart-message-admin {
-  align-self: flex-end;
+.admin-chart-message-label {
+  padding:
+    0 0.25rem;
 
-  align-items: flex-end;
-}
+  color: #666666;
 
+  font-size: 0.58rem;
 
-/* =========================================================
-   MESSAGE USERNAME
-========================================================= */
-
-.admin-chart-message-username {
-  display: block;
-
-  margin:
-    0 0.35rem 0.15rem;
-
-  color: #858585;
-
-  font-size: 0.62rem;
-
-  font-weight: 650;
-
-  line-height: 1.2;
-
-  letter-spacing: 0.01em;
-}
-
-
-/* =========================================================
-   VISITOR USERNAME
-========================================================= */
-
-.admin-chart-message-visitor
-.admin-chart-message-username {
-  color: #929292;
-
-  text-align: left;
-}
-
-
-/* =========================================================
-   ADMIN USERNAME
-========================================================= */
-
-.admin-chart-message-admin
-.admin-chart-message-username {
-  color: #ffad32;
-
-  text-align: right;
+  font-weight: 600;
 }
 
 
@@ -519,7 +622,7 @@
 
   border:
     1px solid
-    rgba(255, 255, 255, 0.09);
+    rgba(255, 255, 255, 0.08);
 
   border-radius: 14px;
 
@@ -527,23 +630,13 @@
 
   background: #181818;
 
-  font-size: 0.82rem;
+  font-size: 0.8rem;
 
   line-height: 1.55;
 
-  word-break: break-word;
-
   overflow-wrap: anywhere;
-
-  box-shadow:
-    0 5px 18px
-    rgba(0, 0, 0, 0.12);
 }
 
-
-/* =========================================================
-   ADMIN MESSAGE BUBBLE
-========================================================= */
 
 .admin-chart-message-admin
 .admin-chart-message-bubble {
@@ -551,25 +644,21 @@
 
   border-color: transparent;
 
+  border-bottom-right-radius: 5px;
+
   background:
     linear-gradient(
       135deg,
-      #ffad32 0%,
-      #ff8a00 52%,
-      #ffc400 100%
+      #ffb52e,
+      #ff9f00,
+      #ff7a00
     );
-
-  border-bottom-right-radius: 5px;
 
   box-shadow:
     0 7px 22px
     rgba(255, 138, 0, 0.12);
 }
 
-
-/* =========================================================
-   VISITOR MESSAGE BUBBLE
-========================================================= */
 
 .admin-chart-message-visitor
 .admin-chart-message-bubble {
@@ -581,1257 +670,60 @@
    MESSAGE TIME
 ========================================================= */
 
-.admin-chart-message-time {
+.admin-chart-message time {
   padding:
-    0 0.35rem;
+    0 0.25rem;
 
   color: #5f5f5f;
 
-  font-size: 0.57rem;
+  font-size: 0.56rem;
 
-  line-height: 1.2;
-}
-
-.admin-chart-message-admin
-.admin-chart-message-time {
-  text-align: right;
+  font-weight: 500;
 }
 
 
 /* =========================================================
-   EMPTY STATE
+   VOICE MESSAGE
 ========================================================= */
 
-.admin-chart-empty {
-  width: 100%;
-  height: 100%;
-
-  min-height: 0;
-
-  display: flex;
-
-  align-items: center;
-  justify-content: center;
-
-  padding: 2rem;
-
-  text-align: center;
-}
-
-.admin-chart-empty-content {
+.admin-chart-voice-message {
   width:
-    min(360px, 90%);
+    min(330px, 100%);
 
-  display: flex;
-
-  align-items: center;
-
-  flex-direction: column;
-}
-
-.admin-chart-empty-icon {
-  width: 64px;
-  height: 64px;
-
-  margin-bottom: 1rem;
-
-  display: flex;
-
-  align-items: center;
-  justify-content: center;
-
-  border:
-    1px solid
-    rgba(255, 138, 0, 0.2);
-
-  border-radius: 18px;
-
-  color: #ffad32;
-
-  background:
-    rgba(255, 138, 0, 0.07);
-
-  box-shadow:
-    0 0 30px
-    rgba(255, 138, 0, 0.07);
-}
-
-.admin-chart-empty h2 {
-  margin:
-    0 0 0.45rem;
-
-  color: #ffffff;
-
-  font-size: 1rem;
-
-  font-weight: 700;
-
-  letter-spacing: -0.02em;
-}
-
-.admin-chart-empty p {
-  max-width: 320px;
-
-  margin: 0;
-
-  color: #707070;
-
-  font-size: 0.75rem;
-
-  line-height: 1.6;
-}
-
-
-/* =========================================================
-   REPLY AREA
-   STABLE BOTTOM BAR
-========================================================= */
-
-/* =========================================================
-   ADMIN CHAT REPLY
-   Sticky-style raised reply bar + emoji picker
-========================================================= */
-
-.admin-chart-reply {
-  position: relative;
-
-  flex:
-    0 0 auto;
-
-  z-index: 50;
-
-  min-height: 72px;
-
-  margin:
-    0 0.75rem 4rem;
+  min-width:
+    240px;
 
   padding:
-    0.75rem 0.75rem;
+    0.7rem;
 
   display: flex;
 
-  align-items: flex-end;
+  align-items: center;
 
   gap: 0.65rem;
 
   border:
     1px solid
-    rgba(255, 255, 255, 0.08);
+    rgba(255, 255, 255, 0.09);
 
   border-radius: 14px;
 
-  background:
-    rgba(13, 13, 13, 0.98);
-
-  backdrop-filter:
-    blur(18px);
-
-  -webkit-backdrop-filter:
-    blur(18px);
-
-  box-shadow:
-    0 8px 30px
-    rgba(0, 0, 0, 0.28);
-}
-
-
-/* =========================================================
-   EMOJI BUTTON
-========================================================= */
-
-.admin-chart-emoji-button {
-  width: 44px;
-  height: 44px;
-
-  flex-shrink: 0;
-
-  display: flex;
-
-  align-items: center;
-  justify-content: center;
-
-  padding: 0;
-
-  border:
-    1px solid
-    rgba(255, 255, 255, 0.09);
-
-  border-radius: 11px;
-
-  color:
-    #b8b8b8;
-
-  background:
-    rgba(255, 255, 255, 0.04);
-
-  cursor: pointer;
-
-  transition:
-    color 200ms ease,
-    background 200ms ease,
-    border-color 200ms ease,
-    transform 200ms ease,
-    box-shadow 200ms ease;
-}
-
-
-.admin-chart-emoji-button:hover,
-.admin-chart-emoji-button.active {
-  color:
-    #ffad32;
-
-  background:
-    rgba(255, 138, 0, 0.08);
-
-  border-color:
-    rgba(255, 159, 0, 0.32);
-
-  transform:
-    translateY(-1px);
-
-  box-shadow:
-    0 5px 18px
-    rgba(255, 138, 0, 0.08);
-}
-
-
-.admin-chart-emoji-button:active {
-  transform:
-    translateY(0)
-    scale(0.96);
-}
-
-
-/* =========================================================
-   REPLY TEXTAREA
-========================================================= */
-
-.admin-chart-reply textarea {
-  flex: 1;
-
-  min-width: 0;
-
-  width: 100%;
-
-  min-height: 44px;
-
-  max-height: 120px;
-
-  padding:
-    0.7rem 0.9rem;
-
-  resize: none;
-
-  outline: none;
-
-  border:
-    1px solid
-    rgba(255, 255, 255, 0.09);
-
-  border-radius: 11px;
-
-  color:
-    #ffffff;
-
-  background:
-    rgba(255, 255, 255, 0.04);
-
-  font-family:
-    inherit;
-
-  font-size:
-    0.82rem;
-
-  line-height:
-    1.45;
-
-  box-sizing:
-    border-box;
-
-  transition:
-    border-color 200ms ease,
-    background 200ms ease,
-    box-shadow 200ms ease;
-}
-
-
-.admin-chart-reply textarea::placeholder {
-  color:
-    #666666;
-}
-
-
-.admin-chart-reply textarea:hover {
-  border-color:
-    rgba(255, 255, 255, 0.13);
-}
-
-
-.admin-chart-reply textarea:focus {
-  border-color:
-    rgba(255, 159, 0, 0.42);
-
-  background:
-    rgba(255, 138, 0, 0.045);
-
-  box-shadow:
-    0 0 0 3px
-    rgba(255, 138, 0, 0.07);
-}
-
-
-/* =========================================================
-   SEND BUTTON
-========================================================= */
-
-.admin-chart-send {
-  width: 44px;
-  height: 44px;
-
-  flex-shrink: 0;
-
-  display: flex;
-
-  align-items: center;
-  justify-content: center;
-
-  padding: 0;
-
-  border:
-    none;
-
-  border-radius:
-    25%;
-
-  color:
-    #090909;
-
-  background:
-    linear-gradient(
-      135deg,
-      #ffad32 0%,
-      #ff8a00 52%,
-      #ffc400 100%
-    );
-
-  cursor: pointer;
-
-  box-shadow:
-    0 6px 18px
-    rgba(255, 138, 0, 0.16);
-
-  transition:
-    transform 200ms ease,
-    filter 200ms ease,
-    box-shadow 200ms ease;
-}
-
-
-.admin-chart-send:hover:not(:disabled) {
-  transform:
-    translateY(-2px);
-
-  filter:
-    brightness(1.05);
+  background: #171717;
 
   box-shadow:
     0 8px 24px
-    rgba(255, 138, 0, 0.28);
+    rgba(0, 0, 0, 0.18);
 }
 
 
-.admin-chart-send:active:not(:disabled) {
-  transform:
-    translateY(0)
-    scale(0.96);
-}
-
-
-.admin-chart-send:disabled {
-  cursor:
-    not-allowed;
-
-  opacity:
-    0.35;
-
-  box-shadow:
-    none;
-}
-
-
-/* =========================================================
-   EMOJI PICKER
-   Floats above the reply bar.
-   Does NOT affect the chat layout.
-========================================================= */
-
-.admin-chart-emoji-picker {
-  position: absolute;
-
-  left:
-    0.75rem;
-
-  bottom:
-    calc(100% + 0.6rem);
-
-  width:
-    min(390px, calc(100vw - 2rem));
-
-  height:
-    360px;
-
-  display:
-    flex;
-
-  flex-direction:
-    column;
-
-  overflow:
-    hidden;
-
-  z-index:
-    100;
-
-  border:
-    1px solid
-    rgba(255, 255, 255, 0.11);
-
-  border-radius:
-    16px;
-
-  background:
-    rgba(18, 18, 18, 0.98);
-
-  box-shadow:
-    0 20px 60px
-    rgba(0, 0, 0, 0.55),
-
-    0 0 30px
-    rgba(255, 138, 0, 0.06);
-
-  backdrop-filter:
-    blur(24px);
-
-  -webkit-backdrop-filter:
-    blur(24px);
-}
-
-
-/* =========================================================
-   EMOJI PICKER HEADER
-========================================================= */
-
-.admin-chart-emoji-header {
-  flex-shrink:
-    0;
-
-  padding:
-    0.75rem;
-
-  display:
-    flex;
-
-  align-items:
-    center;
-
-  justify-content:
-    space-between;
-
-  gap:
-    0.6rem;
-
-  border-bottom:
-    1px solid
-    rgba(255, 255, 255, 0.07);
-}
-
-
-/* =========================================================
-   EMOJI SEARCH WRAPPER
-========================================================= */
-
-.admin-chart-emoji-search-wrap {
-  position:
-    relative;
+.admin-chart-audio-play {
+  width: 38px;
+  height: 38px;
 
   flex:
-    1;
+    0 0 38px;
 
-  min-width:
-    0;
-
-  display:
-    flex;
-
-  align-items:
-    center;
-}
-
-
-.admin-chart-emoji-search-wrap svg {
-  position:
-    absolute;
-
-  left:
-    0.75rem;
-
-  color:
-    #666666;
-
-  pointer-events:
-    none;
-}
-
-
-/* =========================================================
-   EMOJI SEARCH
-========================================================= */
-
-.admin-chart-emoji-search {
-  width:
-    100%;
-
-  height:
-    38px;
-
-  padding:
-    0 0.75rem 0 2.25rem;
-
-  outline:
-    none;
-
-  border:
-    1px solid
-    rgba(255, 255, 255, 0.08);
-
-  border-radius:
-    9px;
-
-  color:
-    #ffffff;
-
-  background:
-    rgba(255, 255, 255, 0.04);
-
-  font-family:
-    inherit;
-
-  font-size:
-    0.75rem;
-
-  box-sizing:
-    border-box;
-}
-
-
-.admin-chart-emoji-search::placeholder {
-  color:
-    #666666;
-}
-
-
-.admin-chart-emoji-search:focus {
-  border-color:
-    rgba(255, 159, 0, 0.35);
-
-  background:
-    rgba(255, 138, 0, 0.05);
-
-  box-shadow:
-    0 0 0 3px
-    rgba(255, 138, 0, 0.06);
-}
-
-
-/* =========================================================
-   EMOJI CLOSE BUTTON
-========================================================= */
-
-.admin-chart-emoji-close {
-  width:
-    38px;
-
-  height:
-    38px;
-
-  flex-shrink:
-    0;
-
-  display:
-    flex;
-
-  align-items:
-    center;
-
-  justify-content:
-    center;
-
-  padding:
-    0;
-
-  border:
-    1px solid
-    rgba(255, 255, 255, 0.08);
-
-  border-radius:
-    9px;
-
-  color:
-    #8a8a8a;
-
-  background:
-    rgba(255, 255, 255, 0.035);
-
-  cursor:
-    pointer;
-
-  transition:
-    color 200ms ease,
-    background 200ms ease,
-    border-color 200ms ease;
-}
-
-
-.admin-chart-emoji-close:hover {
-  color:
-    #ffffff;
-
-  background:
-    rgba(255, 138, 0, 0.08);
-
-  border-color:
-    rgba(255, 159, 0, 0.3);
-}
-
-
-/* =========================================================
-   EMOJI CATEGORIES
-========================================================= */
-
-.admin-chart-emoji-categories {
-  flex-shrink:
-    0;
-
-  display:
-    flex;
-
-  align-items:
-    center;
-
-  gap:
-    0.35rem;
-
-  padding:
-    0.55rem 0.75rem;
-
-  overflow-x:
-    auto;
-
-  scrollbar-width:
-    none;
-
-  border-bottom:
-    1px solid
-    rgba(255, 255, 255, 0.06);
-}
-
-
-.admin-chart-emoji-categories::-webkit-scrollbar {
-  display:
-    none;
-}
-
-
-/* =========================================================
-   EMOJI CATEGORY
-========================================================= */
-
-.admin-chart-emoji-category {
-  flex-shrink:
-    0;
-
-  min-height:
-    30px;
-
-  padding:
-    0.35rem 0.65rem;
-
-  border:
-    1px solid
-    rgba(255, 255, 255, 0.07);
-
-  border-radius:
-    999px;
-
-  color:
-    #7f7f7f;
-
-  background:
-    rgba(255, 255, 255, 0.025);
-
-  cursor:
-    pointer;
-
-  font-family:
-    inherit;
-
-  font-size:
-    0.62rem;
-
-  font-weight:
-    600;
-
-  white-space:
-    nowrap;
-
-  transition:
-    color 180ms ease,
-    background 180ms ease,
-    border-color 180ms ease;
-}
-
-
-.admin-chart-emoji-category:hover {
-  color:
-    #ffffff;
-
-  background:
-    rgba(255, 255, 255, 0.05);
-
-  border-color:
-    rgba(255, 255, 255, 0.12);
-}
-
-
-.admin-chart-emoji-category.active {
-  color:
-    #090909;
-
-  border-color:
-    transparent;
-
-  background:
-    linear-gradient(
-      135deg,
-      #ffad32,
-      #ff8a00,
-      #ffc400
-    );
-}
-
-
-/* =========================================================
-   EMOJI GRID
-========================================================= */
-
-.admin-chart-emoji-grid {
-  flex:
-    1;
-
-  min-height:
-    0;
-
-  padding:
-    0.75rem;
-
-  display:
-    grid;
-
-  grid-template-columns:
-    repeat(
-      8,
-      minmax(0, 1fr)
-    );
-
-  align-content:
-    start;
-
-  gap:
-    0.35rem;
-
-  overflow-y:
-    auto;
-
-  scrollbar-width:
-    thin;
-
-  scrollbar-color:
-    rgba(255, 255, 255, 0.12)
-    transparent;
-}
-
-
-/* =========================================================
-   EMOJI
-========================================================= */
-
-.admin-chart-emoji {
-  aspect-ratio:
-    1;
-
-  min-width:
-    0;
-
-  display:
-    flex;
-
-  align-items:
-    center;
-
-  justify-content:
-    center;
-
-  padding:
-    0;
-
-  border:
-    1px solid
-    transparent;
-
-  border-radius:
-    9px;
-
-  background:
-    transparent;
-
-  font-size:
-    1.35rem;
-
-  line-height:
-    1;
-
-  cursor:
-    pointer;
-
-  transition:
-    transform 150ms ease,
-    background 150ms ease,
-    border-color 150ms ease;
-}
-
-
-.admin-chart-emoji:hover {
-  transform:
-    scale(1.12);
-
-  border-color:
-    rgba(255, 159, 0, 0.22);
-
-  background:
-    rgba(255, 138, 0, 0.08);
-}
-
-
-.admin-chart-emoji:active {
-  transform:
-    scale(0.95);
-}
-
-
-/* =========================================================
-   NO EMOJI RESULTS
-========================================================= */
-
-.admin-chart-emoji-empty {
-  grid-column:
-    1 / -1;
-
-  min-height:
-    150px;
-
-  display:
-    flex;
-
-  align-items:
-    center;
-
-  justify-content:
-    center;
-
-  color:
-    #666666;
-
-  font-size:
-    0.72rem;
-
-  text-align:
-    center;
-}
-
-
-/* =========================================================
-   EMOJI SCROLLBAR
-========================================================= */
-
-.admin-chart-emoji-grid::-webkit-scrollbar {
-  width:
-    6px;
-}
-
-.admin-chart-emoji-grid::-webkit-scrollbar-track {
-  background:
-    transparent;
-}
-
-.admin-chart-emoji-grid::-webkit-scrollbar-thumb {
-  border-radius:
-    999px;
-
-  background:
-    rgba(255, 255, 255, 0.11);
-}
-
-.admin-chart-emoji-grid::-webkit-scrollbar-thumb:hover {
-  background:
-    rgba(255, 138, 0, 0.42);
-}
-
-
-/* =========================================================
-   FOCUS
-========================================================= */
-
-.admin-chart-reply button:focus-visible,
-.admin-chart-reply textarea:focus-visible,
-.admin-chart-emoji-search:focus-visible {
-  outline:
-    2px solid
-    #ffad32;
-
-  outline-offset:
-    2px;
-}
-
-
-/* =========================================================
-   TABLET
-========================================================= */
-
-@media (max-width: 1024px) {
-
-  .admin-chart-reply {
-    margin:
-      0 0.6rem 4rem;
-
-    padding:
-      0.7rem;
-  }
-
-  .admin-chart-emoji-picker {
-    width:
-      min(360px, calc(100vw - 2rem));
-
-    height:
-      340px;
-  }
-
-}
-
-
-/* =========================================================
-   MOBILE
-========================================================= */
-
-@media (max-width: 768px) {
-
-  .admin-chart-reply {
-    min-height:
-      66px;
-
-    margin:
-      0 0.5rem 3rem;
-
-    padding:
-      0.6rem;
-
-    gap:
-      0.5rem;
-
-    border-radius:
-      13px;
-  }
-
-
-  .admin-chart-emoji-button {
-    width:
-      42px;
-
-    height:
-      42px;
-  }
-
-
-  .admin-chart-reply textarea {
-    min-height:
-      42px;
-  }
-
-
-  .admin-chart-send {
-    width:
-      42px;
-
-    height:
-      42px;
-  }
-
-
-  .admin-chart-emoji-picker {
-    left:
-      0.5rem;
-
-    bottom:
-      calc(100% + 0.5rem);
-
-    width:
-      min(360px, calc(100vw - 1.3rem));
-
-    height:
-      330px;
-
-    border-radius:
-      14px;
-  }
-
-
-  .admin-chart-emoji-grid {
-    grid-template-columns:
-      repeat(
-        7,
-        minmax(0, 1fr)
-      );
-
-    gap:
-      0.3rem;
-  }
-
-
-  .admin-chart-emoji {
-    font-size:
-      1.25rem;
-  }
-
-}
-
-
-/* =========================================================
-   SMALL MOBILE
-========================================================= */
-
-@media (max-width: 480px) {
-
-  .admin-chart-reply {
-    min-height:
-      62px;
-
-    margin:
-      0 0.35rem 2.5rem;
-
-    padding:
-      0.5rem;
-
-    gap:
-      0.4rem;
-
-    border-radius:
-      12px;
-  }
-
-
-  .admin-chart-emoji-button {
-    width:
-      40px;
-
-    height:
-      40px;
-  }
-
-
-  .admin-chart-reply textarea {
-    min-height:
-      40px;
-
-    font-size:
-      0.78rem;
-  }
-
-
-  .admin-chart-send {
-    width:
-      40px;
-
-    height:
-      40px;
-  }
-
-
-  .admin-chart-emoji-picker {
-    left:
-      0;
-
-    bottom:
-      calc(100% + 0.45rem);
-
-    width:
-      min(350px, calc(100vw - 1rem));
-
-    height:
-      315px;
-
-    border-radius:
-      13px;
-  }
-
-
-  .admin-chart-emoji-grid {
-    grid-template-columns:
-      repeat(
-        6,
-        minmax(0, 1fr)
-      );
-
-    padding:
-      0.6rem;
-
-    gap:
-      0.25rem;
-  }
-
-
-  .admin-chart-emoji {
-    font-size:
-      1.18rem;
-  }
-
-
-  .admin-chart-emoji-header {
-    padding:
-      0.6rem;
-  }
-
-
-  .admin-chart-emoji-categories {
-    padding:
-      0.45rem 0.6rem;
-  }
-
-
-  .admin-chart-emoji-category {
-    min-height:
-      28px;
-
-    padding:
-      0.3rem 0.55rem;
-
-    font-size:
-      0.58rem;
-  }
-
-}
-
-
-/* =========================================================
-   VERY SMALL SCREENS
-========================================================= */
-
-@media (max-width: 360px) {
-
-  .admin-chart-reply {
-    min-height:
-      58px;
-
-    margin:
-      0 0.25rem 2rem;
-
-    padding:
-      0.4rem;
-
-    gap:
-      0.3rem;
-  }
-
-
-  .admin-chart-emoji-button {
-    width:
-      38px;
-
-    height:
-      38px;
-  }
-
-
-  .admin-chart-reply textarea {
-    min-height:
-      38px;
-
-    padding:
-      0.55rem 0.65rem;
-
-    font-size:
-      0.74rem;
-  }
-
-
-  .admin-chart-send {
-    width:
-      38px;
-
-    height:
-      38px;
-  }
-
-
-  .admin-chart-emoji-picker {
-    width:
-      calc(100vw - 0.7rem);
-
-    height:
-      300px;
-  }
-
-
-  .admin-chart-emoji-grid {
-    grid-template-columns:
-      repeat(
-        6,
-        minmax(0, 1fr)
-      );
-  }
-
-}
-
-
-/* =========================================================
-   REDUCED MOTION
-========================================================= */
-
-@media (prefers-reduced-motion: reduce) {
-
-  .admin-chart-reply *,
-  .admin-chart-reply *::before,
-  .admin-chart-reply *::after {
-
-    transition:
-      none !important;
-
-    animation:
-      none !important;
-  }
-
-}
-
-
-/* =========================================================
-   EMOJI BUTTON
-========================================================= */
-
-.admin-chart-emoji-button {
-  width: 44px;
-  height: 44px;
-
-  flex-shrink: 0;
-
-  display: flex;
+  display: inline-flex;
 
   align-items: center;
   justify-content: center;
@@ -1840,117 +732,7 @@
 
   border:
     1px solid
-    rgba(255, 255, 255, 0.09);
-
-  border-radius: 11px;
-
-  color: #b8b8b8;
-
-  background:
-    rgba(255, 255, 255, 0.04);
-
-  cursor: pointer;
-
-  transition:
-    color 200ms ease,
-    background 200ms ease,
-    border-color 200ms ease,
-    transform 200ms ease;
-}
-
-.admin-chart-emoji-button:hover,
-.admin-chart-emoji-button.active {
-  color: #ffad32;
-
-  background:
-    rgba(255, 138, 0, 0.08);
-
-  border-color:
-    rgba(255, 159, 0, 0.32);
-
-  transform:
-    translateY(-1px);
-}
-
-
-/* =========================================================
-   REPLY TEXTAREA
-========================================================= */
-
-.admin-chart-reply textarea {
-  flex: 1;
-
-  min-width: 0;
-
-  min-height: 44px;
-
-  max-height: 120px;
-
-  padding:
-    0.7rem 0.9rem;
-
-  resize: none;
-
-  outline: none;
-
-  border:
-    1px solid
-    rgba(255, 255, 255, 0.09);
-
-  border-radius: 11px;
-
-  color: #ffffff;
-
-  background:
-    rgba(255, 255, 255, 0.04);
-
-  font-family: inherit;
-
-  font-size: 0.82rem;
-
-  line-height: 1.45;
-
-  transition:
-    border-color 200ms ease,
-    background 200ms ease,
-    box-shadow 200ms ease;
-}
-
-.admin-chart-reply textarea::placeholder {
-  color: #666666;
-}
-
-.admin-chart-reply textarea:focus {
-  border-color:
-    rgba(255, 159, 0, 0.42);
-
-  background:
-    rgba(255, 138, 0, 0.045);
-
-  box-shadow:
-    0 0 0 3px
-    rgba(255, 138, 0, 0.07);
-}
-
-
-/* =========================================================
-   SEND BUTTON
-========================================================= */
-
-.admin-chart-send {
-  width: 44px;
-  height: 44px;
-
-  flex-shrink: 0;
-
-  display: flex;
-
-  align-items: center;
-  justify-content: center;
-
-  padding: 0;
-
-  border: none;
+    rgba(255, 190, 60, 0.45);
 
   border-radius: 50%;
 
@@ -1959,207 +741,326 @@
   background:
     linear-gradient(
       135deg,
-      #ffad32,
-      #ff8a00,
-      #ffc400
+      #ffb52e,
+      #ff9f00,
+      #ff7a00
     );
 
   cursor: pointer;
-
-  transition:
-    transform 200ms ease,
-    filter 200ms ease,
-    box-shadow 200ms ease;
-}
-
-.admin-chart-send:hover:not(:disabled) {
-  transform:
-    translateY(-2px);
-
-  filter:
-    brightness(1.05);
-
-  box-shadow:
-    0 8px 24px
-    rgba(255, 138, 0, 0.25);
-}
-
-.admin-chart-send:active:not(:disabled) {
-  transform:
-    translateY(0);
-}
-
-.admin-chart-send:disabled {
-  cursor: not-allowed;
-
-  opacity: 0.35;
 }
 
 
 /* =========================================================
-   EMOJI PICKER
-   Positioned above the reply bar.
-   Does NOT affect chat layout.
+   AUDIO CONTENT
 ========================================================= */
 
-.admin-chart-emoji-picker {
-  position: absolute;
+.admin-chart-audio-content {
+  flex:
+    1 1 auto;
 
-  left: 0.75rem;
-  bottom:
-    calc(100% + 0.6rem);
-
-  width:
-    min(390px, calc(100vw - 2rem));
-
-  height: 360px;
+  min-width: 0;
 
   display: flex;
 
   flex-direction: column;
 
-  overflow: hidden;
-
-  z-index: 100;
-
-  border:
-    1px solid
-    rgba(255, 255, 255, 0.11);
-
-  border-radius: 16px;
-
-  background:
-    rgba(18, 18, 18, 0.98);
-
-  box-shadow:
-    0 20px 60px
-    rgba(0, 0, 0, 0.55),
-
-    0 0 30px
-    rgba(255, 138, 0, 0.06);
-
-  backdrop-filter:
-    blur(24px);
-
-  -webkit-backdrop-filter:
-    blur(24px);
+  gap: 0.35rem;
 }
 
 
-/* =========================================================
-   EMOJI PICKER HEADER
-========================================================= */
-
-.admin-chart-emoji-header {
-  flex-shrink: 0;
-
-  padding:
-    0.75rem;
+.admin-chart-audio-top {
+  width: 100%;
 
   display: flex;
 
   align-items: center;
 
   justify-content: space-between;
+}
 
-  gap: 0.6rem;
 
-  border-bottom:
+.admin-chart-audio-top span {
+  min-width: 48px;
+
+  padding:
+    0.18rem 0.4rem;
+
+  border:
     1px solid
-    rgba(255, 255, 255, 0.07);
+    rgba(255, 159, 0, 0.18);
+
+  border-radius: 6px;
+
+  color: #ffad32;
+
+  background:
+    rgba(255, 159, 0, 0.07);
+
+  font-family:
+    "JetBrains Mono",
+    monospace;
+
+  font-size: 0.58rem;
+
+  font-weight: 600;
+
+  text-align: center;
 }
 
 
 /* =========================================================
-   EMOJI SEARCH WRAPPER
+   AUDIO PROGRESS
 ========================================================= */
 
-.admin-chart-emoji-search-wrap {
+.admin-chart-audio-progress {
   position: relative;
 
-  flex: 1;
+  width: 100%;
+  height: 4px;
+
+  overflow: hidden;
+
+  border-radius: 999px;
+
+  background:
+    rgba(255, 255, 255, 0.09);
+
+  cursor: pointer;
+}
+
+
+.admin-chart-audio-progress-fill {
+  position: absolute;
+
+  top: 0;
+  left: 0;
+
+  width: 0%;
+
+  height: 100%;
+
+  border-radius: inherit;
+
+  background:
+    linear-gradient(
+      90deg,
+      #ff8a00,
+      #ffc400
+    );
+}
+
+
+.admin-chart-audio-bottom {
+  display: flex;
+
+  justify-content: flex-end;
+}
+
+
+.admin-chart-audio-mute {
+  width: 25px;
+  height: 25px;
+
+  display: inline-flex;
+
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  border: none;
+
+  border-radius: 7px;
+
+  color: #777777;
+
+  background: transparent;
+
+  cursor: pointer;
+}
+
+
+/* =========================================================
+   HIDE NATIVE AUDIO
+========================================================= */
+
+.admin-chart-voice-message audio,
+.admin-chart-recording-preview audio {
+  display: none;
+}
+
+
+/* =========================================================
+   LOADING
+========================================================= */
+
+.admin-chart-loading,
+.admin-chart-no-messages {
+  min-height: 250px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 0.5rem;
+
+  text-align: center;
+}
+
+
+.admin-chart-loading {
+  color: #707070;
+
+  font-size: 0.72rem;
+}
+
+
+.admin-chart-no-messages svg {
+  color: #ffad32;
+
+  opacity: 0.7;
+}
+
+
+.admin-chart-no-messages p {
+  margin: 0;
+
+  color: #b8b8b8;
+
+  font-size: 0.8rem;
+}
+
+
+.admin-chart-no-messages span {
+  color: #666666;
+
+  font-size: 0.7rem;
+}
+
+
+/* =========================================================
+   REPLY BAR
+   NOT SCROLLABLE
+========================================================= */
+
+.admin-chart-reply {
+  position: relative;
+
+  flex:
+    0 0 72px;
+
+  width: 100%;
 
   min-width: 0;
+  min-height: 72px;
+
+  margin: 0;
+
+  padding:
+    10px 12px;
 
   display: flex;
 
   align-items: center;
-}
 
+  gap: 8px;
 
-/* =========================================================
-   EMOJI SEARCH ICON
-========================================================= */
-
-.admin-chart-emoji-search-wrap svg {
-  position: absolute;
-
-  left: 0.75rem;
-
-  color: #666666;
-
-  pointer-events: none;
-}
-
-
-/* =========================================================
-   EMOJI SEARCH
-========================================================= */
-
-.admin-chart-emoji-search {
-  width: 100%;
-
-  height: 38px;
-
-  padding:
-    0 0.75rem 0 2.25rem;
-
-  outline: none;
-
-  border:
-    1px solid
-    rgba(255, 255, 255, 0.08);
-
-  border-radius: 9px;
-
-  color: #ffffff;
-
-  background:
-    rgba(255, 255, 255, 0.04);
-
-  font-family: inherit;
-
-  font-size: 0.75rem;
-}
-
-.admin-chart-emoji-search::placeholder {
-  color: #666666;
-}
-
-.admin-chart-emoji-search:focus {
-  border-color:
-    rgba(255, 159, 0, 0.35);
-
-  background:
-    rgba(255, 138, 0, 0.05);
-
-  box-shadow:
-    0 0 0 3px
-    rgba(255, 138, 0, 0.06);
-}
-
-
-/* =========================================================
-   EMOJI CLOSE
-========================================================= */
-
-.admin-chart-emoji-close {
-  width: 38px;
-  height: 38px;
+  overflow: visible;
 
   flex-shrink: 0;
 
-  display: flex;
+  border-top:
+    1px solid
+    rgba(255, 255, 255, 0.08);
+
+  background:
+    #111111;
+
+  z-index: 100;
+
+  box-sizing: border-box;
+}
+
+
+/* =========================================================
+   TEXTAREA
+========================================================= */
+
+.admin-chart-reply textarea {
+  flex:
+    1 1 auto;
+
+  width: 100%;
+
+  min-width: 0;
+
+  height: 46px;
+  min-height: 46px;
+  max-height: 46px;
+
+  display: block;
+
+  resize: none;
+
+  overflow: hidden;
+
+  padding:
+    0.7rem 0.85rem;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.09);
+
+  border-radius: 10px;
+
+  outline: none;
+
+  color: #ffffff;
+
+  background: #181818;
+
+  font-family: inherit;
+
+  font-size: 0.8rem;
+
+  line-height: 1.35;
+}
+
+
+.admin-chart-reply textarea:focus {
+  border-color:
+    rgba(255, 159, 0, 0.38);
+
+  box-shadow:
+    0 0 0 3px
+    rgba(255, 138, 0, 0.07);
+}
+
+
+.admin-chart-reply textarea::placeholder {
+  color: #666666;
+}
+
+
+/* =========================================================
+   EMOJI + MICROPHONE
+========================================================= */
+
+.admin-chart-emoji-button,
+.admin-chart-mic-button {
+  width: 42px;
+  height: 42px;
+
+  min-width: 42px;
+
+  flex:
+    0 0 42px;
+
+  display: inline-flex;
 
   align-items: center;
   justify-content: center;
@@ -2168,31 +1069,555 @@
 
   border:
     1px solid
-    rgba(255, 255, 255, 0.08);
+    rgba(255, 255, 255, 0.09);
+
+  border-radius: 10px;
+
+  color: #9a9a9a;
+
+  background: #181818;
+
+  cursor: pointer;
+
+  transition:
+    color 180ms ease,
+    border-color 180ms ease,
+    background 180ms ease,
+    transform 180ms ease;
+}
+
+
+.admin-chart-emoji-button:hover,
+.admin-chart-mic-button:hover {
+  color: #ffad32;
+
+  border-color:
+    rgba(255, 159, 0, 0.3);
+
+  background:
+    rgba(255, 159, 0, 0.07);
+
+  transform:
+    translateY(-1px);
+}
+
+
+/* =========================================================
+   SEND BUTTON
+   NEVER SCROLL
+========================================================= */
+
+.admin-chart-send {
+  width: 46px;
+  height: 46px;
+
+  min-width: 46px;
+  min-height: 46px;
+
+  flex:
+    0 0 46px;
+
+  display: inline-flex;
+
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  border:
+    1px solid
+    rgba(255, 190, 60, 0.45);
+
+  border-radius: 10px;
+
+  color: #111111;
+
+  background:
+    linear-gradient(
+      135deg,
+      #ffb52e 0%,
+      #ff9f00 52%,
+      #ff7a00 100%
+    );
+
+  box-shadow:
+    0 7px 22px
+    rgba(255, 159, 0, 0.18);
+
+  cursor: pointer;
+
+  flex-shrink: 0;
+
+  transition:
+    transform 200ms ease,
+    box-shadow 200ms ease,
+    filter 200ms ease,
+    opacity 200ms ease;
+}
+
+
+.admin-chart-send:hover:not(:disabled) {
+  transform:
+    translateY(-2px);
+
+  filter:
+    brightness(1.06);
+
+  box-shadow:
+    0 11px 30px
+    rgba(255, 159, 0, 0.3);
+}
+
+
+.admin-chart-send:disabled {
+  opacity: 0.38;
+
+  cursor:
+    not-allowed;
+}
+
+
+/* =========================================================
+   RECORDING BAR
+========================================================= */
+
+.admin-chart-recording {
+  width: 100%;
+
+  height: 46px;
+
+  min-width: 0;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 0.55rem;
+
+  padding:
+    0 0.5rem;
+
+  border:
+    1px solid
+    rgba(255, 138, 0, 0.2);
+
+  border-radius: 10px;
+
+  background:
+    rgba(255, 138, 0, 0.045);
+}
+
+
+/* =========================================================
+   RECORDING INDICATOR
+========================================================= */
+
+.admin-chart-recording-indicator {
+  width: 8px;
+  height: 8px;
+
+  flex:
+    0 0 8px;
+
+  border-radius: 50%;
+
+  background:
+    #ef4444;
+
+  box-shadow:
+    0 0 12px
+    rgba(239, 68, 68, 0.65);
+
+  animation:
+    admin-chart-recording-pulse 1s
+    ease-in-out
+    infinite;
+}
+
+
+@keyframes admin-chart-recording-pulse {
+
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: scale(0.9);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+
+}
+
+
+/* =========================================================
+   RECORDING TIMER
+========================================================= */
+
+.admin-chart-recording-time {
+  min-width: 58px;
+
+  padding:
+    0.25rem 0.45rem;
+
+  border:
+    1px solid
+    rgba(255, 159, 0, 0.22);
+
+  border-radius: 7px;
+
+  color: #ffad32;
+
+  background:
+    rgba(255, 159, 0, 0.08);
+
+  font-family:
+    "JetBrains Mono",
+    monospace;
+
+  font-size: 0.65rem;
+
+  font-weight: 700;
+
+  text-align: center;
+}
+
+
+.admin-chart-recording-label {
+  min-width: 0;
+
+  overflow: hidden;
+
+  color: #b8b8b8;
+
+  font-size: 0.68rem;
+
+  white-space: nowrap;
+
+  text-overflow: ellipsis;
+}
+
+
+.admin-chart-recording-stop {
+  width: 34px;
+  height: 34px;
+
+  margin-left: auto;
+
+  flex:
+    0 0 34px;
+
+  display: inline-flex;
+
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  border: none;
 
   border-radius: 9px;
 
-  color: #8a8a8a;
+  color: #090909;
+
+  background: #ff9f00;
+
+  cursor: pointer;
+}
+
+
+.admin-chart-recording-cancel {
+  width: 34px;
+  height: 34px;
+
+  flex:
+    0 0 34px;
+
+  display: inline-flex;
+
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.1);
+
+  border-radius: 9px;
+
+  color: #999999;
 
   background:
     rgba(255, 255, 255, 0.035);
 
   cursor: pointer;
-
-  transition:
-    color 200ms ease,
-    background 200ms ease,
-    border-color 200ms ease;
 }
+
+
+/* =========================================================
+   RECORDING PREVIEW
+========================================================= */
+
+.admin-chart-recording-preview {
+  width: 100%;
+
+  min-width: 0;
+
+  min-height: 46px;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 0.55rem;
+
+  padding:
+    0.35rem 0.45rem;
+
+  border:
+    1px solid
+    rgba(255, 159, 0, 0.2);
+
+  border-radius: 10px;
+
+  background:
+    rgba(255, 159, 0, 0.045);
+}
+
+
+.admin-chart-recording-preview-label {
+  flex: 1;
+
+  color: #b8b8b8;
+
+  font-size: 0.68rem;
+}
+
+
+.admin-chart-recording-preview-delete,
+.admin-chart-recording-preview-send {
+  width: 36px;
+  height: 36px;
+
+  flex:
+    0 0 36px;
+
+  display: inline-flex;
+
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  border-radius: 9px;
+
+  cursor: pointer;
+}
+
+
+.admin-chart-recording-preview-delete {
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.09);
+
+  color: #888888;
+
+  background: transparent;
+}
+
+
+.admin-chart-recording-preview-delete:hover {
+  color: #ef4444;
+
+  border-color:
+    rgba(239, 68, 68, 0.3);
+
+  background:
+    rgba(239, 68, 68, 0.06);
+}
+
+
+.admin-chart-recording-preview-send {
+  border:
+    1px solid
+    rgba(255, 190, 60, 0.35);
+
+  color: #090909;
+
+  background:
+    linear-gradient(
+      135deg,
+      #ffb52e,
+      #ff9f00
+    );
+}
+
+
+/* =========================================================
+   VOICE ERROR
+========================================================= */
+
+.admin-chart-voice-error {
+  flex:
+    0 0 auto;
+
+  margin:
+    0.3rem 0.75rem;
+
+  padding:
+    0.5rem 0.7rem;
+
+  border:
+    1px solid
+    rgba(239, 68, 68, 0.22);
+
+  border-radius: 8px;
+
+  color: #fca5a5;
+
+  background:
+    rgba(239, 68, 68, 0.06);
+
+  font-size: 0.65rem;
+
+  text-align: center;
+}
+
+
+/* =========================================================
+   EMOJI PICKER
+========================================================= */
+
+.admin-chart-emoji-picker {
+  position: absolute;
+
+  right: 12px;
+
+  bottom:
+    calc(100% + 8px);
+
+  width:
+    min(330px, calc(100vw - 30px));
+
+  max-height: 360px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  overflow: hidden;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.11);
+
+  border-radius: 14px;
+
+  background:
+    rgba(19, 19, 19, 0.98);
+
+  box-shadow:
+    0 20px 55px
+    rgba(0, 0, 0, 0.45);
+
+  z-index: 2000;
+}
+
+
+.admin-chart-emoji-picker-header {
+  min-height: 46px;
+
+  padding:
+    0 0.75rem;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  border-bottom:
+    1px solid
+    rgba(255, 255, 255, 0.08);
+
+  color: #b8b8b8;
+
+  font-size: 0.7rem;
+
+  font-weight: 700;
+}
+
+
+.admin-chart-emoji-search-wrap {
+  padding:
+    0.55rem 0.65rem;
+}
+
+
+.admin-chart-emoji-search {
+  width: 100%;
+  height: 34px;
+
+  padding:
+    0 0.7rem;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.08);
+
+  border-radius: 8px;
+
+  outline: none;
+
+  color: #ffffff;
+
+  background: #171717;
+
+  font-size: 0.7rem;
+}
+
+
+.admin-chart-emoji-search::placeholder {
+  color: #666666;
+}
+
+
+.admin-chart-emoji-search:focus {
+  border-color:
+    rgba(255, 159, 0, 0.35);
+}
+
+
+.admin-chart-emoji-close {
+  width: 28px;
+  height: 28px;
+
+  display: inline-flex;
+
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  border: none;
+
+  border-radius: 7px;
+
+  color: #777777;
+
+  background: transparent;
+
+  cursor: pointer;
+}
+
 
 .admin-chart-emoji-close:hover {
   color: #ffffff;
 
   background:
-    rgba(255, 138, 0, 0.08);
-
-  border-color:
-    rgba(255, 159, 0, 0.3);
+    rgba(255, 255, 255, 0.06);
 }
 
 
@@ -2201,139 +1626,27 @@
 ========================================================= */
 
 .admin-chart-emoji-categories {
-  flex-shrink: 0;
-
   display: flex;
 
-  align-items: center;
-
-  gap: 0.35rem;
+  gap: 0.25rem;
 
   padding:
-    0.55rem 0.75rem;
+    0 0.65rem 0.5rem;
 
   overflow-x: auto;
 
   scrollbar-width: none;
-
-  border-bottom:
-    1px solid
-    rgba(255, 255, 255, 0.06);
 }
 
-.admin-chart-emoji-categories::-webkit-scrollbar {
-  display: none;
-}
-
-
-/* =========================================================
-   EMOJI CATEGORY BUTTON
-========================================================= */
 
 .admin-chart-emoji-category {
-  flex-shrink: 0;
+  min-width: 34px;
+  height: 32px;
 
-  min-height: 30px;
+  flex:
+    0 0 34px;
 
-  padding:
-    0.35rem 0.65rem;
-
-  border:
-    1px solid
-    rgba(255, 255, 255, 0.07);
-
-  border-radius: 999px;
-
-  color: #7f7f7f;
-
-  background:
-    rgba(255, 255, 255, 0.025);
-
-  cursor: pointer;
-
-  font-family: inherit;
-
-  font-size: 0.62rem;
-
-  font-weight: 600;
-
-  white-space: nowrap;
-
-  transition:
-    color 180ms ease,
-    background 180ms ease,
-    border-color 180ms ease;
-}
-
-.admin-chart-emoji-category:hover {
-  color: #ffffff;
-
-  background:
-    rgba(255, 255, 255, 0.05);
-
-  border-color:
-    rgba(255, 255, 255, 0.12);
-}
-
-.admin-chart-emoji-category.active {
-  color: #090909;
-
-  border-color: transparent;
-
-  background:
-    linear-gradient(
-      135deg,
-      #ffad32,
-      #ff8a00,
-      #ffc400
-    );
-}
-
-
-/* =========================================================
-   EMOJI GRID
-========================================================= */
-
-.admin-chart-emoji-grid {
-  flex: 1;
-
-  min-height: 0;
-
-  padding:
-    0.75rem;
-
-  display: grid;
-
-  grid-template-columns:
-    repeat(
-      8,
-      minmax(0, 1fr)
-    );
-
-  align-content: start;
-
-  gap: 0.35rem;
-
-  overflow-y: auto;
-
-  scrollbar-width: thin;
-
-  scrollbar-color:
-    rgba(255, 255, 255, 0.12)
-    transparent;
-}
-
-
-/* =========================================================
-   EMOJI ITEM
-========================================================= */
-
-.admin-chart-emoji {
-  aspect-ratio: 1;
-
-  min-width: 0;
-
-  display: flex;
+  display: inline-flex;
 
   align-items: center;
   justify-content: center;
@@ -2344,133 +1657,102 @@
     1px solid
     transparent;
 
-  border-radius: 9px;
+  border-radius: 8px;
 
-  background:
-    transparent;
+  color: #777777;
 
-  font-size: 1.35rem;
-
-  line-height: 1;
+  background: transparent;
 
   cursor: pointer;
-
-  transition:
-    transform 150ms ease,
-    background 150ms ease,
-    border-color 150ms ease;
 }
 
-.admin-chart-emoji:hover {
-  transform:
-    scale(1.12);
+
+.admin-chart-emoji-category:hover,
+.admin-chart-emoji-category.active {
+  color: #ffad32;
 
   border-color:
     rgba(255, 159, 0, 0.22);
 
   background:
-    rgba(255, 138, 0, 0.08);
-}
-
-.admin-chart-emoji:active {
-  transform:
-    scale(0.95);
+    rgba(255, 159, 0, 0.07);
 }
 
 
 /* =========================================================
-   EMOJI EMPTY
+   EMOJI GRID
 ========================================================= */
 
-.admin-chart-emoji-empty {
-  grid-column:
-    1 / -1;
+.admin-chart-emoji-grid {
+  flex:
+    1 1 auto;
 
-  min-height: 150px;
+  min-height: 0;
 
-  display: flex;
+  display: grid;
+
+  grid-template-columns:
+    repeat(8, 1fr);
+
+  gap:
+    0.15rem;
+
+  padding:
+    0.55rem;
+
+  overflow-y:
+    auto;
+}
+
+
+.admin-chart-emoji {
+  min-width: 0;
+
+  aspect-ratio: 1;
+
+  display: inline-flex;
 
   align-items: center;
   justify-content: center;
 
+  padding: 0;
+
+  border: none;
+
+  border-radius: 8px;
+
+  font-size: 1.2rem;
+
+  background: transparent;
+
+  cursor: pointer;
+
+  transition:
+    transform 120ms ease,
+    background 120ms ease;
+}
+
+
+.admin-chart-emoji:hover {
+  transform:
+    scale(1.12);
+
+  background:
+    rgba(255, 159, 0, 0.08);
+}
+
+
+.admin-chart-emoji-empty {
+  grid-column: 1 / -1;
+
+  padding:
+    2rem 1rem;
+
   color: #666666;
 
-  font-size: 0.72rem;
-
   text-align: center;
-}
 
-
-/* =========================================================
-   EMOJI PICKER SCROLLBAR
-========================================================= */
-
-.admin-chart-emoji-grid::-webkit-scrollbar {
-  width: 6px;
-}
-
-.admin-chart-emoji-grid::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.admin-chart-emoji-grid::-webkit-scrollbar-thumb {
-  border-radius: 999px;
-
-  background:
-    rgba(255, 255, 255, 0.11);
-}
-
-.admin-chart-emoji-grid::-webkit-scrollbar-thumb:hover {
-  background:
-    rgba(255, 138, 0, 0.42);
-}
-
-
-/* =========================================================
-   MAIN CHAT SCROLLBAR
-========================================================= */
-
-.admin-chart-messages::-webkit-scrollbar {
-  width: 7px;
-}
-
-.admin-chart-messages::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.admin-chart-messages::-webkit-scrollbar-thumb {
-  border-radius: 999px;
-
-  background:
-    rgba(255, 255, 255, 0.12);
-}
-
-.admin-chart-messages::-webkit-scrollbar-thumb:hover {
-  background:
-    rgba(255, 138, 0, 0.42);
-}
-
-.admin-chart-messages {
-  scrollbar-width: thin;
-
-  scrollbar-color:
-    rgba(255, 255, 255, 0.12)
-    transparent;
-}
-
-
-/* =========================================================
-   FOCUS
-========================================================= */
-
-.admin-chart button:focus-visible,
-.admin-chart textarea:focus-visible,
-.admin-chart input:focus-visible {
-  outline:
-    2px solid
-    #ffad32;
-
-  outline-offset: 2px;
+  font-size: 0.7rem;
 }
 
 
@@ -2486,16 +1768,67 @@
     infinite;
 }
 
+
 @keyframes admin-chart-spin {
 
   from {
-    transform: rotate(0deg);
+    transform:
+      rotate(0deg);
   }
 
   to {
-    transform: rotate(360deg);
+    transform:
+      rotate(360deg);
   }
 
+}
+
+
+/* =========================================================
+   SCROLLBAR
+========================================================= */
+
+.admin-chart-messages::-webkit-scrollbar,
+.admin-chart-emoji-grid::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+
+.admin-chart-messages::-webkit-scrollbar-track,
+.admin-chart-emoji-grid::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+
+.admin-chart-messages::-webkit-scrollbar-thumb,
+.admin-chart-emoji-grid::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+
+  background:
+    rgba(255, 255, 255, 0.1);
+}
+
+
+.admin-chart-messages::-webkit-scrollbar-thumb:hover,
+.admin-chart-emoji-grid::-webkit-scrollbar-thumb:hover {
+  background:
+    rgba(255, 138, 0, 0.42);
+}
+
+
+/* =========================================================
+   FOCUS
+========================================================= */
+
+.admin-chart button:focus-visible,
+.admin-chart textarea:focus-visible,
+.admin-chart input:focus-visible {
+  outline:
+    2px solid
+    #ff9f00;
+
+  outline-offset: 2px;
 }
 
 
@@ -2506,33 +1839,15 @@
 @media (max-width: 1024px) {
 
   .admin-chart {
-    top: 72px;
-
     left: 290px;
-
-    height:
-      calc(100dvh - 72px);
-
-    padding: 0.8rem;
   }
-
 
   .admin-chart-message {
-    max-width: 80%;
+    max-width: 78%;
   }
 
-
-  .admin-chart-reply {
-    margin:
-      0 0.6rem 0.7rem;
-  }
-
-
-  .admin-chart-emoji-picker {
-    width:
-      min(360px, calc(100vw - 2rem));
-
-    height: 340px;
+  .admin-chart-user-info h2 {
+    max-width: 280px;
   }
 
 }
@@ -2546,34 +1861,60 @@
 
   .admin-chart {
     top: 66px;
-
     left: 0;
+    right: 0;
+    bottom: 0;
 
-    width: 100%;
-
-    height:
-      calc(100dvh - 66px);
-
-    padding: 0.65rem;
+    padding: 0.4rem;
   }
 
 
   .admin-chart-container {
-    border-radius: 15px;
+    border-radius: 12px;
   }
 
 
   .admin-chart-header {
-    min-height: 62px;
+    flex-basis: 64px;
+
+    min-height: 64px;
 
     padding:
-      0 0.9rem;
+      0 0.75rem;
   }
 
 
   .admin-chart-avatar {
-    width: 36px;
-    height: 36px;
+    width: 37px;
+    height: 37px;
+
+    flex-basis: 37px;
+  }
+
+
+  .admin-chart-user-info h2 {
+    max-width: 220px;
+
+    font-size: 0.86rem;
+  }
+
+
+  .admin-chart-email span {
+    max-width: 180px;
+  }
+
+
+  .admin-chart-status {
+    min-height: 26px;
+
+    padding:
+      0 0.55rem;
+  }
+
+
+  .admin-chart-messages {
+    padding:
+      0.75rem;
   }
 
 
@@ -2582,77 +1923,92 @@
   }
 
 
-  .admin-chart-messages {
-    padding:
-      1rem;
-
-    gap:
-      0.75rem;
-  }
-
-
   /* =======================================================
      REPLY
+     STILL NON-SCROLLABLE
   ======================================================= */
 
   .admin-chart-reply {
-    min-height: 66px;
+    flex:
+      0 0 68px;
 
-    margin:
-      0 0.5rem 0.7rem;
+    min-height:
+      68px;
+
+    height:
+      68px;
 
     padding:
-      0.6rem;
+      8px;
 
-    gap: 0.5rem;
+    gap:
+      6px;
 
-    border-radius: 13px;
-  }
-
-
-  .admin-chart-emoji-button {
-    width: 42px;
-    height: 42px;
+    overflow:
+      visible;
   }
 
 
   .admin-chart-reply textarea {
-    min-height: 42px;
+    height: 44px;
+    min-height: 44px;
+    max-height: 44px;
+
+    padding:
+      0.65rem;
   }
 
 
-  /* =======================================================
-     EMOJI PICKER
-  ======================================================= */
+  .admin-chart-emoji-button,
+  .admin-chart-mic-button {
+    width: 40px;
+    height: 40px;
 
-  .admin-chart-emoji-picker {
-    left: 0.5rem;
+    min-width: 40px;
 
-    bottom:
-      calc(100% + 0.5rem);
+    flex-basis: 40px;
+  }
+
+
+  .admin-chart-send {
+    width: 44px;
+    height: 44px;
+
+    min-width: 44px;
+
+    flex-basis: 44px;
+  }
+
+
+  .admin-chart-recording {
+    height: 44px;
+  }
+
+
+  .admin-chart-recording-label {
+    max-width: 100px;
+  }
+
+
+  .admin-chart-voice-message {
+    min-width: 215px;
 
     width:
-      min(360px, calc(100vw - 1.3rem));
+      min(310px, 100%);
+  }
 
-    height: 330px;
 
-    border-radius: 14px;
+  .admin-chart-emoji-picker {
+    right: 4px;
+
+    width:
+      min(320px, calc(100vw - 20px));
   }
 
 
   .admin-chart-emoji-grid {
     grid-template-columns:
-      repeat(
-        7,
-        minmax(0, 1fr)
-      );
-
-    gap: 0.3rem;
-  }
-
-
-  .admin-chart-emoji {
-    font-size: 1.25rem;
+      repeat(7, 1fr);
   }
 
 }
@@ -2667,40 +2023,106 @@
   .admin-chart {
     top: 62px;
 
-    height:
-      calc(100dvh - 62px);
+    padding:
+      0.25rem;
+  }
 
-    padding: 0.5rem;
+
+  .admin-chart-container {
+    border-radius: 10px;
   }
 
 
   .admin-chart-header {
-    min-height: 58px;
+    flex-basis: 60px;
+
+    min-height: 60px;
 
     padding:
-      0 0.75rem;
-  }
-
-
-  .admin-chart-visitor {
-    gap:
-      0.55rem;
+      0 0.65rem;
   }
 
 
   .admin-chart-avatar {
-    width: 34px;
-    height: 34px;
+    width: 35px;
+    height: 35px;
 
-    font-size: 0.75rem;
+    flex-basis: 35px;
+  }
+
+
+  .admin-chart-user-info h2 {
+    max-width: 150px;
+
+    font-size: 0.82rem;
+  }
+
+
+  .admin-chart-email span {
+    max-width: 145px;
   }
 
 
   .admin-chart-status {
-    padding:
-      0.3rem 0.5rem;
+    display: none;
+  }
 
-    font-size: 0.58rem;
+
+  .admin-chart-messages {
+    padding:
+      0.6rem;
+  }
+
+
+  .admin-chart-reply {
+    flex:
+      0 0 64px;
+
+    min-height:
+      64px;
+
+    height:
+      64px;
+
+    padding:
+      7px;
+
+    gap:
+      5px;
+  }
+
+
+  .admin-chart-emoji-button,
+  .admin-chart-mic-button {
+    width: 38px;
+    height: 38px;
+
+    min-width: 38px;
+
+    flex-basis: 38px;
+  }
+
+
+  .admin-chart-send {
+    width: 42px;
+    height: 42px;
+
+    min-width: 42px;
+
+    flex-basis: 42px;
+  }
+
+
+  .admin-chart-reply textarea {
+    height: 42px;
+    min-height: 42px;
+    max-height: 42px;
+
+    padding:
+      0.55rem 0.65rem;
+
+    font-size:
+      0.75rem;
   }
 
 
@@ -2709,196 +2131,95 @@
   }
 
 
-  .admin-chart-message-bubble {
-    font-size: 0.78rem;
-
-    padding:
-      0.65rem 0.8rem;
+  .admin-chart-voice-message {
+    min-width: 200px;
   }
 
 
-  .admin-chart-message-username {
-    font-size: 0.58rem;
+  .admin-chart-audio-play {
+    width: 34px;
+    height: 34px;
+
+    flex-basis: 34px;
   }
 
 
-  .admin-chart-message-time {
+  .admin-chart-audio-top span {
+    min-width: 44px;
+
     font-size: 0.54rem;
   }
 
 
-  /* =======================================================
-     REPLY
-  ======================================================= */
-
-  .admin-chart-reply {
-    min-height: 62px;
-
-    margin:
-      0 0.35rem 0.6rem;
-
-    padding:
-      0.5rem;
-
-    gap: 0.4rem;
-
-    border-radius: 12px;
-  }
-
-
-  .admin-chart-emoji-button {
-    width: 40px;
-    height: 40px;
-  }
-
-
-  .admin-chart-reply textarea {
-    min-height: 40px;
-
-    font-size: 0.78rem;
-  }
-
-
-  .admin-chart-send {
-    width: 40px;
-    height: 40px;
+  .admin-chart-recording-label {
+    display: none;
   }
 
 
   .admin-chart-emoji-picker {
-    left: 0;
+    right: 2px;
 
     bottom:
-      calc(100% + 0.45rem);
+      calc(100% + 6px);
 
     width:
-      min(350px, calc(100vw - 1rem));
+      calc(100vw - 18px);
 
-    height: 315px;
-
-    border-radius: 13px;
+    max-height:
+      330px;
   }
 
 
   .admin-chart-emoji-grid {
     grid-template-columns:
-      repeat(
-        6,
-        minmax(0, 1fr)
-      );
-
-    padding: 0.6rem;
-
-    gap: 0.25rem;
-  }
-
-
-  .admin-chart-emoji {
-    font-size: 1.18rem;
-
-    border-radius: 8px;
-  }
-
-
-  .admin-chart-emoji-header {
-    padding: 0.6rem;
-  }
-
-
-  .admin-chart-emoji-categories {
-    padding:
-      0.45rem 0.6rem;
-  }
-
-
-  .admin-chart-emoji-category {
-    min-height: 28px;
-
-    padding:
-      0.3rem 0.55rem;
-
-    font-size: 0.58rem;
+      repeat(7, 1fr);
   }
 
 }
 
 
 /* =========================================================
-   VERY SMALL SCREENS
+   VERY SMALL MOBILE
 ========================================================= */
 
 @media (max-width: 360px) {
 
-  .admin-chart {
-    padding:
-      0.35rem;
-  }
-
-
-  .admin-chart-status {
-    display: none;
-  }
-
-
-  .admin-chart-message {
-    max-width: 96%;
-  }
-
-
-  .admin-chart-visitor-info p {
-    display: none;
-  }
-
-
   .admin-chart-reply {
-    min-height: 58px;
+    gap: 4px;
 
-    margin:
-      0 0.25rem 0.5rem;
-
-    padding:
-      0.4rem;
-
-    gap: 0.3rem;
+    padding: 6px;
   }
 
 
-  .admin-chart-emoji-button {
-    width: 38px;
-    height: 38px;
-  }
+  .admin-chart-emoji-button,
+  .admin-chart-mic-button {
+    width: 35px;
+    height: 35px;
 
+    min-width: 35px;
 
-  .admin-chart-reply textarea {
-    min-height: 38px;
-
-    padding:
-      0.55rem 0.65rem;
-
-    font-size: 0.74rem;
+    flex-basis: 35px;
   }
 
 
   .admin-chart-send {
-    width: 38px;
-    height: 38px;
+    width: 40px;
+    height: 40px;
+
+    min-width: 40px;
+
+    flex-basis: 40px;
   }
 
 
-  .admin-chart-emoji-picker {
-    width:
-      calc(100vw - 0.7rem);
+  .admin-chart-reply textarea {
+    height: 40px;
+    min-height: 40px;
+    max-height: 40px;
 
-    height: 300px;
-  }
+    padding: 0.5rem;
 
-
-  .admin-chart-emoji-grid {
-    grid-template-columns:
-      repeat(
-        6,
-        minmax(0, 1fr)
-      );
+    font-size: 0.72rem;
   }
 
 }
@@ -2913,12 +2234,9 @@
   .admin-chart *,
   .admin-chart *::before,
   .admin-chart *::after {
+    animation: none !important;
 
-    animation:
-      none !important;
-
-    transition:
-      none !important;
+    transition: none !important;
   }
 
 }

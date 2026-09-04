@@ -11,7 +11,6 @@ import {
 ========================================================= */
 
 import Navbar from "./components/Shared/Navbar/Navbar.jsx";
-
 import Footer from "./components/Shared/Footer/Footer.jsx";
 
 
@@ -20,13 +19,9 @@ import Footer from "./components/Shared/Footer/Footer.jsx";
 ========================================================= */
 
 import Home from "./pages/Home.jsx";
-
 import About from "./pages/About.jsx";
-
 import Skills from "./pages/Skills.jsx";
-
 import Projects from "./pages/Projects.jsx";
-
 import Contact from "./pages/Contact.jsx";
 
 
@@ -35,9 +30,7 @@ import Contact from "./pages/Contact.jsx";
 ========================================================= */
 
 import AdminLogin from "./pages/Admin/AdminLogin.jsx";
-
 import AdminChat from "./pages/Admin/Admin.jsx";
-
 import ProtectedAdmin from "./components/Admin/ProtectedAdmin.jsx";
 
 
@@ -61,16 +54,14 @@ import { getData } from "./javascript/data/data.js";
 
 function AppContent() {
 
-  const location =
-    useLocation();
+  const location = useLocation();
 
 
   /* =======================================================
      WEBSITE DATA
   ======================================================= */
 
-  const data =
-    getData();
+  const data = getData();
 
 
   /* =======================================================
@@ -78,9 +69,7 @@ function AppContent() {
   ======================================================= */
 
   const isAdminRoute =
-    location.pathname.startsWith(
-      "/admin"
-    );
+    location.pathname.startsWith("/admin");
 
 
   return (
@@ -228,7 +217,7 @@ function AppContent() {
 
       {/* ===================================================
           PUBLIC FOOTER
-      =================================================== */}
+      ================================================= */}
 
       {!isAdminRoute && (
         <Footer />
@@ -237,7 +226,7 @@ function AppContent() {
 
       {/* ===================================================
           PUBLIC CHAT
-      =================================================== */}
+      ================================================= */}
 
       {!isAdminRoute && (
         <ChatController />

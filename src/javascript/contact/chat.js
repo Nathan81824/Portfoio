@@ -1,23 +1,16 @@
 /* =========================================================
    CHAT SERVICE
-   Supabase communication layer for portfolio chat.
+   Visitor + Admin communication service
 
    Responsibilities:
-   - Create conversations
-   - Store visitor conversation locally
-   - Restore conversations
-   - Validate conversations
-   - Load messages
-   - Send visitor/admin messages
-   - Recover deleted/stale conversations
-   - Realtime message subscriptions
-   - Delete conversations
-   - Delete all conversations
-
-   React UI is NOT handled here.
-
-   React component:
-   components/Contact/ChatController.jsx
+   - Conversations
+   - Text messages
+   - Voice messages
+   - Private audio Storage
+   - Signed audio URLs
+   - Realtime messages
+   - Conversation recovery
+   - Conversation deletion
 ========================================================= */
 
 import {
@@ -27,7 +20,7 @@ import {
 
 
 /* =========================================================
-   STORAGE KEYS
+   STORAGE
 ========================================================= */
 
 const CONVERSATION_STORAGE_KEY =
@@ -41,7 +34,18 @@ const DELETED_CONVERSATIONS_KEY =
 
 
 /* =========================================================
-   SAFE STORAGE
+   AUDIO STORAGE
+========================================================= */
+
+const CHAT_AUDIO_BUCKET =
+  "chat-audio";
+
+const MAX_AUDIO_SIZE =
+  10 * 1024 * 1024;
+
+
+/* =========================================================
+   LOCAL STORAGE CHECK
 ========================================================= */
 
 const hasLocalStorage =
@@ -59,18 +63,21 @@ export function getStoredConversation() {
     return null;
   }
 
+
   try {
 
-    const stored =
+    const raw =
       window.localStorage.getItem(
         CONVERSATION_STORAGE_KEY
       );
 
-    if (!stored) {
+
+    if (!raw) {
       return null;
     }
 
-    return JSON.parse(stored);
+
+    return JSON.parse(raw);
 
   } catch (error) {
 
@@ -80,7 +87,37 @@ export function getStoredConversation() {
     );
 
     return null;
+
   }
+
+}
+
+
+/* =========================================================
+   GET STORED TOKEN
+========================================================= */
+
+export function getStoredConversationToken() {
+
+  if (!hasLocalStorage) {
+    return "";
+  }
+
+
+  try {
+
+    return (
+      window.localStorage.getItem(
+        TOKEN_STORAGE_KEY
+      ) || ""
+    );
+
+  } catch {
+
+    return "";
+
+  }
+
 }
 
 
@@ -92,19 +129,25 @@ function storeConversation(
   conversation
 ) {
 
-  if (
-    !hasLocalStorage ||
-    !conversation
-  ) {
+  if (!hasLocalStorage) {
     return;
   }
+
+
+  if (!conversation?.id) {
+    return;
+  }
+
 
   try {
 
     window.localStorage.setItem(
       CONVERSATION_STORAGE_KEY,
-      JSON.stringify(conversation)
+      JSON.stringify(
+        conversation
+      )
     );
+
 
     if (
       conversation.access_token
@@ -125,6 +168,7 @@ function storeConversation(
     );
 
   }
+
 }
 
 
@@ -137,6 +181,7 @@ export function clearStoredConversation() {
   if (!hasLocalStorage) {
     return;
   }
+
 
   try {
 
@@ -151,16 +196,17 @@ export function clearStoredConversation() {
   } catch (error) {
 
     console.error(
-      "Failed to clear stored conversation:",
+      "Failed to clear conversation:",
       error
     );
 
   }
+
 }
 
 
 /* =========================================================
-   MARK DELETED CONVERSATION
+   MARK CONVERSATION DELETED
 ========================================================= */
 
 function markConversationDeleted(
@@ -174,49 +220,50 @@ function markConversationDeleted(
     return;
   }
 
+
   try {
 
-    const stored =
-      window.localStorage.getItem(
-        DELETED_CONVERSATIONS_KEY
+    const existing =
+      JSON.parse(
+        window.localStorage.getItem(
+          DELETED_CONVERSATIONS_KEY
+        ) || "[]"
       );
 
+
     const ids =
-      stored
-        ? JSON.parse(stored)
+      Array.isArray(existing)
+        ? existing
         : [];
 
-    const next =
-      Array.isArray(ids)
-        ? ids
-        : [];
 
     if (
-      !next.includes(conversationId)
+      !ids.includes(
+        conversationId
+      )
     ) {
 
-      next.push(
+      ids.push(
         conversationId
       );
 
     }
 
-    const limited =
-      next.slice(-50);
 
     window.localStorage.setItem(
       DELETED_CONVERSATIONS_KEY,
-      JSON.stringify(limited)
+      JSON.stringify(ids)
     );
 
   } catch (error) {
 
     console.error(
-      "Failed to mark conversation as deleted:",
+      "Failed to mark conversation deleted:",
       error
     );
 
   }
+
 }
 
 
@@ -235,23 +282,22 @@ function isConversationMarkedDeleted(
     return false;
   }
 
+
   try {
 
-    const stored =
-      window.localStorage.getItem(
-        DELETED_CONVERSATIONS_KEY
+    const existing =
+      JSON.parse(
+        window.localStorage.getItem(
+          DELETED_CONVERSATIONS_KEY
+        ) || "[]"
       );
 
-    if (!stored) {
-      return false;
-    }
-
-    const ids =
-      JSON.parse(stored);
 
     return (
-      Array.isArray(ids) &&
-      ids.includes(conversationId)
+      Array.isArray(existing) &&
+      existing.includes(
+        conversationId
+      )
     );
 
   } catch {
@@ -259,6 +305,28 @@ function isConversationMarkedDeleted(
     return false;
 
   }
+
+}
+
+
+/* =========================================================
+   CLEAN TEXT
+========================================================= */
+
+function cleanText(
+  value,
+  maxLength = 500
+) {
+
+  return String(
+    value || ""
+  )
+    .trim()
+    .slice(
+      0,
+      maxLength
+    );
+
 }
 
 
@@ -267,83 +335,72 @@ function isConversationMarkedDeleted(
 ========================================================= */
 
 export async function createConversation({
-
   visitorName = "",
-
   visitorEmail = "",
-
 } = {}) {
 
   const cleanName =
-    String(
-      visitorName
-    ).trim();
-
-  const cleanEmail =
-    String(
-      visitorEmail
-    ).trim();
-
-
-  if (!cleanName) {
-
-    throw new Error(
-      "Please enter your name before starting the chat."
+    cleanText(
+      visitorName,
+      120
     );
 
-  }
+  const cleanEmail =
+    cleanText(
+      visitorEmail,
+      160
+    );
 
 
-  /* =======================================================
-     ACCESS TOKEN
-  ======================================================= */
+  /*
+    This token identifies the visitor conversation.
+
+    IMPORTANT:
+    This is NOT a Supabase Auth JWT.
+    Storage policies must therefore be designed
+    accordingly, or signed URLs must be generated
+    by a trusted backend/Edge Function.
+  */
 
   const accessToken =
     crypto.randomUUID();
 
 
-  /* =======================================================
-     CREATE DATABASE ROW
-  ======================================================= */
-
   const {
     data,
     error,
-  } =
-    await supabase
+  } = await supabase
 
-      .from(
-        "conversations"
-      )
+    .from("conversations")
 
-      .insert({
+    .insert({
 
-        visitor_name:
-          cleanName,
+      visitor_name:
+        cleanName,
 
-        visitor_email:
-          cleanEmail,
+      visitor_email:
+        cleanEmail,
 
-        access_token:
-          accessToken,
+      access_token:
+        accessToken,
 
-      })
+    })
 
-      .select(`
-        id,
-        visitor_name,
-        visitor_email,
-        access_token,
-        created_at
-      `)
+    .select(`
+      id,
+      visitor_name,
+      visitor_email,
+      access_token,
+      created_at
+    `)
 
-      .single();
+    .single();
 
 
   if (error) {
 
     console.error(
-      "Create conversation error:",
+      "Failed to create conversation:",
       error
     );
 
@@ -352,89 +409,9 @@ export async function createConversation({
   }
 
 
-  if (!data?.id) {
-
-    throw new Error(
-      "Conversation was not created."
-    );
-
-  }
-
-
-  /* =======================================================
-     STORE LOCALLY
-  ======================================================= */
-
   storeConversation(
     data
   );
-
-
-  /* =======================================================
-     REMOVE FROM DELETED LIST
-  ======================================================= */
-
-  if (
-    hasLocalStorage
-  ) {
-
-    try {
-
-      const stored =
-        window.localStorage.getItem(
-          DELETED_CONVERSATIONS_KEY
-        );
-
-      const ids =
-        stored
-          ? JSON.parse(stored)
-          : [];
-
-      if (
-        Array.isArray(ids)
-      ) {
-
-        window.localStorage.setItem(
-          DELETED_CONVERSATIONS_KEY,
-          JSON.stringify(
-            ids.filter(
-              (id) =>
-                id !== data.id
-            )
-          )
-        );
-
-      }
-
-    } catch {
-      /* Ignore storage cleanup errors. */
-    }
-
-  }
-
-
-  /* =======================================================
-     APPLICATION EVENT
-  ======================================================= */
-
-  if (
-    typeof window !==
-    "undefined"
-  ) {
-
-    window.dispatchEvent(
-      new CustomEvent(
-        "portfolio:conversation-created",
-        {
-          detail: {
-            conversation:
-              data,
-          },
-        }
-      )
-    );
-
-  }
 
 
   return data;
@@ -455,103 +432,86 @@ export async function getConversation(
   }
 
 
-  try {
+  const stored =
+    getStoredConversation();
 
-    const {
-      data,
-      error,
-    } =
-      await supabase
 
-        .from(
-          "conversations"
+  const client =
+    stored?.id === conversationId &&
+    stored?.access_token
+
+      ? getChatClient(
+          stored.access_token
         )
 
-        .select(`
-          id,
-          visitor_name,
-          visitor_email,
-          access_token,
-          created_at
-        `)
-
-        .eq(
-          "id",
-          conversationId
-        )
-
-        .maybeSingle();
+      : supabase;
 
 
-    if (error) {
+  const {
+    data,
+    error,
+  } = await client
 
-      console.error(
-        "Get conversation error:",
-        error
-      );
+    .from("conversations")
 
-      throw error;
+    .select(`
+      id,
+      visitor_name,
+      visitor_email,
+      access_token,
+      created_at
+    `)
 
-    }
+    .eq(
+      "id",
+      conversationId
+    )
 
-
-    if (!data) {
-
-      const stored =
-        getStoredConversation();
-
-
-      if (
-        stored?.id ===
-        conversationId
-      ) {
-
-        clearStoredConversation();
-
-      }
+    .maybeSingle();
 
 
-      return null;
+  if (error) {
 
-    }
-
-
-    /* =====================================================
-       KEEP LOCAL STORAGE UPDATED
-    ===================================================== */
-
-    const stored =
-      getStoredConversation();
-
-
-    if (
-      stored?.id ===
-      data.id
-    ) {
-
-      storeConversation(
-        data
-      );
-
-    }
-
-
-    return data;
-
-  } catch (error) {
-
-    if (
-      error?.code ===
-      "PGRST116"
-    ) {
-
-      return null;
-
-    }
+    console.error(
+      "Failed to get conversation:",
+      error
+    );
 
     throw error;
 
   }
+
+
+  return data || null;
+
+}
+
+
+/* =========================================================
+   GET VISITOR CLIENT
+========================================================= */
+
+function getVisitorClient(
+  conversationId
+) {
+
+  const stored =
+    getStoredConversation();
+
+
+  if (
+    stored?.id === conversationId &&
+    stored?.access_token
+  ) {
+
+    return getChatClient(
+      stored.access_token
+    );
+
+  }
+
+
+  return supabase;
 
 }
 
@@ -566,18 +526,20 @@ export async function validateStoredConversation() {
     getStoredConversation();
 
 
-  if (!stored?.id) {
+  if (
+    !stored?.id
+  ) {
+
     return null;
+
   }
 
 
-  const conversation =
-    await getConversation(
+  if (
+    isConversationMarkedDeleted(
       stored.id
-    );
-
-
-  if (!conversation) {
+    )
+  ) {
 
     clearStoredConversation();
 
@@ -586,12 +548,49 @@ export async function validateStoredConversation() {
   }
 
 
-  storeConversation(
-    conversation
-  );
+  try {
+
+    const conversation =
+      await getConversation(
+        stored.id
+      );
 
 
-  return conversation;
+    if (!conversation) {
+
+      clearStoredConversation();
+
+      return null;
+
+    }
+
+
+    if (
+      conversation.access_token &&
+      stored.access_token &&
+      conversation.access_token !==
+        stored.access_token
+    ) {
+
+      clearStoredConversation();
+
+      return null;
+
+    }
+
+
+    return conversation;
+
+  } catch (error) {
+
+    console.error(
+      "Conversation validation failed:",
+      error
+    );
+
+    return null;
+
+  }
 
 }
 
@@ -609,69 +608,46 @@ export async function getMessages(
   }
 
 
-  const stored =
-    getStoredConversation();
-
-
-  let client =
-    supabase;
-
-
-  /*
-    Visitors use the access-token client.
-
-    Admin uses the normal Supabase client.
-  */
-
-  if (
-    stored?.id ===
-      conversationId &&
-    stored?.access_token
-  ) {
-
-    client =
-      getChatClient(
-        stored.access_token
-      );
-
-  }
+  const client =
+    getVisitorClient(
+      conversationId
+    );
 
 
   const {
     data,
     error,
-  } =
-    await client
+  } = await client
 
-      .from(
-        "messages"
-      )
+    .from("messages")
 
-      .select(`
-        id,
-        conversation_id,
-        message,
-        sender,
-        created_at
-      `)
+    .select(`
+      id,
+      conversation_id,
+      message,
+      sender,
+      message_type,
+      audio_url,
+      created_at
+    `)
 
-      .eq(
-        "conversation_id",
-        conversationId
-      )
+    .eq(
+      "conversation_id",
+      conversationId
+    )
 
-      .order(
-        "created_at",
-        {
-          ascending: true,
-        }
-      );
+    .order(
+      "created_at",
+      {
+        ascending: true,
+      }
+    );
 
 
   if (error) {
 
     console.error(
-      "Get messages error:",
+      "Failed to get messages:",
       error
     );
 
@@ -680,119 +656,110 @@ export async function getMessages(
   }
 
 
-  return data || [];
+  /*
+    IMPORTANT:
+
+    Storage paths such as:
+
+    conversation-id/voice-file.webm
+
+    are NOT playable URLs.
+
+    Resolve every audio path into a
+    signed URL before returning messages.
+  */
+
+  return resolveMessageAudioUrls(
+    data || [],
+    3600,
+    conversationId
+  );
 
 }
 
 
 /* =========================================================
-   SEND MESSAGE
+   SEND TEXT MESSAGE
 ========================================================= */
 
 export async function sendMessage({
-
   conversationId,
-
   message,
-
   sender = "visitor",
-
   visitorName = "",
-
   visitorEmail = "",
-
 } = {}) {
 
-  const cleanMessage =
-    typeof message ===
-    "string"
-
-      ? message.trim()
-
-      : "";
+  const text =
+    cleanText(
+      message,
+      5000
+    );
 
 
-  if (!cleanMessage) {
-
+  if (!text) {
     throw new Error(
       "Message cannot be empty."
     );
-
   }
 
 
-  if (
-    sender !== "visitor" &&
-    sender !== "admin"
-  ) {
-
+  if (!conversationId) {
     throw new Error(
-      "Invalid message sender."
+      "Conversation ID is required."
     );
-
   }
 
 
   /* =======================================================
-     ADMIN MESSAGE
+     ADMIN
   ======================================================= */
 
   if (
     sender === "admin"
   ) {
 
-    if (!conversationId) {
-
-      throw new Error(
-        "A conversation ID is required."
-      );
-
-    }
-
-
     const {
       data,
       error,
-    } =
-      await supabase
+    } = await supabase
 
-        .from(
-          "messages"
-        )
+      .from("messages")
 
-        .insert({
+      .insert({
 
-          conversation_id:
-            conversationId,
+        conversation_id:
+          conversationId,
 
-          message:
-            cleanMessage,
+        message:
+          text,
 
-          sender:
-            "admin",
+        sender:
+          "admin",
 
-        })
+        message_type:
+          "text",
 
-        .select(`
-          id,
-          conversation_id,
-          message,
-          sender,
-          created_at
-        `)
+        audio_url:
+          null,
 
-        .single();
+      })
+
+      .select(`
+        id,
+        conversation_id,
+        message,
+        sender,
+        message_type,
+        audio_url,
+        created_at
+      `)
+
+      .single();
 
 
     if (error) {
-
-      console.error(
-        "Admin message error:",
-        error
-      );
-
       throw error;
-
     }
 
 
@@ -802,284 +769,158 @@ export async function sendMessage({
 
 
   /* =======================================================
-     VISITOR MESSAGE
+     VISITOR
   ======================================================= */
 
-  let activeConversation =
-    null;
+  let conversation =
+    await validateStoredConversation();
 
+
+  /*
+    Recover conversation if the
+    supplied ID is still valid.
+  */
 
   if (
-    conversationId
+    !conversation ||
+    conversation.id !== conversationId
   ) {
 
-    activeConversation =
-      await getConversation(
-        conversationId
-      );
+    try {
+
+      conversation =
+        await getConversation(
+          conversationId
+        );
+
+    } catch {
+
+      conversation = null;
+
+    }
 
   }
 
 
-  /* =======================================================
-     RECOVER MISSING CONVERSATION
-  ======================================================= */
+  /*
+    If conversation disappeared,
+    create a new one.
+  */
 
-  if (
-    !activeConversation
-  ) {
+  if (!conversation) {
 
-    const stored =
-      getStoredConversation();
-
-
-    const fallbackName =
-      String(
-        visitorName ||
-        stored?.visitor_name ||
-        ""
-      ).trim();
-
-
-    const fallbackEmail =
-      String(
-        visitorEmail ||
-        stored?.visitor_email ||
-        ""
-      ).trim();
-
-
-    if (!fallbackName) {
-
-      throw new Error(
-        "Please enter your name before sending a message."
-      );
-
-    }
-
-
-    clearStoredConversation();
-
-
-    activeConversation =
+    conversation =
       await createConversation({
-
-        visitorName:
-          fallbackName,
-
-        visitorEmail:
-          fallbackEmail,
-
+        visitorName,
+        visitorEmail,
       });
 
-
-    if (
-      typeof window !==
-      "undefined"
-    ) {
-
-      window.dispatchEvent(
-        new CustomEvent(
-          "portfolio:chat:conversation-recreated",
-          {
-            detail: {
-
-              oldConversationId:
-                conversationId ||
-                null,
-
-              conversation:
-                activeConversation,
-
-            },
-          }
-        )
-      );
-
-    }
-
-  }
-
-
-  /* =======================================================
-     ACCESS TOKEN
-  ======================================================= */
-
-  const accessToken =
-    activeConversation?.access_token;
-
-
-  if (!accessToken) {
-
-    throw new Error(
-      "Conversation access token is missing."
-    );
+    conversationId =
+      conversation.id;
 
   }
 
 
   const client =
-    getChatClient(
-      accessToken
+    getVisitorClient(
+      conversationId
     );
 
 
-  /* =======================================================
-     INSERT VISITOR MESSAGE
-  ======================================================= */
+  let {
+    data,
+    error,
+  } = await client
 
-  const insertMessage =
-    async (
-      targetConversationId
-    ) => {
+    .from("messages")
 
-      const {
-        data,
-        error,
-      } =
-        await client
+    .insert({
 
-          .from(
-            "messages"
-          )
+      conversation_id:
+        conversationId,
 
-          .insert({
+      message:
+        text,
 
-            conversation_id:
-              targetConversationId,
+      sender:
+        "visitor",
 
-            message:
-              cleanMessage,
+      message_type:
+        "text",
 
-            sender:
-              "visitor",
+      audio_url:
+        null,
 
-          })
+    })
 
-          .select(`
-            id,
-            conversation_id,
-            message,
-            sender,
-            created_at
-          `)
+    .select(`
+      id,
+      conversation_id,
+      message,
+      sender,
+      message_type,
+      audio_url,
+      created_at
+    `)
 
-          .single();
+    .single();
 
 
-      if (error) {
-        throw error;
-      }
+  /*
+    Conversation may have been deleted
+    between validation and insertion.
 
+    Recreate once.
+  */
 
-      return data;
-
-    };
-
-
-  try {
-
-    return await insertMessage(
-      activeConversation.id
-    );
-
-  } catch (error) {
-
-    if (
-      error?.code !==
-      "23503"
-    ) {
-
-      console.error(
-        "Visitor message error:",
-        error
-      );
-
-      throw error;
-
-    }
-
-
-    console.warn(
-      "Conversation disappeared before message insertion. Creating a new conversation."
-    );
-
-
-    const oldConversationId =
-      activeConversation.id;
-
-
-    markConversationDeleted(
-      oldConversationId
-    );
-
+  if (
+    error &&
+    String(
+      error.code
+    ) === "23503"
+  ) {
 
     clearStoredConversation();
 
 
-    const fallbackName =
-      String(
-        visitorName ||
-        activeConversation.visitor_name ||
-        ""
-      ).trim();
-
-
-    const fallbackEmail =
-      String(
-        visitorEmail ||
-        activeConversation.visitor_email ||
-        ""
-      ).trim();
-
-
-    if (!fallbackName) {
-
-      throw new Error(
-        "Your previous conversation was deleted. Please enter your name to start a new conversation."
-      );
-
-    }
-
-
-    const newConversation =
+    conversation =
       await createConversation({
-
-        visitorName:
-          fallbackName,
-
-        visitorEmail:
-          fallbackEmail,
-
+        visitorName,
+        visitorEmail,
       });
 
 
-    const newClient =
-      getChatClient(
-        newConversation.access_token
+    conversationId =
+      conversation.id;
+
+
+    const retryClient =
+      getVisitorClient(
+        conversationId
       );
 
 
-    const {
-      data: retryData,
-      error: retryError,
-    } =
-      await newClient
+    const retryResult =
+      await retryClient
 
-        .from(
-          "messages"
-        )
+        .from("messages")
 
         .insert({
 
           conversation_id:
-            newConversation.id,
+            conversationId,
 
           message:
-            cleanMessage,
+            text,
 
           sender:
             "visitor",
+
+          message_type:
+            "text",
+
+          audio_url:
+            null,
 
         })
 
@@ -1088,70 +929,492 @@ export async function sendMessage({
           conversation_id,
           message,
           sender,
+          message_type,
+          audio_url,
           created_at
         `)
 
         .single();
 
 
-    if (retryError) {
+    data =
+      retryResult.data;
 
-      console.error(
-        "Recovered message retry error:",
-        retryError
+    error =
+      retryResult.error;
+
+  }
+
+
+  if (error) {
+    throw error;
+  }
+
+
+  return data;
+
+}
+
+
+/* =========================================================
+   AUDIO EXTENSION
+========================================================= */
+
+function getAudioExtension(
+  mimeType = ""
+) {
+
+  const type =
+    String(
+      mimeType
+    ).toLowerCase();
+
+
+  if (
+    type.includes("webm")
+  ) {
+
+    return "webm";
+
+  }
+
+
+  if (
+    type.includes("mp4")
+  )
+  {
+
+    return "mp4";
+
+  }
+
+
+  if (
+    type.includes("ogg")
+  )
+  {
+
+    return "ogg";
+
+  }
+
+
+  if (
+    type.includes("mpeg")
+  )
+  {
+
+    return "mp3";
+
+  }
+
+
+  if (
+    type.includes("wav")
+  )
+  {
+
+    return "wav";
+
+  }
+
+
+  return "webm";
+
+}
+
+
+/* =========================================================
+   UPLOAD VOICE MESSAGE
+========================================================= */
+
+export async function uploadVoiceMessage({
+  conversationId,
+  audioBlob,
+} = {}) {
+
+  if (!conversationId) {
+
+    throw new Error(
+      "Conversation ID is required."
+    );
+
+  }
+
+
+  if (!audioBlob) {
+
+    throw new Error(
+      "Audio recording is required."
+    );
+
+  }
+
+
+  if (
+    typeof audioBlob.size !==
+    "number"
+  ) {
+
+    throw new Error(
+      "Invalid audio recording."
+    );
+
+  }
+
+
+  if (
+    audioBlob.size === 0
+  ) {
+
+    throw new Error(
+      "The audio recording is empty."
+    );
+
+  }
+
+
+  if (
+    audioBlob.size >
+    MAX_AUDIO_SIZE
+  ) {
+
+    throw new Error(
+      "Audio recording is too large. Maximum size is 10 MB."
+    );
+
+  }
+
+
+  const mimeType =
+    audioBlob.type ||
+    "audio/webm";
+
+
+  const extension =
+    getAudioExtension(
+      mimeType
+    );
+
+
+  const uniqueId =
+    `${Date.now()}-${Math.random()
+      .toString(36)
+      .slice(2, 10)}`;
+
+
+  const filePath =
+    `${conversationId}/voice-${uniqueId}.${extension}`;
+
+
+  const client =
+    getVisitorClient(
+      conversationId
+    );
+
+
+  const {
+    error,
+  } = await client
+
+    .storage
+
+    .from(
+      CHAT_AUDIO_BUCKET
+    )
+
+    .upload(
+      filePath,
+      audioBlob,
+      {
+
+        cacheControl:
+          "3600",
+
+        contentType:
+          mimeType,
+
+        upsert:
+          false,
+
+      }
+    );
+
+
+  if (error) {
+
+    console.error(
+      "Voice upload failed:",
+      error
+    );
+
+    throw error;
+
+  }
+
+
+  return {
+
+    path:
+      filePath,
+
+    bucket:
+      CHAT_AUDIO_BUCKET,
+
+    mimeType:
+      mimeType,
+
+    size:
+      audioBlob.size,
+
+  };
+
+}
+
+
+/* =========================================================
+   SEND VOICE MESSAGE
+========================================================= */
+
+export async function sendVoiceMessage(
+  voiceInput = {}
+) {
+
+  /*
+    Supports:
+
+    sendVoiceMessage(blob)
+
+    OR
+
+    sendVoiceMessage({
+      conversationId,
+      audioBlob,
+    })
+  */
+
+  let conversationId =
+    null;
+
+  let audioBlob =
+    null;
+
+
+  if (
+    voiceInput instanceof Blob
+  ) {
+
+    audioBlob =
+      voiceInput;
+
+  } else if (
+    voiceInput &&
+    typeof voiceInput === "object"
+  ) {
+
+    conversationId =
+      voiceInput.conversationId ||
+      null;
+
+    audioBlob =
+      voiceInput.audioBlob ||
+      null;
+
+  }
+
+
+  const stored =
+    getStoredConversation();
+
+
+  if (!conversationId) {
+
+    conversationId =
+      stored?.id ||
+      null;
+
+  }
+
+
+  if (!conversationId) {
+
+    throw new Error(
+      "No active conversation."
+    );
+
+  }
+
+
+  if (!audioBlob) {
+
+    throw new Error(
+      "No audio recording."
+    );
+
+  }
+
+
+  /*
+    Make sure the conversation still exists.
+  */
+
+  const conversation =
+    await getConversation(
+      conversationId
+    );
+
+
+  if (!conversation) {
+
+    throw new Error(
+      "This conversation is no longer available."
+    );
+
+  }
+
+
+  let uploaded;
+
+
+  try {
+
+    uploaded =
+      await uploadVoiceMessage({
+        conversationId,
+        audioBlob,
+      });
+
+  } catch (error) {
+
+    console.error(
+      "Voice upload failed:",
+      error
+    );
+
+    throw error;
+
+  }
+
+
+  try {
+
+    const client =
+      getVisitorClient(
+        conversationId
       );
 
-      throw retryError;
+
+    const {
+      data,
+      error,
+    } = await client
+
+      .from("messages")
+
+      .insert({
+
+        conversation_id:
+          conversationId,
+
+        message:
+          "",
+
+        sender:
+          "visitor",
+
+        message_type:
+          "audio",
+
+        /*
+          Store the Storage PATH
+          in the database.
+
+          Never store an expiring signed
+          URL as the permanent database value.
+        */
+
+        audio_url:
+          uploaded.path,
+
+      })
+
+      .select(`
+        id,
+        conversation_id,
+        message,
+        sender,
+        message_type,
+        audio_url,
+        created_at
+      `)
+
+      .single();
+
+
+    if (error) {
+
+      /*
+        Remove uploaded audio if
+        message insertion fails.
+      */
+
+      try {
+
+        await client
+
+          .storage
+
+          .from(
+            CHAT_AUDIO_BUCKET
+          )
+
+          .remove([
+            uploaded.path,
+          ]);
+
+      } catch (
+        cleanupError
+      ) {
+
+        console.error(
+          "Failed to clean up uploaded audio:",
+          cleanupError
+        );
+
+      }
+
+
+      throw error;
 
     }
 
 
-    if (
-      typeof window !==
-      "undefined"
-    ) {
+    /*
+      Resolve the Storage path into a
+      playable signed URL for the UI.
+    */
 
-      window.dispatchEvent(
-        new CustomEvent(
-          "portfolio:chat:conversation-recreated",
-          {
-            detail: {
-
-              oldConversationId,
-
-              conversation:
-                newConversation,
-
-              message:
-                retryData,
-
-            },
-          }
-        )
+    const resolvedMessages =
+      await resolveMessageAudioUrls(
+        [data],
+        3600,
+        conversationId
       );
 
 
-      window.dispatchEvent(
-        new CustomEvent(
-          "portfolio:chat:message-sent",
-          {
-            detail: {
+    return (
+      resolvedMessages[0] ||
+      data
+    );
 
-              message:
-                retryData,
+  } catch (error) {
 
-              conversation:
-                newConversation,
+    console.error(
+      "Failed to send voice message:",
+      error
+    );
 
-            },
-          }
-        )
-      );
-
-    }
-
-
-    return retryData;
+    throw error;
 
   }
 
@@ -1159,21 +1422,210 @@ export async function sendMessage({
 
 
 /* =========================================================
-   REALTIME MESSAGE SUBSCRIPTION
+   CREATE SIGNED AUDIO URL
+========================================================= */
+
+export async function createAudioSignedUrl(
+  audioPath,
+  expiresIn = 3600,
+  conversationId = null
+) {
+
+  if (!audioPath) {
+    return "";
+  }
+
+
+  /*
+    Already a URL.
+  */
+
+  if (
+    typeof audioPath === "string" &&
+    (
+      audioPath.startsWith(
+        "http://"
+      ) ||
+      audioPath.startsWith(
+        "https://"
+      )
+    )
+  ) {
+
+    return audioPath;
+
+  }
+
+
+  /*
+    Use visitor client when a
+    conversation ID is available.
+  */
+
+  let client =
+    supabase;
+
+
+  if (
+    conversationId
+  ) {
+
+    client =
+      getVisitorClient(
+        conversationId
+      );
+
+  }
+
+
+  const {
+    data,
+    error,
+  } = await client
+
+    .storage
+
+    .from(
+      CHAT_AUDIO_BUCKET
+    )
+
+    .createSignedUrl(
+      audioPath,
+      expiresIn
+    );
+
+
+  if (error) {
+
+    throw error;
+
+  }
+
+
+  return (
+    data?.signedUrl ||
+    ""
+  );
+
+}
+
+
+/* =========================================================
+   RESOLVE AUDIO URLS
+========================================================= */
+
+export async function resolveMessageAudioUrls(
+  messages = [],
+  expiresIn = 3600,
+  conversationId = null
+) {
+
+  if (
+    !Array.isArray(
+      messages
+    )
+  ) {
+
+    return [];
+
+  }
+
+
+  return Promise.all(
+
+    messages.map(
+      async (message) => {
+
+        if (
+          !message ||
+          message.message_type !==
+            "audio" ||
+          !message.audio_url
+        ) {
+
+          return message;
+
+        }
+
+
+        /*
+          If it is already a full URL,
+          don't sign it again.
+        */
+
+        if (
+          message.audio_url.startsWith(
+            "http://"
+          ) ||
+          message.audio_url.startsWith(
+            "https://"
+          )
+        ) {
+
+          return message;
+
+        }
+
+
+        try {
+
+          const signedUrl =
+            await createAudioSignedUrl(
+              message.audio_url,
+              expiresIn,
+              conversationId ||
+                message.conversation_id ||
+                null
+            );
+
+
+          return {
+
+            ...message,
+
+            audio_url:
+              signedUrl,
+
+          };
+
+        } catch (error) {
+
+          console.error(
+            "Failed to resolve audio URL:",
+            error
+          );
+
+
+          /*
+            Keep the original object.
+
+            The UI can then display an
+            unavailable-audio state instead
+            of crashing.
+          */
+
+          return message;
+
+        }
+
+      }
+    )
+
+  );
+
+}
+
+
+/* =========================================================
+   SUBSCRIBE TO MESSAGES
 ========================================================= */
 
 export function subscribeToMessages({
-
   conversationId,
-
   accessToken = null,
-
   onMessage,
-
   onUpdate,
-
   onDelete,
-
 } = {}) {
 
   if (!conversationId) {
@@ -1183,194 +1635,210 @@ export function subscribeToMessages({
   }
 
 
-  /* =======================================================
-     USE TOKEN CLIENT FOR VISITOR
-  ======================================================= */
-
   const client =
     accessToken
-      ? getChatClient(accessToken)
-      : supabase;
+      ? getChatClient(
+          accessToken
+        )
+      : getVisitorClient(
+          conversationId
+        );
 
-
-  /* =======================================================
-     UNIQUE CHANNEL
-  ======================================================= */
 
   const channel =
-    client.channel(
-      `portfolio-chat-${conversationId}-${Date.now()}`
-    );
+    client
+
+      .channel(
+        `chat-messages-${conversationId}`
+      )
 
 
-  /* =======================================================
-     INSERT
-  ======================================================= */
+      /* ===============================================
+         INSERT
+      =============================================== */
 
-  channel.on(
-    "postgres_changes",
-    {
-      event: "INSERT",
-      schema: "public",
-      table: "messages",
-      filter:
-        `conversation_id=eq.${conversationId}`,
-    },
-    (payload) => {
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "messages",
+          filter:
+            `conversation_id=eq.${conversationId}`,
+        },
+        async (payload) => {
 
-      console.log(
-        "Realtime message received:",
-        payload.new
-      );
+          let message =
+            payload.new;
 
 
-      if (
-        typeof onMessage ===
-        "function"
-      ) {
+          /*
+            Realtime audio payloads contain
+            Storage paths, not playable URLs.
+          */
 
-        onMessage(
-          payload.new
-        );
+          if (
+            message?.message_type ===
+              "audio" &&
+            message?.audio_url
+          ) {
 
-      }
+            try {
 
-    }
-  );
-
-
-  /* =======================================================
-     UPDATE
-  ======================================================= */
-
-  channel.on(
-    "postgres_changes",
-    {
-      event: "UPDATE",
-      schema: "public",
-      table: "messages",
-      filter:
-        `conversation_id=eq.${conversationId}`,
-    },
-    (payload) => {
-
-      if (
-        typeof onUpdate ===
-        "function"
-      ) {
-
-        onUpdate(
-          payload.new
-        );
-
-      }
-
-    }
-  );
+              const resolved =
+                await resolveMessageAudioUrls(
+                  [message],
+                  3600,
+                  conversationId
+                );
 
 
-  /* =======================================================
-     DELETE
-  ======================================================= */
+              message =
+                resolved[0] ||
+                message;
 
-  channel.on(
-    "postgres_changes",
-    {
-      event: "DELETE",
-      schema: "public",
-      table: "messages",
-      filter:
-        `conversation_id=eq.${conversationId}`,
-    },
-    (payload) => {
+            } catch (error) {
 
-      if (
-        typeof onDelete ===
-        "function"
-      ) {
+              console.error(
+                "Failed to resolve realtime audio:",
+                error
+              );
 
-        onDelete(
-          payload.old
-        );
+            }
 
-      }
-
-    }
-  );
+          }
 
 
-  /* =======================================================
-     SUBSCRIBE
-  ======================================================= */
+          if (
+            typeof onMessage ===
+            "function"
+          ) {
 
-  channel.subscribe(
-    (status) => {
+            onMessage(
+              message
+            );
 
-      console.log(
-        `Chat realtime status: ${status}`
-      );
+          }
 
-
-      if (
-        status ===
-        "SUBSCRIBED"
-      ) {
-
-        console.log(
-          "Chat realtime connected."
-        );
-
-      }
+        }
+      )
 
 
-      if (
-        status ===
-        "CHANNEL_ERROR"
-      ) {
+      /* ===============================================
+         UPDATE
+      =============================================== */
 
-        console.error(
-          "Chat realtime channel error."
-        );
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "messages",
+          filter:
+            `conversation_id=eq.${conversationId}`,
+        },
+        async (payload) => {
 
-      }
-
-
-      if (
-        status ===
-        "TIMED_OUT"
-      ) {
-
-        console.warn(
-          "Chat realtime subscription timed out."
-        );
-
-      }
+          let message =
+            payload.new;
 
 
-      if (
-        status ===
-        "CLOSED"
-      ) {
+          if (
+            message?.message_type ===
+              "audio" &&
+            message?.audio_url
+          ) {
 
-        console.warn(
-          "Chat realtime channel closed."
-        );
+            try {
 
-      }
+              const resolved =
+                await resolveMessageAudioUrls(
+                  [message],
+                  3600,
+                  conversationId
+                );
 
-    }
-  );
+
+              message =
+                resolved[0] ||
+                message;
+
+            } catch (error) {
+
+              console.error(
+                "Failed to resolve updated audio:",
+                error
+              );
+
+            }
+
+          }
 
 
-  /* =======================================================
-     CLEANUP
-  ======================================================= */
+          if (
+            typeof onUpdate ===
+            "function"
+          ) {
+
+            onUpdate(
+              message
+            );
+
+          }
+
+        }
+      )
+
+
+      /* ===============================================
+         DELETE
+      =============================================== */
+
+      .on(
+        "postgres_changes",
+        {
+          event: "DELETE",
+          schema: "public",
+          table: "messages",
+          filter:
+            `conversation_id=eq.${conversationId}`,
+        },
+        (payload) => {
+
+          if (
+            typeof onDelete ===
+            "function"
+          ) {
+
+            onDelete(
+              payload.old
+            );
+
+          }
+
+        }
+      )
+
+
+      .subscribe();
+
 
   return () => {
 
-    client.removeChannel(
-      channel
-    );
+    try {
+
+      client.removeChannel(
+        channel
+      );
+
+    } catch (error) {
+
+      console.error(
+        "Failed to remove chat channel:",
+        error
+      );
+
+    }
 
   };
 
@@ -1378,121 +1846,120 @@ export function subscribeToMessages({
 
 
 /* =========================================================
-   SUBSCRIBE TO CONVERSATIONS
+   DELETE CONVERSATION AUDIO
 ========================================================= */
 
-export function subscribeToConversations({
+export async function deleteConversationAudio(
+  conversationId
+) {
 
-  onInsert,
+  if (!conversationId) {
+    return;
+  }
 
-  onUpdate,
 
-  onDelete,
+  try {
 
-} = {}) {
+    const client =
+      getVisitorClient(
+        conversationId
+      );
 
-  const channel =
-    supabase.channel(
-      `portfolio-conversations-${Date.now()}`
+
+    const {
+      data: files,
+      error: listError,
+    } = await client
+
+      .storage
+
+      .from(
+        CHAT_AUDIO_BUCKET
+      )
+
+      .list(
+        conversationId,
+        {
+          limit: 100,
+        }
+      );
+
+
+    if (listError) {
+
+      console.warn(
+        "Unable to list conversation audio:",
+        listError
+      );
+
+      return;
+
+    }
+
+
+    if (
+      !files ||
+      files.length === 0
+    ) {
+
+      return;
+
+    }
+
+
+    const paths =
+      files
+        .filter(
+          (file) =>
+            file?.name
+        )
+        .map(
+          (file) =>
+            `${conversationId}/${file.name}`
+        );
+
+
+    if (
+      paths.length === 0
+    ) {
+
+      return;
+
+    }
+
+
+    const {
+      error: removeError,
+    } = await client
+
+      .storage
+
+      .from(
+        CHAT_AUDIO_BUCKET
+      )
+
+      .remove(
+        paths
+      );
+
+
+    if (removeError) {
+
+      console.warn(
+        "Unable to delete conversation audio:",
+        removeError
+      );
+
+    }
+
+  } catch (error) {
+
+    console.warn(
+      "Conversation audio cleanup failed:",
+      error
     );
 
-
-  channel.on(
-    "postgres_changes",
-    {
-      event: "INSERT",
-      schema: "public",
-      table: "conversations",
-    },
-    (payload) => {
-
-      if (
-        typeof onInsert ===
-        "function"
-      ) {
-
-        onInsert(
-          payload.new
-        );
-
-      }
-
-    }
-  );
-
-
-  channel.on(
-    "postgres_changes",
-    {
-      event: "UPDATE",
-      schema: "public",
-      table: "conversations",
-    },
-    (payload) => {
-
-      if (
-        typeof onUpdate ===
-        "function"
-      ) {
-
-        onUpdate(
-          payload.new
-        );
-
-      }
-
-    }
-  );
-
-
-  channel.on(
-    "postgres_changes",
-    {
-      event: "DELETE",
-      schema: "public",
-      table: "conversations",
-    },
-    (payload) => {
-
-      if (
-        typeof onDelete ===
-        "function"
-      ) {
-
-        onDelete(
-          payload.old
-        );
-
-      }
-
-    }
-  );
-
-
-  channel.subscribe(
-    (status) => {
-
-      console.log(
-        `Conversation realtime status: ${status}`
-      );
-
-    }
-  );
-
-
-  return {
-
-    channel,
-
-    unsubscribe: () => {
-
-      supabase.removeChannel(
-        channel
-      );
-
-    },
-
-  };
+  }
 
 }
 
@@ -1514,25 +1981,31 @@ export async function deleteConversation(
   }
 
 
-  /* =======================================================
-     DELETE MESSAGES
-  ======================================================= */
+  /*
+    Delete audio first.
+  */
+
+  await deleteConversationAudio(
+    conversationId
+  );
+
+
+  /*
+    Delete messages.
+  */
 
   const {
     error: messagesError,
-  } =
-    await supabase
+  } = await supabase
 
-      .from(
-        "messages"
-      )
+    .from("messages")
 
-      .delete()
+    .delete()
 
-      .eq(
-        "conversation_id",
-        conversationId
-      );
+    .eq(
+      "conversation_id",
+      conversationId
+    );
 
 
   if (messagesError) {
@@ -1542,28 +2015,25 @@ export async function deleteConversation(
   }
 
 
-  /* =======================================================
-     DELETE CONVERSATION
-  ======================================================= */
+  /*
+    Delete conversation.
+  */
 
   const {
     data,
     error,
-  } =
-    await supabase
+  } = await supabase
 
-      .from(
-        "conversations"
-      )
+    .from("conversations")
 
-      .delete()
+    .delete()
 
-      .eq(
-        "id",
-        conversationId
-      )
+    .eq(
+      "id",
+      conversationId
+    )
 
-      .select("id");
+    .select("id");
 
 
   if (error) {
@@ -1579,15 +2049,16 @@ export async function deleteConversation(
   ) {
 
     throw new Error(
-      "The conversation was not deleted. Check the Supabase DELETE policy."
+      "Conversation was not deleted."
     );
 
   }
 
 
-  /* =======================================================
-     CLEAR LOCAL STORAGE
-  ======================================================= */
+  markConversationDeleted(
+    conversationId
+  );
+
 
   const stored =
     getStoredConversation();
@@ -1603,72 +2074,7 @@ export async function deleteConversation(
   }
 
 
-  markConversationDeleted(
-    conversationId
-  );
-
-
-  /* =======================================================
-     VERIFY
-  ======================================================= */
-
-  const {
-    data: remaining,
-    error: verifyError,
-  } =
-    await supabase
-
-      .from(
-        "conversations"
-      )
-
-      .select("id")
-
-      .eq(
-        "id",
-        conversationId
-      );
-
-
-  if (verifyError) {
-
-    throw verifyError;
-
-  }
-
-
-  if (
-    remaining &&
-    remaining.length > 0
-  ) {
-
-    throw new Error(
-      "The conversation still exists after deletion."
-    );
-
-  }
-
-
-  if (
-    typeof window !==
-    "undefined"
-  ) {
-
-    window.dispatchEvent(
-      new CustomEvent(
-        "portfolio:conversation-deleted",
-        {
-          detail: {
-            conversationId,
-          },
-        }
-      )
-    );
-
-  }
-
-
-  return true;
+  return data[0];
 
 }
 
@@ -1679,26 +2085,72 @@ export async function deleteConversation(
 
 export async function deleteAllConversations() {
 
-  /* =======================================================
-     DELETE ALL MESSAGES
-  ======================================================= */
+  /*
+    Get conversations first so
+    their audio folders can be cleaned.
+  */
+
+  const {
+    data: conversations,
+    error: fetchError,
+  } = await supabase
+
+    .from("conversations")
+
+    .select("id");
+
+
+  if (fetchError) {
+
+    throw fetchError;
+
+  }
+
+
+  /*
+    Delete audio for each conversation.
+  */
+
+  for (
+    const conversation
+    of conversations || []
+  ) {
+
+    try {
+
+      await deleteConversationAudio(
+        conversation.id
+      );
+
+    } catch (error) {
+
+      console.warn(
+        "Failed to clean conversation audio:",
+        error
+      );
+
+    }
+
+  }
+
+
+  /*
+    Delete messages.
+  */
 
   const {
     error: messagesError,
-  } =
-    await supabase
+  } = await supabase
 
-      .from(
-        "messages"
-      )
+    .from("messages")
 
-      .delete()
+    .delete()
 
-      .not(
-        "id",
-        "is",
-        null
-      );
+    .not(
+      "id",
+      "is",
+      null
+    );
 
 
   if (messagesError) {
@@ -1708,29 +2160,26 @@ export async function deleteAllConversations() {
   }
 
 
-  /* =======================================================
-     DELETE ALL CONVERSATIONS
-  ======================================================= */
+  /*
+    Delete conversations.
+  */
 
   const {
     data,
     error,
-  } =
-    await supabase
+  } = await supabase
 
-      .from(
-        "conversations"
-      )
+    .from("conversations")
 
-      .delete()
+    .delete()
 
-      .not(
-        "id",
-        "is",
-        null
-      )
+    .not(
+      "id",
+      "is",
+      null
+    )
 
-      .select("id");
+    .select("id");
 
 
   if (error) {
@@ -1740,76 +2189,25 @@ export async function deleteAllConversations() {
   }
 
 
-  /* =======================================================
-     VERIFY
-  ======================================================= */
-
-  const {
-    data: remaining,
-    error: verifyError,
-  } =
-    await supabase
-
-      .from(
-        "conversations"
-      )
-
-      .select("id");
-
-
-  if (verifyError) {
-
-    throw verifyError;
-
-  }
-
-
-  if (
-    remaining &&
-    remaining.length > 0
-  ) {
-
-    throw new Error(
-      "Some conversations could not be deleted. Check the Supabase DELETE policy."
-    );
-
-  }
-
+  /*
+    Clear local visitor state.
+  */
 
   clearStoredConversation();
 
 
-  /* =======================================================
-     EVENT
-  ======================================================= */
+  return data || [];
 
-  if (
-    typeof window !==
-    "undefined"
-  ) {
-
-    window.dispatchEvent(
-      new CustomEvent(
-        "portfolio:all-conversations-deleted",
-        {
-          detail: {
-
-            count:
-              data?.length ||
-              0,
-
-          },
-        }
-      )
-    );
-
-  }
+}
 
 
-  return (
-    data?.length ||
-    0
-  );
+/* =========================================================
+   GET AUDIO BUCKET
+========================================================= */
+
+export function getChatAudioBucket() {
+
+  return CHAT_AUDIO_BUCKET;
 
 }
 
@@ -1821,6 +2219,8 @@ export async function deleteAllConversations() {
 const chat = {
 
   getStoredConversation,
+
+  getStoredConversationToken,
 
   clearStoredConversation,
 
@@ -1834,15 +2234,26 @@ const chat = {
 
   sendMessage,
 
+  uploadVoiceMessage,
+
+  sendVoiceMessage,
+
+  createAudioSignedUrl,
+
+  resolveMessageAudioUrls,
+
   subscribeToMessages,
 
-  subscribeToConversations,
+  deleteConversationAudio,
 
   deleteConversation,
 
   deleteAllConversations,
 
+  getChatAudioBucket,
+
 };
 
 
 export default chat;
+

@@ -9,7 +9,11 @@
    - Restore conversations
    - Load messages
    - Subscribe to realtime messages
-   - Send messages
+   - Send text messages
+   - Record voice messages
+   - Preview voice recordings
+   - Send voice messages
+   - Cancel recordings
    - Handle recreated conversations
    - Reset chat
    - Notify React UI
@@ -27,6 +31,7 @@ import {
   getConversation,
   getMessages,
   sendMessage,
+  sendVoiceMessage,
   subscribeToMessages,
   clearStoredConversation,
 } from "./chat.js";
@@ -40,9 +45,9 @@ class ChatController {
 
   constructor() {
 
-    /* =====================================================
+    /* =======================================================
        STATE
-    ===================================================== */
+    ======================================================= */
 
     this.state = {
 
@@ -53,6 +58,14 @@ class ChatController {
       loading: false,
 
       sending: false,
+
+      recording: false,
+
+      recordingDuration: 0,
+
+      voiceBlob: null,
+
+      voicePreviewUrl: "",
 
       error: "",
 
@@ -67,28 +80,47 @@ class ChatController {
     };
 
 
-    /* =====================================================
+    /* =======================================================
        SUBSCRIBERS
-    ===================================================== */
+    ======================================================= */
 
-    this.listeners =
-      new Set();
+    this.listeners = new Set();
 
 
-    /* =====================================================
+    /* =======================================================
        REALTIME SUBSCRIPTION
-    ===================================================== */
+    ======================================================= */
 
-    this.unsubscribeMessages =
-      null;
+    this.unsubscribeMessages = null;
 
 
-    /* =====================================================
+    /* =======================================================
        INITIALIZATION
-    ===================================================== */
+    ======================================================= */
 
-    this.initialized =
-      false;
+    this.initialized = false;
+
+
+    /* =======================================================
+       MEDIA RECORDER
+    ======================================================= */
+
+    this.mediaRecorder = null;
+
+    this.mediaStream = null;
+
+    this.recordingChunks = [];
+
+    this.recordingTimer = null;
+
+    this.recordingStartedAt = null;
+
+
+    /* =======================================================
+       RECORDING CANCELLATION FLAG
+    ======================================================= */
+
+    this.discardRecording = false;
 
   }
 
@@ -100,11 +132,13 @@ class ChatController {
   getState() {
 
     return {
+
       ...this.state,
 
       messages: [
         ...this.state.messages,
       ],
+
     };
 
   }
@@ -114,9 +148,7 @@ class ChatController {
      SET STATE
   ========================================================= */
 
-  setState(
-    updates
-  ) {
+  setState(updates) {
 
     this.state = {
 
@@ -125,7 +157,6 @@ class ChatController {
       ...updates,
 
     };
-
 
     this.notify();
 
@@ -138,18 +169,14 @@ class ChatController {
 
   notify() {
 
-    const nextState =
-      this.getState();
-
+    const nextState = this.getState();
 
     this.listeners.forEach(
       (listener) => {
 
         try {
 
-          listener(
-            nextState
-          );
+          listener(nextState);
 
         } catch (error) {
 
@@ -170,13 +197,10 @@ class ChatController {
      SUBSCRIBE TO STATE
   ========================================================= */
 
-  subscribe(
-    listener
-  ) {
+  subscribe(listener) {
 
     if (
-      typeof listener !==
-      "function"
+      typeof listener !== "function"
     ) {
 
       return () => {};
@@ -184,15 +208,7 @@ class ChatController {
     }
 
 
-    this.listeners.add(
-      listener
-    );
-
-
-    /*
-      Immediately provide
-      the current state.
-    */
+    this.listeners.add(listener);
 
     listener(
       this.getState()
@@ -201,9 +217,7 @@ class ChatController {
 
     return () => {
 
-      this.listeners.delete(
-        listener
-      );
+      this.listeners.delete(listener);
 
     };
 
@@ -216,17 +230,14 @@ class ChatController {
 
   async initialize() {
 
-    if (
-      this.initialized
-    ) {
+    if (this.initialized) {
 
       return this.getState();
 
     }
 
 
-    this.initialized =
-      true;
+    this.initialized = true;
 
 
     this.setState({
@@ -248,9 +259,7 @@ class ChatController {
         getStoredConversation();
 
 
-      if (
-        !stored?.id
-      ) {
+      if (!stored?.id) {
 
         this.setState({
 
@@ -280,9 +289,7 @@ class ChatController {
         );
 
 
-      if (
-        !conversation
-      ) {
+      if (!conversation) {
 
         clearStoredConversation();
 
@@ -391,7 +398,8 @@ class ChatController {
   } = {}) {
 
     if (
-      this.state.sending
+      this.state.sending ||
+      this.state.recording
     ) {
 
       return null;
@@ -491,7 +499,7 @@ class ChatController {
 
 
       /* ================================================
-         REALTIME SUBSCRIPTION
+         REALTIME
       ================================================ */
 
       this.subscribeToConversation(
@@ -597,34 +605,20 @@ class ChatController {
     conversation
   ) {
 
-    if (
-      !conversation?.id
-    ) {
+    if (!conversation?.id) {
 
       return;
 
     }
 
 
-    /* ================================================
-       REMOVE OLD SUBSCRIPTION
-    ================================================ */
-
     this.unsubscribeFromMessages();
 
-
-    /* ================================================
-       ACCESS TOKEN
-    ================================================ */
 
     const accessToken =
       conversation.access_token ||
       null;
 
-
-    /* ================================================
-       CREATE REALTIME SUBSCRIPTION
-    ================================================ */
 
     this.unsubscribeMessages =
       subscribeToMessages({
@@ -634,9 +628,6 @@ class ChatController {
 
         accessToken,
 
-        /* ==========================================
-           NEW MESSAGE
-        ========================================== */
 
         onMessage:
           (newMessage) => {
@@ -648,10 +639,6 @@ class ChatController {
           },
 
 
-        /* ==========================================
-           UPDATED MESSAGE
-        ========================================== */
-
         onUpdate:
           (updatedMessage) => {
 
@@ -661,10 +648,6 @@ class ChatController {
 
           },
 
-
-        /* ==========================================
-           DELETED MESSAGE
-        ========================================== */
 
         onDelete:
           (deletedMessage) => {
@@ -707,8 +690,7 @@ class ChatController {
     }
 
 
-    this.unsubscribeMessages =
-      null;
+    this.unsubscribeMessages = null;
 
   }
 
@@ -721,9 +703,7 @@ class ChatController {
     message
   ) {
 
-    if (
-      !message?.id
-    ) {
+    if (!message?.id) {
 
       return;
 
@@ -736,8 +716,7 @@ class ChatController {
 
         ...this.state.messages.filter(
           (item) =>
-            item.id !==
-            message.id
+            item.id !== message.id
         ),
 
         message,
@@ -757,9 +736,7 @@ class ChatController {
     message
   ) {
 
-    if (
-      !message?.id
-    ) {
+    if (!message?.id) {
 
       return;
 
@@ -771,11 +748,8 @@ class ChatController {
       messages:
         this.state.messages.map(
           (item) =>
-            item.id ===
-            message.id
-
+            item.id === message.id
               ? message
-
               : item
         ),
 
@@ -792,9 +766,7 @@ class ChatController {
     message
   ) {
 
-    if (
-      !message?.id
-    ) {
+    if (!message?.id) {
 
       return;
 
@@ -806,8 +778,7 @@ class ChatController {
       messages:
         this.state.messages.filter(
           (item) =>
-            item.id !==
-            message.id
+            item.id !== message.id
         ),
 
     });
@@ -816,7 +787,7 @@ class ChatController {
 
 
   /* =========================================================
-     SEND MESSAGE
+     SEND TEXT MESSAGE
   ========================================================= */
 
   async send(
@@ -824,11 +795,8 @@ class ChatController {
   ) {
 
     const cleanMessage =
-      typeof message ===
-      "string"
-
+      typeof message === "string"
         ? message.trim()
-
         : "";
 
 
@@ -840,7 +808,8 @@ class ChatController {
 
 
     if (
-      this.state.sending
+      this.state.sending ||
+      this.state.recording
     ) {
 
       return null;
@@ -859,10 +828,6 @@ class ChatController {
 
     try {
 
-      /* ================================================
-         CURRENT CONVERSATION
-      ================================================ */
-
       let conversation =
         this.state.conversation;
 
@@ -871,9 +836,7 @@ class ChatController {
          CREATE CONVERSATION IF NEEDED
       ================================================ */
 
-      if (
-        !conversation?.id
-      ) {
+      if (!conversation?.id) {
 
         conversation =
           await this.startConversation({
@@ -887,9 +850,7 @@ class ChatController {
           });
 
 
-        if (
-          !conversation
-        ) {
+        if (!conversation) {
 
           throw new Error(
             "Unable to create conversation."
@@ -901,7 +862,7 @@ class ChatController {
 
 
       /* ================================================
-         SEND TO SUPABASE
+         SEND TEXT THROUGH CHAT SERVICE
       ================================================ */
 
       const sentMessage =
@@ -925,59 +886,27 @@ class ChatController {
         });
 
 
-      /* ================================================
-         RECOVER NEW CONVERSATION
-         IF THE OLD ONE WAS DELETED
-      ================================================ */
+      if (!sentMessage) {
 
-      if (
-        sentMessage?.conversation_id &&
-        sentMessage.conversation_id !==
-          conversation.id
-      ) {
-
-        const newConversation =
-          await getConversation(
-            sentMessage.conversation_id
-          );
-
-
-        if (
-          newConversation
-        ) {
-
-          this.unsubscribeFromMessages();
-
-
-          this.setState({
-
-            conversation:
-              newConversation,
-
-            visitorName:
-              newConversation.visitor_name ||
-              this.state.visitorName,
-
-            visitorEmail:
-              newConversation.visitor_email ||
-              this.state.visitorEmail,
-
-            isStarted: true,
-
-          });
-
-
-          this.subscribeToConversation(
-            newConversation
-          );
-
-        }
+        throw new Error(
+          "The message could not be sent."
+        );
 
       }
 
 
       /* ================================================
-         ADD SENT MESSAGE LOCALLY
+         HANDLE RECOVERED CONVERSATION
+      ================================================ */
+
+      await this.handleRecoveredConversation(
+        sentMessage,
+        conversation
+      );
+
+
+      /* ================================================
+         ADD LOCALLY
       ================================================ */
 
       this.addMessage(
@@ -990,7 +919,7 @@ class ChatController {
     } catch (error) {
 
       console.error(
-        "Send message error:",
+        "Send text message error:",
         error
       );
 
@@ -1012,6 +941,882 @@ class ChatController {
       });
 
     }
+
+  }
+
+
+  /* =========================================================
+     SEND MESSAGE ALIAS
+     ---------------------------------------------------------
+     ChatController.jsx calls:
+       chatController.sendMessage(message)
+
+     Internally:
+       this.send(message)
+  ========================================================= */
+
+  async sendMessage(
+    message
+  ) {
+
+    return await this.send(
+      message
+    );
+
+  }
+
+
+  /* =========================================================
+     SEND VOICE MESSAGE
+  ========================================================= */
+
+  async sendVoice(
+    blob
+  ) {
+
+    if (
+      !blob ||
+      !(blob instanceof Blob)
+    ) {
+
+      this.setError(
+        "No voice recording is available."
+      );
+
+      return null;
+
+    }
+
+
+    if (
+      this.state.sending ||
+      this.state.recording
+    ) {
+
+      return null;
+
+    }
+
+
+    this.setState({
+
+      sending: true,
+
+      error: "",
+
+    });
+
+
+    try {
+
+      let conversation =
+        this.state.conversation;
+
+
+      /* ================================================
+         CREATE CONVERSATION IF NEEDED
+      ================================================ */
+
+      if (!conversation?.id) {
+
+        conversation =
+          await this.startConversation({
+
+            visitorName:
+              this.state.visitorName,
+
+            visitorEmail:
+              this.state.visitorEmail,
+
+          });
+
+
+        if (!conversation) {
+
+          throw new Error(
+            "Unable to create conversation."
+          );
+
+        }
+
+      }
+
+
+      /* ================================================
+         SEND VOICE MESSAGE
+      ================================================ */
+
+      const sentMessage =
+        await sendVoiceMessage({
+
+          conversationId:
+            conversation.id,
+
+          audioBlob:
+            blob,
+
+          visitorName:
+            this.state.visitorName,
+
+          visitorEmail:
+            this.state.visitorEmail,
+
+        });
+
+
+      if (!sentMessage) {
+
+        throw new Error(
+          "The voice message could not be sent."
+        );
+
+      }
+
+
+      /* ================================================
+         HANDLE RECOVERY
+      ================================================ */
+
+      await this.handleRecoveredConversation(
+        sentMessage,
+        conversation
+      );
+
+
+      /* ================================================
+         ADD MESSAGE
+      ================================================ */
+
+      this.addMessage(
+        sentMessage
+      );
+
+
+      return sentMessage;
+
+    } catch (error) {
+
+      console.error(
+        "Send voice message error:",
+        error
+      );
+
+
+      this.setError(
+        error?.message ||
+        "Failed to send voice message."
+      );
+
+
+      return null;
+
+    } finally {
+
+      this.setState({
+
+        sending: false,
+
+      });
+
+    }
+
+  }
+
+
+  /* =========================================================
+     SEND VOICE MESSAGE ALIAS
+  ========================================================= */
+
+  async sendVoiceMessage(
+    blob
+  ) {
+
+    const result =
+      await this.sendVoice(
+        blob
+      );
+
+
+    if (result) {
+
+      this.clearVoicePreview();
+
+      this.setState({
+
+        recordingDuration: 0,
+
+      });
+
+    }
+
+
+    return result;
+
+  }
+
+
+  /* =========================================================
+     HANDLE RECOVERED CONVERSATION
+  ========================================================= */
+
+  async handleRecoveredConversation(
+    sentMessage,
+    conversation
+  ) {
+
+    if (
+      !sentMessage?.conversation_id ||
+      sentMessage.conversation_id ===
+        conversation.id
+    ) {
+
+      return;
+
+    }
+
+
+    const newConversation =
+      await getConversation(
+        sentMessage.conversation_id
+      );
+
+
+    if (!newConversation) {
+
+      return;
+
+    }
+
+
+    this.unsubscribeFromMessages();
+
+
+    this.setState({
+
+      conversation:
+        newConversation,
+
+      visitorName:
+        newConversation.visitor_name ||
+        this.state.visitorName,
+
+      visitorEmail:
+        newConversation.visitor_email ||
+        this.state.visitorEmail,
+
+      isStarted: true,
+
+    });
+
+
+    this.subscribeToConversation(
+      newConversation
+    );
+
+  }
+
+
+  /* =========================================================
+     START VOICE RECORDING
+  ========================================================= */
+
+  async startRecording() {
+
+    if (
+      this.state.recording ||
+      this.state.sending
+    ) {
+
+      return false;
+
+    }
+
+
+    if (!this.state.isStarted) {
+
+      this.setError(
+        "Start the conversation before recording a voice message."
+      );
+
+      return false;
+
+    }
+
+
+    if (
+      typeof window === "undefined" ||
+      !navigator.mediaDevices?.getUserMedia
+    ) {
+
+      this.setError(
+        "Voice recording is not supported by this browser."
+      );
+
+      return false;
+
+    }
+
+
+    try {
+
+      this.clearError();
+
+
+      const stream =
+        await navigator.mediaDevices.getUserMedia({
+          audio: true,
+        });
+
+
+      this.mediaStream =
+        stream;
+
+
+      const mimeTypes = [
+
+        "audio/webm;codecs=opus",
+
+        "audio/webm",
+
+        "audio/mp4",
+
+        "audio/ogg;codecs=opus",
+
+        "audio/ogg",
+
+      ];
+
+
+      const supportedMimeType =
+        mimeTypes.find(
+          (type) =>
+            typeof MediaRecorder !==
+              "undefined" &&
+            MediaRecorder.isTypeSupported(
+              type
+            )
+        ) || "";
+
+
+      this.recordingChunks =
+        [];
+
+
+      this.discardRecording =
+        false;
+
+
+      this.mediaRecorder =
+        supportedMimeType
+
+          ? new MediaRecorder(
+              stream,
+              {
+                mimeType:
+                  supportedMimeType,
+              }
+            )
+
+          : new MediaRecorder(
+              stream
+            );
+
+
+      this.mediaRecorder.ondataavailable =
+        (event) => {
+
+          if (
+            event.data &&
+            event.data.size > 0
+          ) {
+
+            this.recordingChunks.push(
+              event.data
+            );
+
+          }
+
+        };
+
+
+      this.mediaRecorder.onstop =
+        () => {
+
+          const mimeType =
+            this.mediaRecorder?.mimeType ||
+            supportedMimeType ||
+            "audio/webm";
+
+
+          const blob =
+            new Blob(
+              this.recordingChunks,
+              {
+                type:
+                  mimeType,
+              }
+            );
+
+
+          this.recordingChunks =
+            [];
+
+
+          this.stopMediaStream();
+
+
+          if (
+            this.discardRecording
+          ) {
+
+            this.discardRecording =
+              false;
+
+            this.mediaRecorder =
+              null;
+
+            return;
+
+          }
+
+
+          if (blob.size > 0) {
+
+            this.createVoicePreview(
+              blob
+            );
+
+          } else {
+
+            this.mediaRecorder =
+              null;
+
+            this.setState({
+
+              recording: false,
+
+              recordingDuration: 0,
+
+            });
+
+          }
+
+        };
+
+
+      this.mediaRecorder.onerror =
+        (event) => {
+
+          console.error(
+            "MediaRecorder error:",
+            event
+          );
+
+
+          this.stopMediaStream();
+
+          this.mediaRecorder =
+            null;
+
+          this.recordingChunks =
+            [];
+
+
+          this.setState({
+
+            recording: false,
+
+            recordingDuration: 0,
+
+          });
+
+
+          this.setError(
+            "Voice recording failed."
+          );
+
+        };
+
+
+      this.mediaRecorder.start();
+
+
+      this.recordingStartedAt =
+        Date.now();
+
+
+      this.recordingTimer =
+        window.setInterval(
+          () => {
+
+            const elapsed =
+              Math.floor(
+                (
+                  Date.now() -
+                  this.recordingStartedAt
+                ) / 1000
+              );
+
+
+            this.setState({
+
+              recordingDuration:
+                elapsed,
+
+            });
+
+          },
+          250
+        );
+
+
+      this.setState({
+
+        recording: true,
+
+        recordingDuration: 0,
+
+        voiceBlob: null,
+
+        voicePreviewUrl: "",
+
+        error: "",
+
+      });
+
+
+      return true;
+
+    } catch (error) {
+
+      console.error(
+        "Start recording error:",
+        error
+      );
+
+
+      this.stopMediaStream();
+
+      this.mediaRecorder =
+        null;
+
+
+      this.setState({
+
+        recording: false,
+
+        recordingDuration: 0,
+
+      });
+
+
+      if (
+        error?.name ===
+        "NotAllowedError"
+      ) {
+
+        this.setError(
+          "Microphone permission was denied."
+        );
+
+      } else if (
+        error?.name ===
+        "NotFoundError"
+      ) {
+
+        this.setError(
+          "No microphone was found."
+        );
+
+      } else {
+
+        this.setError(
+          "Unable to access your microphone."
+        );
+
+      }
+
+
+      return false;
+
+    }
+
+  }
+
+
+  /* =========================================================
+     STOP RECORDING
+  ========================================================= */
+
+  stopRecording() {
+
+    if (
+      !this.mediaRecorder ||
+      this.mediaRecorder.state ===
+        "inactive"
+    ) {
+
+      return null;
+
+    }
+
+
+    this.clearRecordingTimer();
+
+
+    try {
+
+      this.mediaRecorder.stop();
+
+    } catch (error) {
+
+      console.error(
+        "Stop recording error:",
+        error
+      );
+
+      this.stopMediaStream();
+
+    }
+
+
+    return true;
+
+  }
+
+
+  /* =========================================================
+     CREATE VOICE PREVIEW
+  ========================================================= */
+
+  createVoicePreview(
+    blob
+  ) {
+
+    this.clearVoicePreview();
+
+
+    const previewUrl =
+      URL.createObjectURL(
+        blob
+      );
+
+
+    this.setState({
+
+      recording: false,
+
+      recordingDuration:
+        this.state.recordingDuration,
+
+      voiceBlob:
+        blob,
+
+      voicePreviewUrl:
+        previewUrl,
+
+    });
+
+
+    this.mediaRecorder =
+      null;
+
+  }
+
+
+  /* =========================================================
+     CANCEL VOICE RECORDING
+  ========================================================= */
+
+  cancelRecording() {
+
+    this.clearRecordingTimer();
+
+
+    this.discardRecording =
+      true;
+
+
+    if (this.mediaRecorder) {
+
+      try {
+
+        if (
+          this.mediaRecorder.state !==
+          "inactive"
+        ) {
+
+          this.mediaRecorder.stop();
+
+        }
+
+      } catch {
+
+        this.mediaRecorder =
+          null;
+
+      }
+
+    }
+
+
+    this.stopMediaStream();
+
+    this.mediaRecorder =
+      null;
+
+    this.recordingChunks =
+      [];
+
+
+    this.clearVoicePreview();
+
+
+    this.setState({
+
+      recording: false,
+
+      recordingDuration: 0,
+
+      voiceBlob: null,
+
+      voicePreviewUrl: "",
+
+    });
+
+  }
+
+
+  /* =========================================================
+     SEND CURRENT VOICE PREVIEW
+  ========================================================= */
+
+  async sendRecordedVoice() {
+
+    const blob =
+      this.state.voiceBlob;
+
+
+    if (!blob) {
+
+      this.setError(
+        "No voice recording is ready to send."
+      );
+
+      return null;
+
+    }
+
+
+    const result =
+      await this.sendVoice(
+        blob
+      );
+
+
+    if (result) {
+
+      this.clearVoicePreview();
+
+      this.setState({
+
+        recordingDuration: 0,
+
+      });
+
+    }
+
+
+    return result;
+
+  }
+
+
+  /* =========================================================
+     CLEAR VOICE PREVIEW
+  ========================================================= */
+
+  clearVoicePreview() {
+
+    const previewUrl =
+      this.state.voicePreviewUrl;
+
+
+    if (previewUrl) {
+
+      try {
+
+        URL.revokeObjectURL(
+          previewUrl
+        );
+
+      } catch {
+        /* Ignore URL cleanup errors. */
+      }
+
+    }
+
+
+    this.setState({
+
+      voiceBlob: null,
+
+      voicePreviewUrl: "",
+
+    });
+
+  }
+
+
+  /* =========================================================
+     RECORDING TIMER
+  ========================================================= */
+
+  clearRecordingTimer() {
+
+    if (this.recordingTimer) {
+
+      clearInterval(
+        this.recordingTimer
+      );
+
+      this.recordingTimer =
+        null;
+
+    }
+
+  }
+
+
+  /* =========================================================
+     STOP MEDIA STREAM
+  ========================================================= */
+
+  stopMediaStream() {
+
+    if (this.mediaStream) {
+
+      this.mediaStream
+        .getTracks()
+        .forEach(
+          (track) => {
+
+            try {
+
+              track.stop();
+
+            } catch {
+              /* Ignore track cleanup errors. */
+            }
+
+          }
+        );
+
+    }
+
+
+    this.mediaStream =
+      null;
 
   }
 
@@ -1124,10 +1929,11 @@ class ChatController {
      END CONVERSATION
   ========================================================= */
 
-  endConversation() {
+  async endConversation() {
+
+    this.cancelRecording();
 
     this.unsubscribeFromMessages();
-
 
     clearStoredConversation();
 
@@ -1141,6 +1947,14 @@ class ChatController {
       loading: false,
 
       sending: false,
+
+      recording: false,
+
+      recordingDuration: 0,
+
+      voiceBlob: null,
+
+      voicePreviewUrl: "",
 
       error: "",
 
@@ -1163,8 +1977,9 @@ class ChatController {
 
   reset() {
 
-    this.unsubscribeFromMessages();
+    this.cancelRecording();
 
+    this.unsubscribeFromMessages();
 
     clearStoredConversation();
 
@@ -1178,6 +1993,14 @@ class ChatController {
       loading: false,
 
       sending: false,
+
+      recording: false,
+
+      recordingDuration: 0,
+
+      voiceBlob: null,
+
+      voicePreviewUrl: "",
 
       error: "",
 
@@ -1279,11 +2102,11 @@ class ChatController {
 
   destroy() {
 
+    this.cancelRecording();
+
     this.unsubscribeFromMessages();
 
-
     this.listeners.clear();
-
 
     this.initialized =
       false;
@@ -1303,7 +2126,7 @@ const chatController =
 
 export default chatController;
 
+
 export {
   ChatController,
 };
-

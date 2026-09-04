@@ -1,19 +1,25 @@
+
 {
   "name": "nathan-frontend-developer",
   "private": true,
   "version": "0.0.0",
   "type": "module",
+
   "scripts": {
     "dev": "vite",
     "server": "node server/server.js",
     "dev:full": "concurrently \"npm run dev\" \"npm run server\"",
+
     "build": "vite build",
-    "build:github": "vite build --mode github",
+    "build:github": "vite build && node scripts/copy-404.js",
+
     "lint": "eslint .",
     "preview": "vite preview",
+
     "predeploy": "npm run build:github",
     "deploy": "cross-env CACHE_DIR=C:/gh-pages-cache gh-pages -d dist"
   },
+
   "dependencies": {
     "@emailjs/browser": "^4.4.1",
     "@lordicon/react": "^1.11.0",
@@ -37,6 +43,7 @@
     "simple-icons": "^16.28.0",
     "web-push": "^3.6.7"
   },
+
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@types/react": "^19.2.18",
