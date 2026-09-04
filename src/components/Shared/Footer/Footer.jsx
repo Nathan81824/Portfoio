@@ -1,15 +1,15 @@
-/* =========================================================
-   FOOTER
-   Nathan — Frontend Developer Portfolio
+ /* =========================================================
+    FOOTER
+    Nathan — Frontend Developer Portfolio
 
-   Location:
-   src/components/Shared/Footer/Footer.jsx
+    Location:
+    src/components/Shared/Footer/Footer.jsx
 
-   Uses:
-   - Central website data
-   - React Router
-   - Lucide React
-   - React Icons
+    Uses:
+    - Central website data
+    - React Router
+    - Lucide React
+    - React Icons
 ========================================================= */
 
 import {
@@ -31,9 +31,24 @@ import {
   Link,
 } from "react-router-dom";
 
+
+/* =========================================================
+   DATA
+========================================================= */
+
 import {
   getData,
-} from "../../../javascript";
+} from "../../../javascript/data/data.js";
+
+
+/* =========================================================
+   UTILITIES
+========================================================= */
+
+import {
+  scrollToTop,
+} from "../../../javascript/utils/scrollToSection.js";
+
 
 
 /* =========================================================
@@ -46,58 +61,41 @@ export default function Footer() {
      WEBSITE DATA
   ======================================================= */
 
-  const data = getData();
+  const data =
+    getData();
+
 
   const personalInfo =
     data?.personalInfo || {};
 
+
   const personalLinks =
     data?.personalLinks || {};
+
 
   const profile =
     data?.profile || {};
 
+
   const navigation =
-    Array.isArray(data?.navigation)
+    Array.isArray(
+      data?.navigation
+    )
       ? data.navigation
       : [];
 
 
   /* =======================================================
-     NAVIGATION FALLBACK
+     FOOTER NAVIGATION
   ======================================================= */
 
   const footerNavigation =
-    navigation.length > 0
-
-      ? navigation
-
-      : [
-          {
-            name: "Home",
-            href: "/",
-          },
-
-          {
-            name: "About",
-            href: "/about",
-          },
-
-          {
-            name: "Skills",
-            href: "/skills",
-          },
-
-          {
-            name: "Projects",
-            href: "/projects",
-          },
-
-          {
-            name: "Contact",
-            href: "/contact",
-          },
-        ];
+    navigation.filter(
+      (item) =>
+        item &&
+        item.href &&
+        item.name
+    );
 
 
   /* =======================================================
@@ -108,22 +106,36 @@ export default function Footer() {
 
     {
       name: "GitHub",
+
       href:
-        personalLinks.github || "",
+        personalLinks.github ||
+        personalLinks.githubUrl ||
+        "",
+
       icon: FaGithub,
     },
 
+
     {
       name: "LinkedIn",
+
       href:
-        personalLinks.linkedin || "",
+        personalLinks.linkedin ||
+        personalLinks.linkedinUrl ||
+        "",
+
       icon: FaLinkedinIn,
     },
 
+
     {
       name: "Vercel",
+
       href:
-        personalLinks.vercel || "",
+        personalLinks.vercel ||
+        personalLinks.vercelUrl ||
+        "",
+
       icon: SiVercel,
     },
 
@@ -135,25 +147,49 @@ export default function Footer() {
   ======================================================= */
 
   const availability =
-    personalInfo.availability;
+    personalInfo.availability ??
+    profile.availability ??
+    "Available for projects";
 
 
   const availabilityText =
-
-    availability &&
     typeof availability === "object"
 
-      ? availability.available
+      ? (
+          availability.available
+            ? (
+                availability.availableText ||
+                "Available for projects"
+              )
+            : (
+                availability.unavailableText ||
+                "Currently unavailable"
+              )
+        )
 
-        ? availability.availableText
+      : String(
+          availability
+        );
 
-        : availability.unavailableText
 
-      : availability ||
+  /* =======================================================
+     PERSONAL DISPLAY NAME
+  ======================================================= */
 
-        profile.availability ||
+  const displayName =
+    personalInfo.displayName ||
+    personalInfo.name ||
+    "Nathan";
 
-        "Available for projects";
+
+  /* =======================================================
+     PROFESSION
+  ======================================================= */
+
+  const profession =
+    profile.profession ||
+    personalInfo.profession ||
+    "Frontend Developer";
 
 
   /* =======================================================
@@ -168,12 +204,9 @@ export default function Footer() {
      BACK TO TOP
   ======================================================= */
 
-  const scrollToTop = () => {
+  const handleScrollToTop = () => {
 
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
+    scrollToTop();
 
   };
 
@@ -207,35 +240,26 @@ export default function Footer() {
               className="footer-logo"
               aria-label="Go to home"
             >
-              N
+
+              {
+                displayName
+                  .charAt(0)
+                  .toUpperCase()
+              }
+
             </Link>
 
 
-            <div className="footer-brand-content">
+            <div
+              className="footer-brand-content"
+            >
 
               <h2>
-
-                {
-                  personalInfo.displayName ||
-
-                  personalInfo.name ||
-
-                  "Nathan"
-                }
-
+                {displayName}
               </h2>
 
-
               <p>
-
-                {
-                  profile.profession ||
-
-                  personalInfo.profession ||
-
-                  "Frontend Developer"
-                }
-
+                {profession}
               </p>
 
             </div>
@@ -284,10 +308,16 @@ export default function Footer() {
                 (link) => (
 
                   <Link
-                    key={link.name}
+                    key={
+                      link.id ||
+                      link.name ||
+                      link.href
+                    }
                     to={link.href}
                   >
+
                     {link.name}
+
                   </Link>
 
                 )
@@ -314,15 +344,10 @@ export default function Footer() {
               {socialLinks.map(
                 (social) => {
 
-                  /*
-                    Don't render social links
-                    that don't have a URL.
-                  */
-
-                  if (!social.href) {
-
+                  if (
+                    !social.href
+                  ) {
                     return null;
-
                   }
 
 
@@ -333,9 +358,13 @@ export default function Footer() {
                   return (
 
                     <a
-                      key={social.name}
+                      key={
+                        social.name
+                      }
 
-                      href={social.href}
+                      href={
+                        social.href
+                      }
 
                       className="footer-social"
 
@@ -354,6 +383,7 @@ export default function Footer() {
 
                       <Icon
                         size={18}
+                        aria-hidden="true"
                       />
 
                       <span>
@@ -383,7 +413,9 @@ export default function Footer() {
             </h3>
 
 
-            <div className="footer-contact">
+            <div
+              className="footer-contact"
+            >
 
 
               {/* =========================================
@@ -403,6 +435,7 @@ export default function Footer() {
                   <Mail
                     size={17}
                     strokeWidth={1.8}
+                    aria-hidden="true"
                   />
 
                   <span>
@@ -427,6 +460,7 @@ export default function Footer() {
                   <MapPin
                     size={17}
                     strokeWidth={1.8}
+                    aria-hidden="true"
                   />
 
                   <span>
@@ -459,13 +493,7 @@ export default function Footer() {
 
             © {currentYear}{" "}
 
-            {
-              personalInfo.displayName ||
-
-              personalInfo.name ||
-
-              "Nathan"
-            }
+            {displayName}
 
             . All rights reserved.
 
@@ -483,7 +511,6 @@ export default function Footer() {
               aria-hidden="true"
             />
 
-
             <span>
               {availabilityText}
             </span>
@@ -500,7 +527,9 @@ export default function Footer() {
 
             className="footer-top-button"
 
-            onClick={scrollToTop}
+            onClick={
+              handleScrollToTop
+            }
 
             aria-label="Back to top"
 
@@ -510,6 +539,7 @@ export default function Footer() {
             <ArrowUp
               size={17}
               strokeWidth={1.8}
+              aria-hidden="true"
             />
 
           </button>

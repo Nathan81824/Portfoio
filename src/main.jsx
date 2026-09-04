@@ -8,9 +8,67 @@ import { ThemeProvider } from "./context/ThemeContext.jsx";
 import "./index.css";
 
 
-const basename =
-  import.meta.env.BASE_URL.replace(/\/$/, "");
+/* =========================================================
+   BASE URL
+========================================================= */
 
+const basename =
+  import.meta.env.BASE_URL.replace(
+    /\/$/,
+    ""
+  );
+
+
+/* =========================================================
+   SERVICE WORKER
+========================================================= */
+
+if ("serviceWorker" in navigator) {
+
+  window.addEventListener(
+    "load",
+    () => {
+
+      const serviceWorkerPath =
+        `${import.meta.env.BASE_URL}sw.js`;
+
+
+      navigator.serviceWorker
+        .register(
+          serviceWorkerPath
+        )
+
+        .then(
+          (registration) => {
+
+            console.log(
+              "Service Worker registered:",
+              registration.scope
+            );
+
+          }
+        )
+
+        .catch(
+          (error) => {
+
+            console.error(
+              "Service Worker registration failed:",
+              error
+            );
+
+          }
+        );
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   REACT APP
+========================================================= */
 
 createRoot(
   document.getElementById("root")
@@ -18,7 +76,9 @@ createRoot(
 
   <StrictMode>
 
-    <BrowserRouter basename={basename}>
+    <BrowserRouter
+      basename={basename}
+    >
 
       <ThemeProvider>
 

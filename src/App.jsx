@@ -1,5 +1,3 @@
-import { useEffect } from "react";
-
 import {
   Routes,
   Route,
@@ -7,200 +5,314 @@ import {
   Link,
 } from "react-router-dom";
 
+
+/* =========================================================
+   SHARED
+========================================================= */
+
 import Navbar from "./components/Shared/Navbar/Navbar.jsx";
+
 import Footer from "./components/Shared/Footer/Footer.jsx";
 
 
-import Home from "./pages/Home.jsx";
-import About from "./pages/About.jsx";
-import Skills from "./pages/Skills.jsx";
-import Projects from "./pages/Projects.jsx";
-import Contact from "./pages/Contact.jsx";
+/* =========================================================
+   PUBLIC PAGES
+========================================================= */
 
-import { getData } from "./javascript/data/data.js";
-import FloatingContact from "./components/Contact/FloatingContact.jsx";
+import Home from "./pages/Home.jsx";
+
+import About from "./pages/About.jsx";
+
+import Skills from "./pages/Skills.jsx";
+
+import Projects from "./pages/Projects.jsx";
+
+import Contact from "./pages/Contact.jsx";
 
 
 /* =========================================================
-   404 PAGE
+   ADMIN
 ========================================================= */
 
-function NotFound() {
+import AdminLogin from "./pages/Admin/AdminLogin.jsx";
+
+import AdminChat from "./pages/Admin/Admin.jsx";
+
+import ProtectedAdmin from "./components/Admin/ProtectedAdmin.jsx";
+
+
+/* =========================================================
+   CHAT
+========================================================= */
+
+import ChatController from "./components/Contact/ChatController.jsx";
+
+
+/* =========================================================
+   DATA
+========================================================= */
+
+import { getData } from "./javascript/data/data.js";
+
+
+/* =========================================================
+   APP CONTENT
+========================================================= */
+
+function AppContent() {
+
+  const location =
+    useLocation();
+
+
+  /* =======================================================
+     WEBSITE DATA
+  ======================================================= */
+
+  const data =
+    getData();
+
+
+  /* =======================================================
+     ADMIN ROUTE CHECK
+  ======================================================= */
+
+  const isAdminRoute =
+    location.pathname.startsWith(
+      "/admin"
+    );
+
+
   return (
-    <main className="not-found">
+    <>
 
-      <div className="container">
+      {/* ===================================================
+          PUBLIC NAVBAR
+      =================================================== */}
 
-        <span
-          className="not-found-code"
-          aria-hidden="true"
-        >
-          404
-        </span>
+      {!isAdminRoute && (
+        <Navbar />
+      )}
 
-        <p className="not-found-label">
-          ERROR
-        </p>
 
-        <h1>
-          Page Not Found
-        </h1>
+      {/* ===================================================
+          ROUTES
+      =================================================== */}
 
-        <p className="not-found-description">
-          The page you're looking for doesn't exist,
-          may have been moved, or the URL may be incorrect.
-        </p>
+      <Routes>
 
-        <div className="not-found-actions">
 
-          <Link
-            to="/"
-            className="btn btn-primary"
-          >
-            Back Home
-          </Link>
+        {/* =================================================
+            HOME
+        ================================================= */}
 
-          <button
-            type="button"
-            className="btn btn-secondary"
-            onClick={() => window.history.back()}
-          >
-            Go Back
-          </button>
+        <Route
+          path="/"
+          element={
+            <Home
+              data={data}
+            />
+          }
+        />
 
-        </div>
 
-      </div>
+        {/* =================================================
+            ABOUT
+        ================================================= */}
 
-    </main>
+        <Route
+          path="/about"
+          element={
+            <About
+              data={data}
+            />
+          }
+        />
+
+
+        {/* =================================================
+            SKILLS
+        ================================================= */}
+
+        <Route
+          path="/skills"
+          element={
+            <Skills
+              data={data}
+            />
+          }
+        />
+
+
+        {/* =================================================
+            PROJECTS
+        ================================================= */}
+
+        <Route
+          path="/projects"
+          element={
+            <Projects
+              data={data}
+            />
+          }
+        />
+
+
+        {/* =================================================
+            CONTACT
+        ================================================= */}
+
+        <Route
+          path="/contact"
+          element={
+            <Contact
+              data={data}
+            />
+          }
+        />
+
+
+        {/* =================================================
+            ADMIN LOGIN
+        ================================================= */}
+
+        <Route
+          path="/admin/login"
+          element={
+            <AdminLogin />
+          }
+        />
+
+
+        {/* =================================================
+            ADMIN DASHBOARD
+        ================================================= */}
+
+        <Route
+          path="/admin"
+          element={
+            <ProtectedAdmin>
+              <AdminChat />
+            </ProtectedAdmin>
+          }
+        />
+
+
+        {/* =================================================
+            ADMIN CHAT
+        ================================================= */}
+
+        <Route
+          path="/admin/chat"
+          element={
+            <ProtectedAdmin>
+              <AdminChat />
+            </ProtectedAdmin>
+          }
+        />
+
+
+        {/* =================================================
+            404
+        ================================================= */}
+
+        <Route
+          path="*"
+          element={
+            <NotFound />
+          }
+        />
+
+      </Routes>
+
+
+      {/* ===================================================
+          PUBLIC FOOTER
+      =================================================== */}
+
+      {!isAdminRoute && (
+        <Footer />
+      )}
+
+
+      {/* ===================================================
+          PUBLIC CHAT
+      =================================================== */}
+
+      {!isAdminRoute && (
+        <ChatController />
+      )}
+
+    </>
   );
 }
 
 
 /* =========================================================
-   PAGE TITLE
+   NOT FOUND
 ========================================================= */
 
-function PageTitle() {
+function NotFound() {
 
-  const location = useLocation();
+  return (
+    <main
+      style={{
+        minHeight: "70vh",
+        display: "grid",
+        placeItems: "center",
+        padding: "2rem",
+        textAlign: "center",
+      }}
+    >
 
-  const {
-    personalInfo = {},
-    roles = [],
-  } = getData();
+      <div>
 
-
-  useEffect(() => {
-
-    /* =======================================================
-       FORMAT NAME
-    ======================================================= */
-
-    const formattedName =
-      personalInfo.name
-        ? personalInfo.name
-            .charAt(0)
-            .toUpperCase() +
-          personalInfo.name
-            .slice(1)
-            .toLowerCase()
-        : "Portfolio";
-
-
-    /* =======================================================
-       PAGE TITLES
-    ======================================================= */
-
-    const pages = {
-      "/": null,
-      "/about": "About",
-      "/skills": "Skills",
-      "/projects": "Projects",
-      "/contact": "Contact",
-    };
+        <p
+          style={{
+            marginBottom: "0.5rem",
+            color: "var(--accent-primary)",
+            fontWeight: 700,
+          }}
+        >
+          404
+        </p>
 
 
-    /* =======================================================
-       NON-HOME PAGES
-    ======================================================= */
-
-    if (location.pathname !== "/") {
-
-      const page =
-        pages[location.pathname] ||
-        "Page Not Found";
-
-      document.title =
-        `${formattedName} — ${page}`;
-
-      return;
-    }
+        <h1>
+          Page not found
+        </h1>
 
 
-    /* =======================================================
-       HOME PAGE
-    ======================================================= */
-
-    if (
-      !Array.isArray(roles) ||
-      roles.length === 0
-    ) {
-
-      document.title =
-        `${formattedName} — Portfolio`;
-
-      return;
-    }
+        <p
+          style={{
+            marginTop: "0.75rem",
+            color: "var(--text-secondary)",
+          }}
+        >
+          The page you're looking for doesn't exist.
+        </p>
 
 
-    /* =======================================================
-       ROTATING HOME TITLE
-    ======================================================= */
+        <Link
+          to="/"
+          style={{
+            display: "inline-flex",
+            marginTop: "1.5rem",
+            padding: "0.7rem 1rem",
+            borderRadius: "999px",
+            background: "var(--accent-gradient)",
+            color: "var(--text-dark)",
+            textDecoration: "none",
+            fontWeight: 700,
+          }}
+        >
+          Back Home
+        </Link>
 
-    let index = 0;
+      </div>
 
-
-    const updateTitle = () => {
-
-      document.title =
-        `${formattedName} — ${roles[index]}`;
-
-    };
-
-
-    /* Initial title */
-
-    updateTitle();
-
-
-    /* Rotate title */
-
-    const interval = setInterval(() => {
-
-      index =
-        (index + 1) %
-        roles.length;
-
-      updateTitle();
-
-    }, 3000);
-
-
-    /* Cleanup */
-
-    return () => {
-      clearInterval(interval);
-    };
-
-  }, [
-    location.pathname,
-    personalInfo.name,
-    roles,
-  ]);
-
-
-  return null;
+    </main>
+  );
 }
 
 
@@ -211,119 +323,7 @@ function PageTitle() {
 export default function App() {
 
   return (
-    <>
-
-      {/* ===================================================
-          DYNAMIC PAGE TITLE
-      =================================================== */}
-
-      <PageTitle />
-
-
-      {/* ===================================================
-          NAVBAR
-      =================================================== */}
-
-      <Navbar />
-
-
-      {/* ===================================================
-          MAIN ROUTES
-      =================================================== */}
-
-      <main>
-
-        <Routes>
-
-          {/* =================================================
-              HOME
-          ================================================= */}
-
-          <Route
-            path="/"
-            element={
-              <Home />
-            }
-          />
-
-
-          {/* =================================================
-              ABOUT
-          ================================================= */}
-
-          <Route
-            path="/about"
-            element={
-              <About />
-            }
-          />
-
-
-          {/* =================================================
-              SKILLS
-          ================================================= */}
-
-          <Route
-            path="/skills"
-            element={
-              <Skills />
-            }
-          />
-
-
-          {/* =================================================
-              PROJECTS
-          ================================================= */}
-
-          <Route
-            path="/projects"
-            element={
-              <Projects />
-            }
-          />
-
-
-          {/* =================================================
-              CONTACT
-          ================================================= */}
-
-          <Route
-            path="/contact"
-            element={
-              <Contact />
-            }
-          />
-
-
-          {/* =================================================
-              404
-          ================================================= */}
-
-          <Route
-            path="*"
-            element={
-              <NotFound />
-            }
-          />
-
-        </Routes>
-
-      </main>
-
-
-      {/* ===================================================
-          FLOATING CONTACT
-      =================================================== */}
-
-      <FloatingContact/>
-
-
-      {/* ===================================================
-          FOOTER
-      =================================================== */}
-
-      <Footer />
-
-    </>
+    <AppContent />
   );
+
 }

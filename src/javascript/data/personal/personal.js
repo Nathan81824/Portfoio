@@ -132,6 +132,7 @@ export const profile = {
    PERSONAL LINKS
 ========================================================= */
 export const personalLinks = {
+   
   github: "https://github.com/Nathan81824",
 
   linkedin: "https://www.linkedin.com/in/YOUR-LINKEDIN-USERNAME/",

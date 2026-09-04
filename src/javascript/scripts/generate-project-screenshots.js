@@ -6,11 +6,12 @@
    ---------------------------------------------------------
    1. Fetch Nathan81824's public GitHub repositories
    2. Find repositories with GitHub Pages enabled
-   3. Open each GitHub Pages website
-   4. Capture a desktop screenshot
-   5. Save screenshots to:
+   3. Ignore forked repositories
+   4. Open each GitHub Pages website
+   5. Capture a desktop screenshot
+   6. Save screenshots to:
       public/project-screenshots/
-   6. Generate project screenshot data
+   7. Generate project screenshot data
 ========================================================= */
 
 
@@ -19,9 +20,7 @@
 ========================================================= */
 
 import { chromium } from "playwright";
-
 import fs from "fs/promises";
-
 import path from "path";
 
 
@@ -29,20 +28,16 @@ import path from "path";
    CONFIGURATION
 ========================================================= */
 
-const GITHUB_USERNAME =
-  "Nathan81824";
-
+const GITHUB_USERNAME = "Nathan81824";
 
 const GITHUB_API =
   `https://api.github.com/users/${GITHUB_USERNAME}/repos`;
-
 
 const OUTPUT_DIRECTORY =
   path.resolve(
     "public",
     "project-screenshots"
   );
-
 
 const OUTPUT_FILE =
   path.join(
@@ -56,31 +51,22 @@ const OUTPUT_FILE =
 ========================================================= */
 
 const VIEWPORT = {
-
   width: 1440,
-
   height: 900,
-
 };
 
+const PAGE_TIMEOUT = 30_000;
 
-const PAGE_TIMEOUT =
-  30_000;
-
-
-const WAIT_AFTER_LOAD =
-  1500;
+const WAIT_AFTER_LOAD = 1500;
 
 
 /* =========================================================
    CREATE SAFE FILE NAME
 ========================================================= */
 
-function createSafeFileName(
-  name
-) {
+function createSafeFileName(name) {
 
-  return name
+  return String(name || "")
 
     .toLowerCase()
 
@@ -100,12 +86,24 @@ function createSafeFileName(
    CREATE GITHUB PAGES URL
 ========================================================= */
 
-function createGitHubPagesUrl(
-  repository
-) {
+function createGitHubPagesUrl(repository) {
+
+  if (
+    repository?.homepage
+  ) {
+
+    return repository.homepage;
+
+  }
+
+
+  const owner =
+    repository?.owner?.login ||
+    GITHUB_USERNAME;
+
 
   return (
-    `https://${repository.owner.login}.github.io/${repository.name}/`
+    `https://${owner}.github.io/${repository.name}/`
   );
 
 }
@@ -124,26 +122,18 @@ async function fetchRepositories() {
 
   const response =
     await fetch(
-
       `${GITHUB_API}?per_page=100&sort=updated`,
-
       {
-
-        method:
-          "GET",
+        method: "GET",
 
         headers: {
-
           Accept:
             "application/vnd.github+json",
 
           "User-Agent":
             "Nathan-Portfolio",
-
         },
-
       }
-
     );
 
 
@@ -157,7 +147,6 @@ async function fetchRepositories() {
       response.headers.get(
         "x-ratelimit-remaining"
       );
-
 
     const reset =
       response.headers.get(
@@ -233,7 +222,7 @@ async function fetchRepositories() {
 
 
 /* =========================================================
-   FIND GITHUB PAGES REPOSITORIES
+   FIND GITHUB PAGES PROJECTS
 ========================================================= */
 
 function findGitHubPagesProjects(
@@ -252,7 +241,7 @@ function findGitHubPagesProjects(
     )
 
     /* -----------------------------------------------------
-       Only repositories with GitHub Pages
+       Only GitHub Pages repositories
     ----------------------------------------------------- */
 
     .filter(
@@ -287,6 +276,9 @@ function findGitHubPagesProjects(
           name:
             repository.name,
 
+          title:
+            repository.name,
+
           description:
             repository.description ||
             "A web project built with modern technologies.",
@@ -298,18 +290,36 @@ function findGitHubPagesProjects(
           githubUrl:
             repository.html_url,
 
+          github:
+            repository.html_url,
+
           liveUrl,
 
           homepage:
-            repository.homepage ||
+            liveUrl,
+
+          demo:
             liveUrl,
 
           stars:
             repository.stargazers_count ||
             0,
 
+          forks:
+            repository.forks_count ||
+            0,
+
+          watchers:
+            repository.watchers_count ||
+            0,
+
           updatedAt:
-            repository.updated_at,
+            repository.updated_at ||
+            null,
+
+          createdAt:
+            repository.created_at ||
+            null,
 
           screenshot:
             `/project-screenshots/${safeName}.png`,
@@ -318,7 +328,7 @@ function findGitHubPagesProjects(
             `${safeName}.png`,
 
           source:
-            "github",
+            "github-pages",
 
         };
 
@@ -346,19 +356,14 @@ async function openWebsite(
 
     const response =
       await page.goto(
-
         url,
-
         {
-
           waitUntil:
             "domcontentloaded",
 
           timeout:
             PAGE_TIMEOUT,
-
         }
-
       );
 
 
@@ -397,7 +402,8 @@ async function openWebsite(
 
 
     console.warn(
-      error.message
+      error?.message ||
+      error
     );
 
 
@@ -553,11 +559,8 @@ async function captureScreenshot(
 
   const screenshotPath =
     path.join(
-
       OUTPUT_DIRECTORY,
-
       project.screenshotFile
-
     );
 
 
@@ -599,7 +602,8 @@ async function captureScreenshot(
 
 
     console.warn(
-      error.message
+      error?.message ||
+      error
     );
 
 
@@ -626,18 +630,15 @@ async function cleanOldScreenshots(
 
   const validFiles =
     new Set(
-
       projects.map(
         (project) =>
           project.screenshotFile
       )
-
     );
 
 
   for (
-    const file
-    of files
+    const file of files
   ) {
 
     /* -----------------------------------------------------
@@ -783,7 +784,8 @@ async function generateProjectScreenshots() {
 
 
     console.error(
-      error.message
+      error?.message ||
+      error
     );
 
 
@@ -910,17 +912,13 @@ async function generateProjectScreenshots() {
 
 
   for (
-    const project
-    of projects
+    const project of projects
   ) {
 
     const result =
       await captureScreenshot(
-
         page,
-
         project
-
       );
 
 

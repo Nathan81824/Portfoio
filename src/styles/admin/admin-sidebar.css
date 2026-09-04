@@ -1,0 +1,1670 @@
+/* =========================================================
+   ADMIN SIDEBAR
+   Premium dark communication sidebar
+========================================================= */
+
+.admin-sidebar {
+  position: fixed;
+
+  top: 0;
+  left: 0;
+
+  width: 320px;
+  height: calc(100vh - 2px);
+
+  z-index: 1400;
+
+  pointer-events: none;
+
+  visibility: visible;
+  opacity: 1;
+}
+
+
+/* =========================================================
+   SIDEBAR CONTENT
+========================================================= */
+
+.admin-sidebar-content {
+  position: relative;
+
+  width: 320px;
+  height: 100%;
+
+  display: flex;
+
+  flex-direction: column;
+
+  overflow: hidden;
+
+  pointer-events: auto;
+
+  box-sizing: border-box;
+
+  border-right:
+    1px solid
+    rgba(255, 255, 255, 0.08);
+
+  background:
+    rgba(12, 12, 12, 0.98);
+
+  color:
+    #ffffff;
+
+  box-shadow:
+    10px 0 40px
+    rgba(0, 0, 0, 0.18);
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.admin-sidebar-header {
+  min-height: 82px;
+
+  padding:
+    0 1.15rem;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 1rem;
+
+  border-bottom:
+    1px solid
+    rgba(255, 255, 255, 0.07);
+}
+
+
+.admin-sidebar-label {
+  display: block;
+
+  margin-bottom:
+    0.3rem;
+
+  color:
+    #ffad32;
+
+  font-size:
+    0.6rem;
+
+  font-weight:
+    800;
+
+  letter-spacing:
+    0.17em;
+
+  text-transform:
+    uppercase;
+}
+
+
+.admin-sidebar-header h2 {
+  margin: 0;
+
+  color:
+    #ffffff;
+
+  font-family:
+    var(
+      --font-heading,
+      "Inter",
+      system-ui,
+      sans-serif
+    );
+
+  font-size:
+    1rem;
+
+  font-weight:
+    700;
+
+  letter-spacing:
+    -0.035em;
+}
+
+
+/* =========================================================
+   HEADER ACTIONS
+========================================================= */
+
+.admin-sidebar-header-actions {
+  display: flex;
+
+  align-items: center;
+
+  gap:
+    0.4rem;
+}
+
+
+/* =========================================================
+   DELETE ALL
+========================================================= */
+
+.admin-sidebar-delete-all,
+.admin-sidebar-mobile-close {
+  width: 36px;
+  height: 36px;
+
+  display: inline-flex;
+
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  color:
+    rgba(255, 255, 255, 0.5);
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.08);
+
+  border-radius:
+    9px;
+
+  background:
+    rgba(255, 255, 255, 0.03);
+
+  cursor: pointer;
+
+  transition:
+    color 200ms ease,
+    background 200ms ease,
+    border-color 200ms ease,
+    transform 200ms ease;
+}
+
+
+.admin-sidebar-delete-all:hover:not(:disabled) {
+  color:
+    #ff6b6b;
+
+  background:
+    rgba(239, 68, 68, 0.08);
+
+  border-color:
+    rgba(239, 68, 68, 0.3);
+
+  transform:
+    translateY(-1px);
+}
+
+
+.admin-sidebar-delete-all:disabled {
+  cursor:
+    not-allowed;
+
+  opacity:
+    0.3;
+}
+
+
+/* =========================================================
+   MOBILE CLOSE
+========================================================= */
+
+.admin-sidebar-mobile-close {
+  display: none;
+}
+
+.admin-sidebar-mobile-close:hover {
+  color:
+    #ffad32;
+
+  background:
+    rgba(255, 138, 0, 0.08);
+
+  border-color:
+    rgba(255, 159, 0, 0.35);
+}
+
+
+/* =========================================================
+   ERROR
+========================================================= */
+
+.admin-sidebar-error {
+  margin:
+    0.7rem 0.75rem 0;
+
+  padding:
+    0.65rem 0.75rem;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap:
+    0.6rem;
+
+  border:
+    1px solid
+    rgba(239, 68, 68, 0.2);
+
+  border-radius:
+    9px;
+
+  color:
+    #fca5a5;
+
+  background:
+    rgba(239, 68, 68, 0.06);
+
+  font-size:
+    0.68rem;
+}
+
+
+.admin-sidebar-error button {
+  padding:
+    0.25rem 0.4rem;
+
+  border: none;
+
+  color:
+    #ffad32;
+
+  background:
+    transparent;
+
+  font-size:
+    0.67rem;
+
+  font-weight:
+    700;
+
+  cursor: pointer;
+}
+
+
+/* =========================================================
+   CONVERSATION AREA
+========================================================= */
+
+.admin-sidebar-conversations {
+  flex: 1;
+
+  min-height: 0;
+
+  display: flex;
+
+  flex-direction: column;
+}
+
+
+/* =========================================================
+   CONVERSATION COUNT
+========================================================= */
+
+.admin-sidebar-conversations-header {
+  min-height: 48px;
+
+  padding:
+    0 0.9rem;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  border-bottom:
+    1px solid
+    rgba(255, 255, 255, 0.045);
+}
+
+
+.admin-sidebar-conversations-header span {
+  color:
+    #555555;
+
+  font-size:
+    0.58rem;
+
+  font-weight:
+    800;
+
+  letter-spacing:
+    0.14em;
+}
+
+
+.admin-sidebar-conversations-header strong {
+  min-width: 25px;
+  height: 25px;
+
+  display: inline-flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border-radius:
+    50%;
+
+  color:
+    #090909;
+
+  background:
+    linear-gradient(
+      135deg,
+      #ffad32,
+      #ff8a00,
+      #ffc400
+    );
+
+  font-size:
+    0.64rem;
+
+  font-weight:
+    800;
+
+  box-shadow:
+    0 4px 14px
+    rgba(255, 138, 0, 0.16);
+}
+
+
+/* =========================================================
+   LIST
+========================================================= */
+
+.admin-sidebar-conversations-list {
+  flex: 1;
+
+  min-height: 0;
+
+  overflow-y: auto;
+
+  padding:
+    0.55rem;
+
+  scrollbar-width:
+    thin;
+
+  scrollbar-color:
+    rgba(255, 255, 255, 0.12)
+    transparent;
+}
+
+
+/* =========================================================
+   CONVERSATION WRAPPER
+========================================================= */
+
+.admin-sidebar-conversation-wrapper {
+  position: relative;
+
+  display: flex;
+
+  align-items: stretch;
+
+  margin-bottom:
+    0.35rem;
+}
+
+
+/* =========================================================
+   CONVERSATION
+========================================================= */
+
+.admin-sidebar-conversation {
+  width: 100%;
+
+  min-height: 68px;
+
+  padding:
+    0.65rem 2.7rem 0.65rem 0.65rem;
+
+  display: flex;
+
+  align-items: center;
+
+  gap:
+    0.7rem;
+
+  border:
+    1px solid
+    transparent;
+
+  border-radius:
+    12px;
+
+  color:
+    #b8b8b8;
+
+  background:
+    transparent;
+
+  text-align:
+    left;
+
+  cursor:
+    pointer;
+
+  transition:
+    color 200ms ease,
+    background 200ms ease,
+    border-color 200ms ease,
+    transform 200ms ease,
+    box-shadow 200ms ease;
+}
+
+
+.admin-sidebar-conversation:hover {
+  color:
+    #ffffff;
+
+  background:
+    rgba(255, 255, 255, 0.035);
+
+  border-color:
+    rgba(255, 255, 255, 0.07);
+
+  transform:
+    translateX(2px);
+}
+
+
+.admin-sidebar-conversation.active {
+  color:
+    #ffffff;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(255, 138, 0, 0.1),
+      rgba(255, 138, 0, 0.035)
+    );
+
+  border-color:
+    rgba(255, 159, 0, 0.22);
+
+  box-shadow:
+    inset 3px 0 0
+    #ff9f00;
+}
+
+
+/* =========================================================
+   CONVERSATION AVATAR
+========================================================= */
+
+.admin-sidebar-conversation-avatar {
+  width: 38px;
+  height: 38px;
+
+  flex-shrink: 0;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  color:
+    #ffad32;
+
+  border:
+    1px solid
+    rgba(255, 159, 0, 0.18);
+
+  border-radius:
+    11px;
+
+  background:
+    rgba(255, 138, 0, 0.06);
+
+  transition:
+    color 200ms ease,
+    background 200ms ease,
+    border-color 200ms ease,
+    transform 200ms ease;
+}
+
+
+.admin-sidebar-conversation.active
+.admin-sidebar-conversation-avatar {
+  color:
+    #090909;
+
+  border-color:
+    transparent;
+
+  background:
+    linear-gradient(
+      135deg,
+      #ffad32,
+      #ff8a00,
+      #ffc400
+    );
+
+  transform:
+    scale(1.03);
+}
+
+
+/* =========================================================
+   CONVERSATION INFO
+========================================================= */
+
+.admin-sidebar-conversation-info {
+  min-width: 0;
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap:
+    0.25rem;
+}
+
+
+.admin-sidebar-conversation-info strong {
+  overflow:
+    hidden;
+
+  color:
+    #ffffff;
+
+  font-size:
+    0.8rem;
+
+  font-weight:
+    650;
+
+  line-height:
+    1.2;
+
+  text-overflow:
+    ellipsis;
+
+  white-space:
+    nowrap;
+}
+
+
+.admin-sidebar-conversation-info span {
+  overflow:
+    hidden;
+
+  color:
+    #606060;
+
+  font-size:
+    0.64rem;
+
+  line-height:
+    1.2;
+
+  text-overflow:
+    ellipsis;
+
+  white-space:
+    nowrap;
+}
+
+
+/* =========================================================
+   DELETE SINGLE
+========================================================= */
+
+.admin-sidebar-delete {
+  position: absolute;
+
+  top: 50%;
+
+  right: 0.55rem;
+
+  width: 30px;
+  height: 30px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  opacity: 0;
+
+  transform:
+    translateY(-50%)
+    scale(0.9);
+
+  color:
+    #666666;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.07);
+
+  border-radius:
+    8px;
+
+  background:
+    rgba(9, 9, 9, 0.7);
+
+  cursor:
+    pointer;
+
+  transition:
+    opacity 180ms ease,
+    color 180ms ease,
+    background 180ms ease,
+    border-color 180ms ease,
+    transform 180ms ease;
+}
+
+
+.admin-sidebar-conversation-wrapper:hover
+.admin-sidebar-delete {
+  opacity:
+    1;
+
+  transform:
+    translateY(-50%)
+    scale(1);
+}
+
+
+.admin-sidebar-delete:hover {
+  color:
+    #ff6b6b;
+
+  border-color:
+    rgba(239, 68, 68, 0.3);
+
+  background:
+    rgba(239, 68, 68, 0.08);
+}
+
+
+.admin-sidebar-delete:disabled {
+  opacity:
+    1;
+
+  cursor:
+    not-allowed;
+
+  color:
+    #ffad32;
+}
+
+
+/* =========================================================
+   EMPTY STATE
+========================================================= */
+
+.admin-sidebar-empty {
+  min-height:
+    260px;
+
+  padding:
+    2rem 1rem;
+
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  flex-direction:
+    column;
+
+  gap:
+    0.5rem;
+
+  text-align:
+    center;
+}
+
+
+.admin-sidebar-empty svg {
+  margin-bottom:
+    0.35rem;
+
+  color:
+    rgba(255, 173, 50, 0.55);
+}
+
+
+.admin-sidebar-empty p {
+  margin:
+    0;
+
+  color:
+    #b8b8b8;
+
+  font-size:
+    0.78rem;
+
+  font-weight:
+    600;
+}
+
+
+.admin-sidebar-empty span {
+  max-width:
+    190px;
+
+  color:
+    #555555;
+
+  font-size:
+    0.64rem;
+
+  line-height:
+    1.5;
+}
+
+
+/* =========================================================
+   LOADING
+========================================================= */
+
+.admin-sidebar-loading {
+  width:
+    100%;
+  height:
+    100%;
+
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  flex-direction:
+    column;
+
+  gap:
+    0.65rem;
+
+  color:
+    #666666;
+
+  font-size:
+    0.72rem;
+}
+
+
+.admin-sidebar-spin {
+  animation:
+    admin-sidebar-spin
+    0.9s linear infinite;
+
+  color:
+    #ffad32;
+}
+
+
+@keyframes admin-sidebar-spin {
+
+  from {
+    transform:
+      rotate(0deg);
+  }
+
+  to {
+    transform:
+      rotate(360deg);
+  }
+
+}
+
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+.admin-sidebar-footer {
+  min-height:
+    72px;
+
+  padding:
+    0 0.85rem;
+
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    space-between;
+
+  gap:
+    0.6rem;
+
+  border-top:
+    1px solid
+    rgba(255, 255, 255, 0.07);
+
+  background:
+    rgba(255, 255, 255, 0.015);
+}
+
+
+/* =========================================================
+   LIVE STATUS
+========================================================= */
+
+.admin-sidebar-status {
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  gap:
+    0.45rem;
+
+  color:
+    #555555;
+
+  font-size:
+    0.62rem;
+
+  font-weight:
+    600;
+}
+
+
+.admin-sidebar-status-dot {
+  width:
+    6px;
+
+  height:
+    6px;
+
+  border-radius:
+    50%;
+
+  background:
+    #22c55e;
+
+  box-shadow:
+    0 0 9px
+    rgba(34, 197, 94, 0.55);
+}
+
+
+/* =========================================================
+   LOGOUT
+========================================================= */
+
+.admin-sidebar-logout {
+  min-height:
+    36px;
+
+  padding:
+    0 0.7rem;
+
+  display:
+    inline-flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  gap:
+    0.4rem;
+
+  color:
+    #777777;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.07);
+
+  border-radius:
+    9px;
+
+  background:
+    rgba(255, 255, 255, 0.025);
+
+  cursor:
+    pointer;
+
+  font-size:
+    0.67rem;
+
+  font-weight:
+    600;
+
+  transition:
+    color 200ms ease,
+    background 200ms ease,
+    border-color 200ms ease,
+    transform 200ms ease;
+}
+
+
+.admin-sidebar-logout:hover {
+  color:
+    #ff6b6b;
+
+  background:
+    rgba(239, 68, 68, 0.07);
+
+  border-color:
+    rgba(239, 68, 68, 0.25);
+
+  transform:
+    translateY(-1px);
+}
+
+
+/* =========================================================
+   MOBILE BACKDROP
+========================================================= */
+
+.admin-sidebar-backdrop {
+  display:
+    none;
+}
+
+
+/* =========================================================
+   DELETE MODAL OVERLAY
+========================================================= */
+
+.admin-delete-overlay {
+  position:
+    fixed;
+
+  inset:
+    0;
+
+  z-index:
+    5000;
+
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  padding:
+    1rem;
+
+  background:
+    rgba(0, 0, 0, 0.68);
+
+  backdrop-filter:
+    blur(7px);
+
+  -webkit-backdrop-filter:
+    blur(7px);
+}
+
+
+/* =========================================================
+   DELETE MODAL
+========================================================= */
+
+.admin-delete-modal {
+  position:
+    relative;
+
+  width:
+    min(420px, 100%);
+
+  padding:
+    1.5rem;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.1);
+
+  border-radius:
+    18px;
+
+  background:
+    linear-gradient(
+      145deg,
+      #171717,
+      #0c0c0c
+    );
+
+  box-shadow:
+    0 30px 90px
+    rgba(0, 0, 0, 0.55),
+
+    0 0 40px
+    rgba(255, 138, 0, 0.06);
+
+  color:
+    #ffffff;
+}
+
+
+/* =========================================================
+   MODAL CLOSE
+========================================================= */
+
+.admin-delete-close {
+  position:
+    absolute;
+
+  top:
+    0.85rem;
+
+  right:
+    0.85rem;
+
+  width:
+    34px;
+
+  height:
+    34px;
+
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  padding:
+    0;
+
+  color:
+    #666666;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.07);
+
+  border-radius:
+    9px;
+
+  background:
+    rgba(255, 255, 255, 0.03);
+
+  cursor:
+    pointer;
+
+  transition:
+    color 200ms ease,
+    background 200ms ease,
+    border-color 200ms ease,
+    transform 200ms ease;
+}
+
+
+.admin-delete-close:hover:not(:disabled) {
+  color:
+    #ffffff;
+
+  background:
+    rgba(255, 255, 255, 0.06);
+
+  border-color:
+    rgba(255, 255, 255, 0.14);
+
+  transform:
+    rotate(5deg);
+}
+
+
+/* =========================================================
+   MODAL ICON
+========================================================= */
+
+.admin-delete-icon {
+  width:
+    48px;
+
+  height:
+    48px;
+
+  margin-bottom:
+    1rem;
+
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  color:
+    #ffad32;
+
+  border:
+    1px solid
+    rgba(255, 159, 0, 0.22);
+
+  border-radius:
+    13px;
+
+  background:
+    rgba(255, 138, 0, 0.07);
+
+  box-shadow:
+    0 0 25px
+    rgba(255, 138, 0, 0.08);
+}
+
+
+/* =========================================================
+   MODAL TEXT
+========================================================= */
+
+.admin-delete-modal h2 {
+  margin:
+    0 0 0.55rem;
+
+  padding-right:
+    2rem;
+
+  color:
+    #ffffff;
+
+  font-size:
+    1.05rem;
+
+  font-weight:
+    750;
+
+  letter-spacing:
+    -0.03em;
+}
+
+
+.admin-delete-modal p {
+  margin:
+    0;
+
+  color:
+    #777777;
+
+  font-size:
+    0.76rem;
+
+  line-height:
+    1.65;
+}
+
+
+/* =========================================================
+   WARNING
+========================================================= */
+
+.admin-delete-warning {
+  margin-top:
+    1rem;
+
+  padding:
+    0.7rem 0.8rem;
+
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  gap:
+    0.5rem;
+
+  color:
+    #ffad32;
+
+  border:
+    1px solid
+    rgba(255, 159, 0, 0.16);
+
+  border-radius:
+    10px;
+
+  background:
+    rgba(255, 138, 0, 0.05);
+
+  font-size:
+    0.68rem;
+}
+
+
+/* =========================================================
+   MODAL ACTIONS
+========================================================= */
+
+.admin-delete-actions {
+  margin-top:
+    1.2rem;
+
+  display:
+    flex;
+
+  justify-content:
+    flex-end;
+
+  gap:
+    0.55rem;
+}
+
+
+.admin-delete-cancel,
+.admin-delete-confirm {
+  min-height:
+    40px;
+
+  padding:
+    0 0.9rem;
+
+  display:
+    inline-flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  gap:
+    0.4rem;
+
+  border-radius:
+    10px;
+
+  cursor:
+    pointer;
+
+  font-size:
+    0.72rem;
+
+  font-weight:
+    650;
+
+  transition:
+    transform 200ms ease,
+    background 200ms ease,
+    border-color 200ms ease,
+    box-shadow 200ms ease,
+    color 200ms ease;
+}
+
+
+.admin-delete-cancel {
+  color:
+    #999999;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.08);
+
+  background:
+    rgba(255, 255, 255, 0.035);
+}
+
+
+.admin-delete-cancel:hover:not(:disabled) {
+  color:
+    #ffffff;
+
+  background:
+    rgba(255, 255, 255, 0.06);
+
+  border-color:
+    rgba(255, 255, 255, 0.14);
+}
+
+
+.admin-delete-confirm {
+  color:
+    #090909;
+
+  border:
+    1px solid
+    transparent;
+
+  background:
+    linear-gradient(
+      135deg,
+      #ffad32,
+      #ff8a00
+    );
+
+  box-shadow:
+    0 7px 20px
+    rgba(255, 138, 0, 0.16);
+}
+
+
+.admin-delete-confirm:hover:not(:disabled) {
+  transform:
+    translateY(-1px);
+
+  box-shadow:
+    0 10px 26px
+    rgba(255, 138, 0, 0.28);
+}
+
+
+.admin-delete-cancel:disabled,
+.admin-delete-confirm:disabled {
+  cursor:
+    not-allowed;
+
+  opacity:
+    0.45;
+}
+
+
+/* =========================================================
+   FOCUS
+========================================================= */
+
+.admin-sidebar button:focus-visible {
+  outline:
+    2px solid
+    #ff9f00;
+
+  outline-offset:
+    2px;
+}
+
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 1024px) {
+
+  .admin-sidebar {
+    width:
+      290px;
+  }
+
+  .admin-sidebar-content {
+    width:
+      290px;
+  }
+
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 768px) {
+
+  .admin-sidebar {
+    top:
+      66px;
+
+    width:
+      100%;
+
+    height:
+      calc(100dvh - 66px);
+
+    visibility:
+      hidden;
+
+    opacity:
+      0;
+
+    pointer-events:
+      none;
+
+    transition:
+      opacity 250ms ease,
+      visibility 250ms ease;
+  }
+
+
+  .admin-sidebar.open {
+    visibility:
+      visible;
+
+    opacity:
+      1;
+
+    pointer-events:
+      auto;
+  }
+
+
+  /* =======================================================
+     BACKDROP
+  ======================================================= */
+
+  .admin-sidebar-backdrop {
+    position:
+      absolute;
+
+    inset:
+      0;
+
+    display:
+      none;
+
+    width:
+      100%;
+
+    height:
+      100%;
+
+    padding:
+      0;
+
+    border:
+      none;
+
+    background:
+      rgba(0, 0, 0, 0.5);
+
+    cursor:
+      pointer;
+  }
+
+
+  .admin-sidebar.open
+  .admin-sidebar-backdrop {
+    display:
+      block;
+  }
+
+
+  /* =======================================================
+     MOBILE CONTENT
+  ======================================================= */
+
+  .admin-sidebar-content {
+    position:
+      absolute;
+
+    top:
+      0;
+
+    right:
+      0;
+
+    width:
+      min(360px, 88vw);
+
+    height:
+      100%;
+
+    transform:
+      translateX(100%);
+
+    border-right:
+      none;
+
+    border-left:
+      1px solid
+      rgba(255, 255, 255, 0.08);
+
+    box-shadow:
+      -20px 0 60px
+      rgba(0, 0, 0, 0.35);
+
+    transition:
+      transform 280ms
+      cubic-bezier(
+        0.4,
+        0,
+        0.2,
+        1
+      );
+  }
+
+
+  .admin-sidebar.open
+  .admin-sidebar-content {
+    transform:
+      translateX(0);
+  }
+
+
+  .admin-sidebar-mobile-close {
+    display:
+      inline-flex;
+  }
+
+
+  .admin-sidebar-header {
+    min-height:
+      70px;
+  }
+
+
+  .admin-sidebar-conversations-list {
+    padding:
+      0.65rem;
+  }
+
+
+  .admin-sidebar-footer {
+    min-height:
+      68px;
+  }
+
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
+
+@media (max-width: 480px) {
+
+  .admin-sidebar-content {
+    width:
+      min(350px, 92vw);
+  }
+
+
+  .admin-sidebar-header {
+    padding:
+      0 1rem;
+  }
+
+
+  .admin-sidebar-label {
+    font-size:
+      0.58rem;
+  }
+
+
+  .admin-sidebar-header h2 {
+    font-size:
+      0.94rem;
+  }
+
+
+  .admin-sidebar-conversation {
+    min-height:
+      64px;
+
+    padding:
+      0.6rem
+      2.5rem
+      0.6rem
+      0.6rem;
+  }
+
+
+  .admin-sidebar-conversation-avatar {
+    width:
+      36px;
+
+    height:
+      36px;
+  }
+
+
+  .admin-sidebar-delete {
+    opacity:
+      1;
+
+    width:
+      28px;
+
+    height:
+      28px;
+
+    transform:
+      translateY(-50%)
+      scale(1);
+  }
+
+
+  .admin-delete-modal {
+    padding:
+      1.25rem;
+
+    border-radius:
+      15px;
+  }
+
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+  .admin-sidebar *,
+  .admin-sidebar *::before,
+  .admin-sidebar *::after,
+  .admin-delete-overlay *,
+  .admin-delete-overlay *::before,
+  .admin-delete-overlay *::after {
+    transition:
+      none !important;
+
+    animation:
+      none !important;
+  }
+
+}

@@ -10,6 +10,7 @@
    - Framer Motion
    - Lucide React
    - Reusable Button component
+   - React Router
    - Background video
 ========================================================= */
 
@@ -56,12 +57,23 @@ import Button from "../Shared/Button/Button.jsx";
 
 
 /* =========================================================
-   CENTRAL JAVASCRIPT
+   CENTRAL DATA
 ========================================================= */
 
 import {
   getData,
-} from "../../javascript";
+} from "../../javascript/data/data.js";
+
+
+/* =========================================================
+   ROUTER
+========================================================= */
+
+import {
+  Link,
+} from "react-router-dom";
+
+
 
 
 
@@ -72,7 +84,7 @@ import {
 export default function Hero() {
 
   /* =======================================================
-     REDUCED MOTIONain
+     REDUCED MOTION
   ======================================================= */
 
   const shouldReduceMotion =
@@ -83,11 +95,40 @@ export default function Hero() {
      WEBSITE DATA
   ======================================================= */
 
-  const {
-    personalInfo = {},
-    roles = [],
-    siteText = {},
-  } = getData();
+  const data =
+    getData();
+
+
+  const personalInfo =
+    data?.personalInfo || {};
+
+
+  const roles =
+    Array.isArray(data?.roles)
+      ? data.roles
+      : [];
+
+
+  const siteText =
+    data?.siteText || {};
+
+
+  /* =======================================================
+     HOME TEXT
+  ======================================================= */
+
+  const homeText =
+    siteText?.home || {};
+
+
+  /* =======================================================
+     DISPLAY NAME
+  ======================================================= */
+
+  const displayName =
+    personalInfo.displayName ||
+    personalInfo.name ||
+    "Nathan";
 
 
   /* =======================================================
@@ -115,24 +156,31 @@ export default function Hero() {
 
 
     const interval =
-      setInterval(() => {
+      window.setInterval(
+        () => {
 
-        setRoleIndex(
-          (previousIndex) =>
-            (
-              previousIndex + 1
-            ) % roles.length
-        );
+          setRoleIndex(
+            (previousIndex) =>
+              (
+                previousIndex + 1
+              ) % roles.length
+          );
 
-      }, 3000);
+        },
+        3000
+      );
 
 
     return () => {
-      clearInterval(interval);
+
+      window.clearInterval(
+        interval
+      );
+
     };
 
   }, [
-    roles,
+    roles.length,
     shouldReduceMotion,
   ]);
 
@@ -143,28 +191,21 @@ export default function Hero() {
 
   const currentRole =
     roles.length > 0
+
       ? roles[
           roleIndex % roles.length
         ]
+
       : "Frontend Developer";
 
 
   /* =======================================================
-     HOME TEXT
+     RESUME URL
   ======================================================= */
 
-  const homeText =
-    siteText.home || {};
-
-
-  /* =======================================================
-     DISPLAY NAME
-  ======================================================= */
-
-  const displayName =
-    personalInfo.displayName ||
-    personalInfo.name ||
-    "Nathan";
+  const resumeUrl =
+    personalInfo.resume ||
+    `${import.meta.env.BASE_URL}resume.pdf`;
 
 
   /* =======================================================
@@ -215,12 +256,18 @@ export default function Hero() {
       =================================================== */}
 
       <div
-        className="hero-glow hero-glow-one"
+        className="
+          hero-glow
+          hero-glow-one
+        "
         aria-hidden="true"
       />
 
       <div
-        className="hero-glow hero-glow-two"
+        className="
+          hero-glow
+          hero-glow-two
+        "
         aria-hidden="true"
       />
 
@@ -251,7 +298,7 @@ export default function Hero() {
 
           animate={
             shouldReduceMotion
-              ? {}
+              ? undefined
               : {
                   opacity: 1,
                   y: 0,
@@ -275,7 +322,10 @@ export default function Hero() {
           >
 
             <span
-              className="hero-eyebrow-dot animate-status"
+              className="
+                hero-eyebrow-dot
+                animate-status
+              "
               aria-hidden="true"
             />
 
@@ -286,9 +336,12 @@ export default function Hero() {
             >
 
               <motion.span
+
                 key={currentRole}
 
-                className="hero-eyebrow-text"
+                className="
+                  hero-eyebrow-text
+                "
 
                 initial={
                   shouldReduceMotion
@@ -351,7 +404,7 @@ export default function Hero() {
 
             animate={
               shouldReduceMotion
-                ? {}
+                ? undefined
                 : {
                     opacity: 1,
                     y: 0,
@@ -373,7 +426,9 @@ export default function Hero() {
             {" "}
 
             <span className="hero-name">
+
               {displayName}.
+
             </span>
 
           </motion.h1>
@@ -396,7 +451,7 @@ export default function Hero() {
 
             animate={
               shouldReduceMotion
-                ? {}
+                ? undefined
                 : {
                     opacity: 1,
                     y: 0,
@@ -423,7 +478,10 @@ export default function Hero() {
           =============================================== */}
 
           <motion.p
-            className="hero-description"
+
+            className="
+              hero-description
+            "
 
             initial={
               shouldReduceMotion
@@ -436,7 +494,7 @@ export default function Hero() {
 
             animate={
               shouldReduceMotion
-                ? {}
+                ? undefined
                 : {
                     opacity: 1,
                     y: 0,
@@ -460,10 +518,11 @@ export default function Hero() {
 
 
           {/* ===============================================
-              HERO BUTTONS
+              HERO ACTIONS
           =============================================== */}
 
           <motion.div
+
             className="hero-actions"
 
             initial={
@@ -477,7 +536,7 @@ export default function Hero() {
 
             animate={
               shouldReduceMotion
-                ? {}
+                ? undefined
                 : {
                     opacity: 1,
                     y: 0,
@@ -497,15 +556,17 @@ export default function Hero() {
             ============================================= */}
 
             <Button
-              href="#projects"
+              href="/projects"
               variant="primary"
               size="lg"
               icon={ArrowRight}
             >
+
               {
                 homeText.button1 ||
                 "View My Work"
               }
+
             </Button>
 
 
@@ -514,19 +575,18 @@ export default function Hero() {
             ============================================= */}
 
             <Button
-              href={
-                personalInfo.resume ||
-                "/resume.pdf"
-              }
+              href={resumeUrl}
               variant="secondary"
               size="lg"
               icon={Download}
               download
             >
+
               {
                 homeText.button2 ||
                 "Download Resume"
               }
+
             </Button>
 
           </motion.div>
@@ -538,38 +598,33 @@ export default function Hero() {
             SCROLL INDICATOR
         ================================================= */}
 
-        <motion.a
-          href="#about"
+        <Link
+          to="/"
           className="hero-scroll"
           aria-label="Scroll to About section"
+          onClick={(event) => {
 
-          initial={
-            shouldReduceMotion
-              ? false
-              : {
-                  opacity: 0,
-                }
-          }
+            event.preventDefault();
 
-          animate={
-            shouldReduceMotion
-              ? {}
-              : {
-                  opacity: 1,
-                }
-          }
+            document
+              .getElementById("about")
+              ?.scrollIntoView({
+                behavior:
+                  shouldReduceMotion
+                    ? "auto"
+                    : "smooth",
+              });
 
-          transition={{
-            delay: 1.2,
-            duration: 0.6,
           }}
         >
 
           <span>
+
             {
               homeText.scroll ||
               "Scroll to explore"
             }
+
           </span>
 
 
@@ -577,7 +632,7 @@ export default function Hero() {
 
             animate={
               shouldReduceMotion
-                ? {}
+                ? undefined
                 : {
                     y: [0, 7, 0],
                   }
@@ -598,16 +653,17 @@ export default function Hero() {
             <ArrowDown
               size={18}
               strokeWidth={2}
+              aria-hidden="true"
             />
 
           </motion.div>
 
-        </motion.a>
+        </Link>
 
       </div>
 
     </section>
 
   );
-}
 
+}

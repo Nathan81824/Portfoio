@@ -1,9 +1,14 @@
-
+import ContactForm from "../components/Contact/ContactForm"
+import ContactHero from "../components/Contact/ContactHero"
 
 function About() {
   return (
     <div>
-      <h1>PAGE@#$</h1>
+      <ContactHero/>
+
+      <ContactForm/>
+
+     
     </div>
   )
 }

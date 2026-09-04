@@ -1,417 +1,594 @@
-import { motion } from "framer-motion";
+
+import { useState } from "react";
+
 import {
-  ArrowDown,
+  Send,
+  User,
   Mail,
-  MessageCircle,
-  Sparkles,
+  MessageSquare,
+  CheckCircle2,
+  AlertCircle,
 } from "lucide-react";
 
-import { getData } from "../../javascript/data/data";
+import dataStorage from "../../javascript/data/dataStorage.js";
 
+import {
+  notifyNewContact,
+} from "../../javascript/data/notification/notification.js";
 
 
 /* =========================================================
-   CONTACT HERO
+   CONTACT FORM
 ========================================================= */
 
-export default function ContactHero() {
+export default function ContactForm({
+  onSubmitted,
+}) {
 
-  const {
-    personalInfo = {},
-    profile = {},
-  } = getData();
+  /* =======================================================
+     FORM STATE
+  ======================================================= */
+
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    message: "",
+  });
 
 
-  const displayName =
-    personalInfo.displayName ||
-    personalInfo.name ||
-    "Nathan";
+  /* =======================================================
+     STATUS
+  ======================================================= */
+
+  const [status, setStatus] =
+    useState("idle");
 
 
-  const email =
-    personalInfo.email ||
-    "";
+  const [error, setError] =
+    useState("");
 
+
+  /* =======================================================
+     HANDLE INPUT
+  ======================================================= */
+
+  const handleChange = (event) => {
+
+    const {
+      name,
+      value,
+    } = event.target;
+
+
+    setFormData((previous) => ({
+      ...previous,
+      [name]: value,
+    }));
+
+
+    if (status !== "idle") {
+      setStatus("idle");
+    }
+
+
+    if (error) {
+      setError("");
+    }
+
+  };
+
+
+  /* =======================================================
+     VALIDATE FORM
+  ======================================================= */
+
+  const validateForm = () => {
+
+    const name =
+      formData.name.trim();
+
+    const email =
+      formData.email.trim();
+
+    const message =
+      formData.message.trim();
+
+
+    if (!name) {
+      return "Please enter your name.";
+    }
+
+
+    if (!email) {
+      return "Please enter your email.";
+    }
+
+
+    const emailPattern =
+      /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+
+    if (!emailPattern.test(email)) {
+      return "Please enter a valid email address.";
+    }
+
+
+    if (!message) {
+      return "Please enter a message.";
+    }
+
+
+    if (message.length > 1000) {
+      return "Your message must be 1000 characters or less.";
+    }
+
+
+    return "";
+
+  };
+
+
+  /* =======================================================
+     SUBMIT
+  ======================================================= */
+
+  const handleSubmit = (event) => {
+
+    event.preventDefault();
+
+    setError("");
+
+
+    const validationError =
+      validateForm();
+
+
+    if (validationError) {
+
+      setError(
+        validationError
+      );
+
+      setStatus("error");
+
+      return;
+
+    }
+
+
+    /* =====================================================
+       CREATE CONTACT MESSAGE
+    ===================================================== */
+
+    const now =
+      new Date();
+
+
+    const contactMessage = {
+
+      id:
+        `${Date.now()}-${Math.random()
+          .toString(36)
+          .slice(2, 9)}`,
+
+      name:
+        formData.name.trim(),
+
+      email:
+        formData.email.trim(),
+
+      message:
+        formData.message.trim(),
+
+      createdAt:
+        now.toISOString(),
+
+      read:
+        false,
+
+    };
+
+
+    try {
+
+      /* ===================================================
+         SAVE MESSAGE
+      =================================================== */
+
+      if (
+        !dataStorage ||
+        typeof dataStorage.save !==
+          "function"
+      ) {
+
+        throw new Error(
+          "Contact message storage is unavailable."
+        );
+
+      }
+
+
+      dataStorage.save(
+        contactMessage
+      );
+
+
+      /* ===================================================
+         NOTIFICATION
+      =================================================== */
+
+      try {
+
+        notifyNewContact(
+          contactMessage
+        );
+
+      } catch (
+        notificationError
+      ) {
+
+        console.warn(
+          "Browser notification could not be created:",
+          notificationError
+        );
+
+      }
+
+
+      /* ===================================================
+         UPDATE INBOX
+      =================================================== */
+
+      window.dispatchEvent(
+        new CustomEvent(
+          "contact:new",
+          {
+            detail:
+              contactMessage,
+          }
+        )
+      );
+
+
+      /* ===================================================
+         CLEAR FORM
+      =================================================== */
+
+      setFormData({
+        name: "",
+        email: "",
+        message: "",
+      });
+
+
+      /* ===================================================
+         SUCCESS
+      =================================================== */
+
+      setStatus(
+        "success"
+      );
+
+
+      if (
+        typeof onSubmitted ===
+        "function"
+      ) {
+
+        onSubmitted(
+          contactMessage
+        );
+
+      }
+
+    } catch (
+      submissionError
+    ) {
+
+      console.error(
+        "Contact form error:",
+        submissionError
+      );
+
+
+      setError(
+        "Something went wrong while saving your message. Please try again."
+      );
+
+
+      setStatus(
+        "error"
+      );
+
+    }
+
+  };
+
+
+  /* =======================================================
+     CHARACTER COUNT
+  ======================================================= */
+
+  const characterCount =
+    formData.message.length;
+
+
+  /* =======================================================
+     RENDER
+  ======================================================= */
 
   return (
 
     <section
-      className="contact-hero"
-      id="contact"
+      className="contact-form"
+      aria-label="Contact form"
     >
 
       {/* ===================================================
-          AMBIENT BACKGROUND
+          HEADER
       =================================================== */}
 
-      <div
-        className="contact-hero__glow contact-hero__glow--one"
-        aria-hidden="true"
-      />
+      <div className="contact-form__header">
 
-      <div
-        className="contact-hero__glow contact-hero__glow--two"
-        aria-hidden="true"
-      />
+        <span className="contact-form__eyebrow">
+          GET IN TOUCH
+        </span>
+
+
+        <h2>
+          Send a message
+        </h2>
+
+
+        <p>
+          Have a project, question, or idea?
+          Send me a message and I'll get back
+          to you.
+        </p>
+
+      </div>
 
 
       {/* ===================================================
-          GRID
+          SUCCESS MESSAGE
       =================================================== */}
 
-      <div
-        className="contact-hero__grid"
-        aria-hidden="true"
-      />
+      {status === "success" && (
 
-
-      {/* ===================================================
-          CONTAINER
-      =================================================== */}
-
-      <div className="contact-hero__container">
-
-
-        {/* =================================================
-            LEFT CONTENT
-        ================================================= */}
-
-        <motion.div
-          className="contact-hero__content"
-
-          initial={{
-            opacity: 0,
-            x: -30,
-          }}
-
-          animate={{
-            opacity: 1,
-            x: 0,
-          }}
-
-          transition={{
-            duration: 0.7,
-            ease: "easeOut",
-          }}
+        <div
+          className="
+            contact-form__status
+            contact-form__status--success
+          "
+          role="status"
         >
 
-          {/* =================================================
-              EYEBROW
-          ================================================= */}
+          <CheckCircle2
+            size={19}
+            strokeWidth={1.8}
+          />
 
-          <motion.div
-            className="contact-hero__eyebrow"
+          <div>
 
-            initial={{
-              opacity: 0,
-              y: 12,
-            }}
-
-            animate={{
-              opacity: 1,
-              y: 0,
-            }}
-
-            transition={{
-              duration: 0.5,
-              delay: 0.15,
-            }}
-          >
-
-            <span className="contact-hero__eyebrow-line" />
+            <strong>
+              Message sent
+            </strong>
 
             <span>
-              CONTACT
+              Your message has been saved successfully.
             </span>
-
-          </motion.div>
-
-
-          {/* =================================================
-              TITLE
-          ================================================= */}
-
-          <motion.h1
-            initial={{
-              opacity: 0,
-              y: 20,
-            }}
-
-            animate={{
-              opacity: 1,
-              y: 0,
-            }}
-
-            transition={{
-              duration: 0.7,
-              delay: 0.25,
-            }}
-          >
-
-            Let's build
-            <br />
-
-            <span>
-              something great.
-            </span>
-
-          </motion.h1>
-
-
-          {/* =================================================
-              DESCRIPTION
-          ================================================= */}
-
-          <motion.p
-            className="contact-hero__description"
-
-            initial={{
-              opacity: 0,
-              y: 18,
-            }}
-
-            animate={{
-              opacity: 1,
-              y: 0,
-            }}
-
-            transition={{
-              duration: 0.7,
-              delay: 0.35,
-            }}
-          >
-
-            Have an idea, project, or question?
-            Send me a message and let's talk about
-            what we can create together.
-
-          </motion.p>
-
-
-          {/* =================================================
-              STATUS
-          ================================================= */}
-
-          <motion.div
-            className="contact-hero__status"
-
-            initial={{
-              opacity: 0,
-              y: 15,
-            }}
-
-            animate={{
-              opacity: 1,
-              y: 0,
-            }}
-
-            transition={{
-              duration: 0.6,
-              delay: 0.45,
-            }}
-          >
-
-            <span className="contact-hero__status-dot" />
-
-            <span>
-              {profile.availability ||
-                "Available for projects"}
-            </span>
-
-          </motion.div>
-
-
-          {/* =================================================
-              QUICK CONTACT
-          ================================================= */}
-
-          {email && (
-
-            <motion.a
-              href={`mailto:${email}`}
-              className="contact-hero__email"
-
-              initial={{
-                opacity: 0,
-              }}
-
-              animate={{
-                opacity: 1,
-              }}
-
-              transition={{
-                duration: 0.6,
-                delay: 0.55,
-              }}
-            >
-
-              <span className="contact-hero__email-icon">
-
-                <Mail
-                  size={17}
-                  strokeWidth={1.8}
-                />
-
-              </span>
-
-
-              <span>
-                {email}
-              </span>
-
-
-              <ArrowDown
-                className="contact-hero__email-arrow"
-                size={16}
-                strokeWidth={1.8}
-              />
-
-            </motion.a>
-
-          )}
-
-
-          {/* =================================================
-              DECORATIVE MESSAGE CARD
-          ================================================= */}
-
-          <motion.div
-            className="contact-hero__message-card"
-
-            initial={{
-              opacity: 0,
-              scale: 0.95,
-            }}
-
-            animate={{
-              opacity: 1,
-              scale: 1,
-            }}
-
-            transition={{
-              duration: 0.7,
-              delay: 0.65,
-            }}
-          >
-
-            <div className="contact-hero__message-icon">
-
-              <MessageCircle
-                size={18}
-                strokeWidth={1.8}
-              />
-
-            </div>
-
-
-            <div>
-
-              <span>
-                Your message
-              </span>
-
-              <strong>
-                goes directly to my inbox.
-              </strong>
-
-            </div>
-
-
-            <Sparkles
-              size={17}
-              strokeWidth={1.7}
-            />
-
-          </motion.div>
-
-        </motion.div>
-
-
-        {/* =================================================
-            RIGHT VISUAL
-        ================================================= */}
-
-        <motion.div
-          className="contact-hero__visual"
-
-          initial={{
-            opacity: 0,
-            x: 30,
-          }}
-
-          animate={{
-            opacity: 1,
-            x: 0,
-          }}
-
-          transition={{
-            duration: 0.8,
-            delay: 0.2,
-            ease: "easeOut",
-          }}
-        >
-
-          <div className="contact-hero__visual-orbit">
-
-            <div className="contact-hero__orbit contact-hero__orbit--one" />
-
-            <div className="contact-hero__orbit contact-hero__orbit--two" />
-
-            <div className="contact-hero__orbit contact-hero__orbit--three" />
-
-
-            <div className="contact-hero__visual-core">
-
-              <MessageCircle
-                size={42}
-                strokeWidth={1.3}
-              />
-
-              <span>
-                Let's Talk
-              </span>
-
-            </div>
 
           </div>
 
-        </motion.div>
+        </div>
+
+      )}
+
+
+      {/* ===================================================
+          ERROR MESSAGE
+      =================================================== */}
+
+      {status === "error" && error && (
+
+        <div
+          className="
+            contact-form__status
+            contact-form__status--error
+          "
+          role="alert"
+        >
+
+          <AlertCircle
+            size={19}
+            strokeWidth={1.8}
+          />
+
+          <span>
+            {error}
+          </span>
+
+        </div>
+
+      )}
+
+
+      {/* ===================================================
+          FORM
+      =================================================== */}
+
+      <form
+        className="contact-form__body"
+        onSubmit={handleSubmit}
+        noValidate
+      >
+
+        {/* =================================================
+            NAME
+        ================================================= */}
+
+        <div className="contact-form__field">
+
+          <label
+            htmlFor="contact-name"
+          >
+            Name
+          </label>
+
+
+          <div className="contact-form__input-wrap">
+
+            <User
+              size={17}
+              strokeWidth={1.7}
+              aria-hidden="true"
+            />
+
+
+            <input
+              id="contact-name"
+              name="name"
+              type="text"
+              value={formData.name}
+              onChange={handleChange}
+              placeholder="Your name"
+              autoComplete="name"
+              maxLength={80}
+              required
+            />
+
+          </div>
+
+        </div>
 
 
         {/* =================================================
-            SCROLL INDICATOR
+            EMAIL
         ================================================= */}
 
-        <motion.a
-          href="#contact-form"
-          className="contact-hero__scroll"
+        <div className="contact-form__field">
 
-          initial={{
-            opacity: 0,
-          }}
+          <label
+            htmlFor="contact-email"
+          >
+            Email
+          </label>
 
-          animate={{
-            opacity: 1,
-          }}
 
-          transition={{
-            delay: 1,
-            duration: 0.6,
-          }}
+          <div className="contact-form__input-wrap">
+
+            <Mail
+              size={17}
+              strokeWidth={1.7}
+              aria-hidden="true"
+            />
+
+
+            <input
+              id="contact-email"
+              name="email"
+              type="email"
+              value={formData.email}
+              onChange={handleChange}
+              placeholder="you@example.com"
+              autoComplete="email"
+              maxLength={120}
+              required
+            />
+
+          </div>
+
+        </div>
+
+
+        {/* =================================================
+            MESSAGE
+        ================================================= */}
+
+        <div className="contact-form__field">
+
+          <div className="contact-form__label-row">
+
+            <label
+              htmlFor="contact-message"
+            >
+              Message
+            </label>
+
+
+            <span
+              className={
+                characterCount >= 900
+                  ? `
+                    contact-form__counter
+                    contact-form__counter--warning
+                  `
+                  : "contact-form__counter"
+              }
+            >
+              {characterCount}/1000
+            </span>
+
+          </div>
+
+
+          <div className="contact-form__textarea-wrap">
+
+            <MessageSquare
+              size={17}
+              strokeWidth={1.7}
+              aria-hidden="true"
+            />
+
+
+            <textarea
+              id="contact-message"
+              name="message"
+              value={formData.message}
+              onChange={handleChange}
+              placeholder="Write your message..."
+              rows={6}
+              maxLength={1000}
+              required
+            />
+
+          </div>
+
+        </div>
+
+
+        {/* =================================================
+            SUBMIT
+        ================================================= */}
+
+        <button
+          type="submit"
+          className="contact-form__submit"
         >
 
           <span>
-            Start a conversation
+            Send Message
           </span>
 
-          <ArrowDown
-            size={16}
-            strokeWidth={1.7}
+
+          <Send
+            size={17}
+            strokeWidth={1.8}
           />
 
-        </motion.a>
+        </button>
 
-      </div>
+      </form>
+
+
+      {/* ===================================================
+          PRIVACY NOTE
+      =================================================== */}
+
+      <p className="contact-form__note">
+        Your contact details are used only to
+        respond to your message.
+      </p>
 
     </section>
 

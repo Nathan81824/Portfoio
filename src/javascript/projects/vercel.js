@@ -7,10 +7,8 @@
 
    PURPOSE
    ---------------------------------------------------------
-   Handles Vercel project information for the Projects
-   section.
-
    Handles:
+
    - Vercel configuration
    - Vercel project URLs
    - Deployment URLs
@@ -56,7 +54,6 @@ export const vercelConfig = {
 
   apiUrl:
     "https://api.vercel.com",
-
 
   projectsEndpoint:
     "https://api.vercel.com/v9/projects",
@@ -225,11 +222,14 @@ export function getVercelDashboardUrl(
   */
 
   if (
-    project.name
+    typeof project.name === "string" &&
+    project.name.trim()
   ) {
 
     return (
-      `https://vercel.com/${vercelConfig.username}/${project.name}`
+      `https://vercel.com/` +
+      `${vercelConfig.username}/` +
+      `${project.name}`
     );
 
   }
@@ -339,7 +339,9 @@ export function getVercelRepositoryUrl(
 
 
   return (
-    `https://github.com/${repository.org}/${repository.repo}`
+    `https://github.com/` +
+    `${repository.org}/` +
+    `${repository.repo}`
   );
 
 }
@@ -479,6 +481,12 @@ export function vercelProjectToProject(
     );
 
 
+  const framework =
+    normalizeVercelFramework(
+      project.framework
+    );
+
+
   return {
 
     /* -----------------------------------------------------
@@ -514,15 +522,9 @@ export function vercelProjectToProject(
     ----------------------------------------------------- */
 
     language:
-      normalizeVercelFramework(
-        project.framework
-      ),
+      framework,
 
-
-    framework:
-      normalizeVercelFramework(
-        project.framework
-      ),
+    framework,
 
 
     /* -----------------------------------------------------
@@ -644,7 +646,7 @@ export function normalizeVercelProjects(
    Do not add a Vercel token here.
 
    A secure backend/serverless function should make the
-   authenticated Vercel API request and return the safe
+   authenticated Vercel API request and return safe
    public project information to React.
 ========================================================= */
 
@@ -668,6 +670,10 @@ export async function fetchVercelProjects(
       endpoint
     );
 
+
+  /* =======================================================
+     AUTHORIZATION ERROR
+  ======================================================= */
 
   if (
     response.status === 401 ||
@@ -693,6 +699,10 @@ export async function fetchVercelProjects(
   }
 
 
+  /* =======================================================
+     OTHER ERRORS
+  ======================================================= */
+
   if (
     !response.ok
   ) {
@@ -712,13 +722,30 @@ export async function fetchVercelProjects(
   }
 
 
-  const data =
-    await response.json();
+  /* =======================================================
+     PARSE RESPONSE
+  ======================================================= */
+
+  let data;
+
+
+  try {
+
+    data =
+      await response.json();
+
+  } catch (error) {
+
+    throw new Error(
+      "Vercel returned invalid JSON."
+    );
+
+  }
 
 
   /*
-    Vercel's projects endpoint returns an object
-    containing a `projects` array.
+    Vercel's projects endpoint normally returns
+    an object containing a `projects` array.
   */
 
   const projects =
@@ -726,8 +753,10 @@ export async function fetchVercelProjects(
       data?.projects
     )
       ? data.projects
+
       : Array.isArray(data)
         ? data
+
         : [];
 
 

@@ -18,13 +18,12 @@
    Do NOT place a Netlify personal access token inside
    frontend React code.
 
-   For now this module provides:
+   This module provides:
    - Netlify configuration
    - Netlify URL helpers
    - Project normalization
    - Safe public-project matching
-   - Optional API fetching when a safe backend/proxy
-     supplies the data
+   - Optional API fetching through a secure backend
 ========================================================= */
 
 
@@ -48,7 +47,6 @@ export const netlifyConfig = {
 
   apiUrl:
     "https://api.netlify.com/api/v1",
-
 
   sitesEndpoint:
     "https://api.netlify.com/api/v1/sites",
@@ -114,7 +112,8 @@ export function getNetlifySiteUrl(
 
 
   /*
-    Netlify's site response normally provides `url`.
+    Netlify normally provides the public
+    deployment URL through `url`.
   */
 
   if (
@@ -130,7 +129,7 @@ export function getNetlifySiteUrl(
 
 
   /*
-    Fallback using the Netlify site slug.
+    Fallback using the Netlify site name.
   */
 
   if (
@@ -385,7 +384,6 @@ export function netlifySiteToProject(
     repository:
       repositoryName,
 
-
     repositoryProvider:
       repository?.provider ||
       "",
@@ -463,14 +461,10 @@ export function normalizeNetlifyProjects(
 
    This function expects an authenticated endpoint.
 
-   Do not put your Netlify token in this browser code.
+   Do NOT put your Netlify token in this browser code.
 
-   A secure backend/serverless function should call:
-
-   GET /api/v1/sites
-
-   with the token and return only the safe public
-   project information to the React application.
+   A secure backend/serverless function should call the
+   Netlify API and return only safe public project data.
 ========================================================= */
 
 export async function fetchNetlifySites(

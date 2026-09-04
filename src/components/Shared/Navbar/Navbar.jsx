@@ -7,9 +7,13 @@
 
    Uses:
    - useTheme
+   - centralized navigation data
+   - centralized personal data
    - react-router-dom
    - lucide-react
 ========================================================= */
+
+import { useState } from "react";
 
 import {
   Menu,
@@ -20,13 +24,19 @@ import {
 } from "lucide-react";
 
 import {
-  useState,
-} from "react";
-
-import {
   Link,
   useLocation,
 } from "react-router-dom";
+
+
+/* =========================================================
+   DATA
+========================================================= */
+
+import {
+  personalInfo,
+  navigation,
+} from "../../../javascript/data/data.js";
 
 
 /* =========================================================
@@ -35,6 +45,9 @@ import {
 
 import useTheme from
   "../../../javascript/hooks/Theme/useTheme.js";
+
+
+
 
 /* =========================================================
    NAVBAR
@@ -71,37 +84,21 @@ export default function Navbar() {
 
 
   /* =======================================================
-     NAVIGATION LINKS
+     NAVIGATION
   ======================================================= */
 
-  const navLinks = [
+  const navLinks =
+    Array.isArray(navigation)
+      ? navigation
+      : [];
 
-    {
-      name: "Home",
-      href: "/",
-    },
 
-    {
-      name: "About",
-      href: "/about",
-    },
+  /* =======================================================
+     RESUME
+  ======================================================= */
 
-    {
-      name: "Skills",
-      href: "/skills",
-    },
-
-    {
-      name: "Projects",
-      href: "/projects",
-    },
-
-    {
-      name: "Contact",
-      href: "/contact",
-    },
-
-  ];
+  const resumeUrl =
+    `${import.meta.env.BASE_URL}resume.pdf`;
 
 
   /* =======================================================
@@ -116,7 +113,7 @@ export default function Navbar() {
 
 
   /* =======================================================
-     NAVIGATION
+     NAVIGATION HANDLER
   ======================================================= */
 
   const handleNavigation = () => {
@@ -127,18 +124,7 @@ export default function Navbar() {
 
 
   /* =======================================================
-     THEME
-  ======================================================= */
-
-  const handleThemeToggle = () => {
-
-    toggleTheme();
-
-  };
-
-
-  /* =======================================================
-     MOBILE MENU
+     MOBILE MENU TOGGLE
   ======================================================= */
 
   const handleMenuToggle = () => {
@@ -159,6 +145,11 @@ export default function Navbar() {
     href
   ) => {
 
+    if (!href) {
+      return false;
+    }
+
+
     if (href === "/") {
 
       return (
@@ -167,11 +158,25 @@ export default function Navbar() {
 
     }
 
+
     return (
-      location.pathname === href
+      location.pathname === href ||
+      location.pathname.startsWith(
+        `${href}/`
+      )
     );
 
   };
+
+
+  /* =======================================================
+     LOGO NAME
+  ======================================================= */
+
+  const logoLetter =
+    personalInfo?.displayName
+      ?.charAt(0)
+      ?.toUpperCase() || "N";
 
 
   /* =======================================================
@@ -195,19 +200,15 @@ export default function Navbar() {
         ================================================= */}
 
         <Link
-
           to="/"
-
           className="navbar-logo"
-
           onClick={
             handleNavigation
           }
-
           aria-label="Go to home"
         >
 
-          N
+          {logoLetter}
 
         </Link>
 
@@ -217,39 +218,51 @@ export default function Navbar() {
         ================================================= */}
 
         <nav
-
           className="navbar-links"
-
           aria-label="Main navigation"
         >
 
           {navLinks.map(
-            (link) => (
+            (link) => {
 
-              <Link
+              if (
+                !link ||
+                !link.href
+              ) {
+                return null;
+              }
 
-                key={link.name}
 
-                to={link.href}
+              return (
 
-                className={
-                  `navbar-link ${
-                    isActive(link.href)
-                      ? "active"
-                      : ""
-                  }`
-                }
+                <Link
+                  key={
+                    link.id ||
+                    link.name ||
+                    link.href
+                  }
+                  to={link.href}
+                  className={
+                    `navbar-link ${
+                      isActive(
+                        link.href
+                      )
+                        ? "active"
+                        : ""
+                    }`
+                  }
+                  onClick={
+                    handleNavigation
+                  }
+                >
 
-                onClick={
-                  handleNavigation
-                }
-              >
+                  {link.name}
 
-                {link.name}
+                </Link>
 
-              </Link>
+              );
 
-            )
+            }
           )}
 
         </nav>
@@ -267,21 +280,16 @@ export default function Navbar() {
           =============================================== */}
 
           <button
-
             type="button"
-
             className="navbar-theme"
-
             onClick={
-              handleThemeToggle
+              toggleTheme
             }
-
             aria-label={
               isDark
                 ? "Switch to light mode"
                 : "Switch to dark mode"
             }
-
             title={
               isDark
                 ? "Switch to light mode"
@@ -294,6 +302,7 @@ export default function Navbar() {
               <Sun
                 size={17}
                 strokeWidth={1.8}
+                aria-hidden="true"
               />
 
             ) : (
@@ -301,6 +310,7 @@ export default function Navbar() {
               <Moon
                 size={17}
                 strokeWidth={1.8}
+                aria-hidden="true"
               />
 
             )}
@@ -313,14 +323,11 @@ export default function Navbar() {
           =============================================== */}
 
           <a
-
-            href="/resume.pdf"
-
+            href={resumeUrl}
             className="
               navbar-resume
               navbar-resume-desktop
             "
-
             download
           >
 
@@ -330,6 +337,7 @@ export default function Navbar() {
 
             <span
               className="navbar-resume-icon"
+              aria-hidden="true"
             >
 
               <Download
@@ -347,24 +355,20 @@ export default function Navbar() {
           =============================================== */}
 
           <button
-
             type="button"
-
             className="navbar-menu-button"
-
             onClick={
               handleMenuToggle
             }
-
             aria-label={
               menuOpen
                 ? "Close navigation menu"
                 : "Open navigation menu"
             }
-
             aria-expanded={
               menuOpen
             }
+            aria-controls="mobile-navigation"
           >
 
             {menuOpen ? (
@@ -372,6 +376,7 @@ export default function Navbar() {
               <X
                 size={19}
                 strokeWidth={1.8}
+                aria-hidden="true"
               />
 
             ) : (
@@ -379,6 +384,7 @@ export default function Navbar() {
               <Menu
                 size={19}
                 strokeWidth={1.8}
+                aria-hidden="true"
               />
 
             )}
@@ -397,11 +403,9 @@ export default function Navbar() {
       {menuOpen && (
 
         <div
-
+          id="mobile-navigation"
           className="navbar-mobile-menu"
-
           role="dialog"
-
           aria-label="Mobile navigation"
         >
 
@@ -419,9 +423,7 @@ export default function Navbar() {
               <span
                 className="navbar-mobile-label"
               >
-
                 Navigation
-
               </span>
 
               <h3>
@@ -436,21 +438,18 @@ export default function Navbar() {
             ========================================= */}
 
             <button
-
               type="button"
-
               className="navbar-mobile-close"
-
               onClick={
                 closeMenu
               }
-
               aria-label="Close navigation menu"
             >
 
               <X
                 size={18}
                 strokeWidth={1.8}
+                aria-hidden="true"
               />
 
             </button>
@@ -463,63 +462,75 @@ export default function Navbar() {
           ============================================= */}
 
           <nav
-
             className="navbar-mobile-links"
-
             aria-label="Mobile navigation"
           >
 
             {navLinks.map(
-              (link, index) => (
+              (link, index) => {
 
-                <Link
+                if (
+                  !link ||
+                  !link.href
+                ) {
+                  return null;
+                }
 
-                  key={link.name}
 
-                  to={link.href}
+                return (
 
-                  className={
-                    `navbar-mobile-link ${
-                      isActive(link.href)
-                        ? "active"
-                        : ""
-                    }`
-                  }
-
-                  onClick={
-                    handleNavigation
-                  }
-                >
-
-                  <span
-                    className="
-                      navbar-mobile-number
-                    "
+                  <Link
+                    key={
+                      link.id ||
+                      link.name ||
+                      link.href
+                    }
+                    to={link.href}
+                    className={
+                      `navbar-mobile-link ${
+                        isActive(
+                          link.href
+                        )
+                          ? "active"
+                          : ""
+                      }`
+                    }
+                    onClick={
+                      handleNavigation
+                    }
                   >
 
-                    {String(
-                      index + 1
-                    ).padStart(
-                      2,
-                      "0"
-                    )}
+                    <span
+                      className="
+                        navbar-mobile-number
+                      "
+                    >
 
-                  </span>
+                      {String(
+                        index + 1
+                      ).padStart(
+                        2,
+                        "0"
+                      )}
+
+                    </span>
 
 
-                  <span
-                    className="
-                      navbar-mobile-link-text
-                    "
-                  >
+                    <span
+                      className="
+                        navbar-mobile-link-text
+                      "
+                    >
 
-                    {link.name}
+                      {link.name}
 
-                  </span>
+                    </span>
 
-                </Link>
+                  </Link>
 
-              )
+                );
+
+              }
             )}
 
           </nav>
@@ -530,14 +541,11 @@ export default function Navbar() {
           ============================================= */}
 
           <a
-
-            href="/resume.pdf"
-
+            href={resumeUrl}
             className="
               navbar-resume
               navbar-resume-mobile
             "
-
             download
           >
 
@@ -547,6 +555,7 @@ export default function Navbar() {
 
             <span
               className="navbar-resume-icon"
+              aria-hidden="true"
             >
 
               <Download
@@ -568,15 +577,18 @@ export default function Navbar() {
           >
 
             <span>
-              FRONTEND DEVELOPER
+              {personalInfo?.profession ||
+                "FRONTEND DEVELOPER"}
             </span>
 
             <span
               className="navbar-mobile-dot"
+              aria-hidden="true"
             />
 
             <span>
-              NATHAN
+              {personalInfo?.displayName ||
+                "NATHAN"}
             </span>
 
           </div>

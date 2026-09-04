@@ -1,69 +1,637 @@
 /* =========================================================
-   BROWSER NOTIFICATION SYSTEM
-   Nathan — Frontend Developer Portfolio
+   NOTIFICATION SYSTEM
+   Nathan Portfolio
 
-   Browser-only contact notification system.
+   Handles:
+   - Browser notifications
+   - Push notification preparation
+   - New visitor message notifications
+   - 5-minute unanswered reminders
+   - Admin Chat active state
+   - Notification cleanup
 ========================================================= */
 
 
 /* =========================================================
-   CONFIGURATION
+   CONSTANTS
 ========================================================= */
 
-const STORAGE_KEY =
-  "portfolio_contact_messages";
+const NOTIFICATION_STORAGE_KEY =
+  "portfolio_notifications";
 
-const NOTIFICATION_ICON =
-  "/favicon.ico";
+const PUSH_SUBSCRIPTION_KEY =
+  "portfolio_push_subscription";
 
-const MAX_MESSAGE_PREVIEW =
-  120;
+const ADMIN_CHAT_ACTIVE_KEY =
+  "portfolio_admin_chat_active";
+
+const UNANSWERED_TIMERS_KEY =
+  "portfolio_unanswered_timers";
+
+const UNANSWERED_DELAY =
+  5 * 60 * 1000;
 
 
 /* =========================================================
-   CHECK SUPPORT
+   INTERNAL STATE
 ========================================================= */
 
-export function notificationsSupported() {
+const unansweredTimers =
+  new Map();
 
-  return (
-    typeof window !== "undefined" &&
-    "Notification" in window
+
+/* =========================================================
+   SAFE JSON PARSE
+========================================================= */
+
+function safeParse(
+  value,
+  fallback
+) {
+
+  try {
+
+    return value
+      ? JSON.parse(value)
+      : fallback;
+
+  } catch {
+
+    return fallback;
+
+  }
+
+}
+
+
+/* =========================================================
+   GET STORED NOTIFICATIONS
+========================================================= */
+
+export function getNotifications() {
+
+  try {
+
+    const stored =
+      localStorage.getItem(
+        NOTIFICATION_STORAGE_KEY
+      );
+
+
+    const notifications =
+      safeParse(
+        stored,
+        []
+      );
+
+
+    return Array.isArray(
+      notifications
+    )
+      ? notifications
+      : [];
+
+  } catch {
+
+    return [];
+
+  }
+
+}
+
+
+/* =========================================================
+   SAVE NOTIFICATIONS
+========================================================= */
+
+function saveNotifications(
+  notifications
+) {
+
+  try {
+
+    localStorage.setItem(
+      NOTIFICATION_STORAGE_KEY,
+
+      JSON.stringify(
+        notifications
+      )
+
+    );
+
+  } catch (error) {
+
+    console.warn(
+      "Could not save notifications:",
+      error
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   ADD NOTIFICATION
+========================================================= */
+
+function addNotification(
+  notification
+) {
+
+  const notifications =
+    getNotifications();
+
+
+  notifications.unshift(
+    notification
+  );
+
+
+  /*
+    Keep the notification list
+    from growing forever.
+  */
+
+  const limited =
+    notifications.slice(
+      0,
+      100
+    );
+
+
+  saveNotifications(
+    limited
+  );
+
+
+  /*
+    Notify React components.
+  */
+
+  dispatchNotificationEvent(
+    "portfolio:notification-created",
+    notification
+  );
+
+
+  return notification;
+
+}
+
+
+/* =========================================================
+   CREATE NOTIFICATION
+========================================================= */
+
+export function createNotification({
+
+  title,
+
+  message,
+
+  conversationId = null,
+
+  type = "chat",
+
+}) {
+
+  const notification = {
+
+    id:
+      crypto.randomUUID(),
+
+    title:
+      title ||
+      "New message",
+
+    message:
+      message ||
+      "",
+
+    conversationId,
+
+    type,
+
+    read:
+      false,
+
+    createdAt:
+      new Date().toISOString(),
+
+  };
+
+
+  return addNotification(
+    notification
   );
 
 }
 
 
 /* =========================================================
-   GET PERMISSION
+   MARK AS READ
 ========================================================= */
 
-export function getNotificationPermission() {
+export function markNotificationRead(
+  notificationId
+) {
 
-  if (
-    !notificationsSupported()
-  ) {
+  const notifications =
+    getNotifications();
 
-    return "unsupported";
 
-  }
+  const updated =
+    notifications.map(
+      (notification) => {
 
-  return Notification.permission;
+        if (
+          notification.id !==
+          notificationId
+        ) {
+
+          return notification;
+
+        }
+
+
+        return {
+
+          ...notification,
+
+          read: true,
+
+        };
+
+      }
+    );
+
+
+  saveNotifications(
+    updated
+  );
+
+
+  dispatchNotificationEvent(
+    "portfolio:notification-read",
+    {
+      notificationId,
+    }
+  );
+
+
+  return updated;
 
 }
 
 
 /* =========================================================
-   REQUEST PERMISSION
+   MARK ALL READ
+========================================================= */
+
+export function markAllNotificationsRead() {
+
+  const notifications =
+    getNotifications();
+
+
+  const updated =
+    notifications.map(
+      (notification) => ({
+
+        ...notification,
+
+        read: true,
+
+      })
+    );
+
+
+  saveNotifications(
+    updated
+  );
+
+
+  dispatchNotificationEvent(
+    "portfolio:notifications-read-all",
+    {}
+  );
+
+
+  return updated;
+
+}
+
+
+/* =========================================================
+   DELETE ONE NOTIFICATION
+========================================================= */
+
+export function deleteNotification(
+  notificationId
+) {
+
+  const notifications =
+    getNotifications();
+
+
+  const updated =
+    notifications.filter(
+      (notification) =>
+        notification.id !==
+        notificationId
+    );
+
+
+  saveNotifications(
+    updated
+  );
+
+
+  dispatchNotificationEvent(
+    "portfolio:notification-deleted",
+    {
+      notificationId,
+    }
+  );
+
+
+  return updated;
+
+}
+
+
+/* =========================================================
+   DELETE NOTIFICATIONS FOR CONVERSATION
+========================================================= */
+
+export function deleteConversationNotifications(
+  conversationId
+) {
+
+  if (!conversationId) {
+
+    return;
+
+  }
+
+
+  const notifications =
+    getNotifications();
+
+
+  const updated =
+    notifications.filter(
+      (notification) =>
+        notification.conversationId !==
+        conversationId
+    );
+
+
+  saveNotifications(
+    updated
+  );
+
+
+  /*
+    Cancel unanswered timer.
+  */
+
+  cancelUnansweredReminder(
+    conversationId
+  );
+
+
+  dispatchNotificationEvent(
+    "portfolio:conversation-notifications-cleaned",
+    {
+      conversationId,
+    }
+  );
+
+}
+
+
+/* =========================================================
+   DELETE ALL NOTIFICATIONS
+========================================================= */
+
+export function deleteAllNotifications() {
+
+  saveNotifications(
+    []
+  );
+
+
+  /*
+    Cancel every unanswered timer.
+  */
+
+  unansweredTimers.forEach(
+    (timer) => {
+
+      clearTimeout(
+        timer
+      );
+
+    }
+  );
+
+
+  unansweredTimers.clear();
+
+
+  saveUnansweredTimers();
+
+
+  dispatchNotificationEvent(
+    "portfolio:notifications-cleared",
+    {}
+  );
+
+}
+
+
+/* =========================================================
+   UNREAD COUNT
+========================================================= */
+
+export function getUnreadNotificationCount() {
+
+  return getNotifications()
+    .filter(
+      (notification) =>
+        !notification.read
+    )
+    .length;
+
+}
+
+
+/* =========================================================
+   ADMIN CHAT ACTIVE STATE
+========================================================= */
+
+export function setAdminChatActive(
+  active,
+  conversationId = null
+) {
+
+  try {
+
+    if (active) {
+
+      localStorage.setItem(
+
+        ADMIN_CHAT_ACTIVE_KEY,
+
+        JSON.stringify({
+
+          active: true,
+
+          conversationId,
+
+        })
+
+      );
+
+    } else {
+
+      localStorage.setItem(
+
+        ADMIN_CHAT_ACTIVE_KEY,
+
+        JSON.stringify({
+
+          active: false,
+
+          conversationId: null,
+
+        })
+
+      );
+
+    }
+
+  } catch {
+
+    // Ignore.
+
+  }
+
+
+  dispatchNotificationEvent(
+    "portfolio:admin-chat-state",
+    {
+      active,
+      conversationId,
+    }
+  );
+
+}
+
+
+/* =========================================================
+   GET ADMIN CHAT STATE
+========================================================= */
+
+export function getAdminChatState() {
+
+  try {
+
+    return safeParse(
+
+      localStorage.getItem(
+        ADMIN_CHAT_ACTIVE_KEY
+      ),
+
+      {
+        active: false,
+        conversationId: null,
+      }
+
+    );
+
+  } catch {
+
+    return {
+
+      active: false,
+
+      conversationId: null,
+
+    };
+
+  }
+
+}
+
+
+/* =========================================================
+   CHECK IF ADMIN CHAT IS ACTIVE
+========================================================= */
+
+export function isAdminChatActive(
+  conversationId = null
+) {
+
+  const state =
+    getAdminChatState();
+
+
+  if (!state.active) {
+
+    return false;
+
+  }
+
+
+  /*
+    If no conversation was supplied,
+    simply check whether Admin Chat
+    is open.
+  */
+
+  if (!conversationId) {
+
+    return true;
+
+  }
+
+
+  return (
+    state.conversationId ===
+    conversationId
+  );
+
+}
+
+
+/* =========================================================
+   REQUEST NOTIFICATION PERMISSION
 ========================================================= */
 
 export async function requestNotificationPermission() {
 
   if (
-    !notificationsSupported()
+    typeof window ===
+    "undefined"
   ) {
 
-    return "unsupported";
+    return "denied";
+
+  }
+
+
+  if (
+    !("Notification" in window)
+  ) {
+
+    console.warn(
+      "This browser does not support notifications."
+    );
+
+    return "denied";
 
   }
 
@@ -93,6 +661,15 @@ export async function requestNotificationPermission() {
     const permission =
       await Notification.requestPermission();
 
+
+    dispatchNotificationEvent(
+      "portfolio:notification-permission",
+      {
+        permission,
+      }
+    );
+
+
     return permission;
 
   } catch (error) {
@@ -102,6 +679,7 @@ export async function requestNotificationPermission() {
       error
     );
 
+
     return "denied";
 
   }
@@ -110,297 +688,88 @@ export async function requestNotificationPermission() {
 
 
 /* =========================================================
-   SAVE CONTACT MESSAGE
+   GET SERVICE WORKER REGISTRATION
 ========================================================= */
 
-export function saveContactMessage({
-
-  name = "",
-
-  email = "",
-
-  message = "",
-
-} = {}) {
-
-  const contactMessage = {
-
-    id:
-      Date.now(),
-
-    name:
-      String(name).trim(),
-
-    email:
-      String(email).trim(),
-
-    message:
-      String(message).trim(),
-
-    createdAt:
-      new Date().toISOString(),
-
-    read:
-      false,
-
-  };
-
-
-  try {
-
-    const existing =
-      JSON.parse(
-        localStorage.getItem(
-          STORAGE_KEY
-        ) || "[]"
-      );
-
-
-    existing.unshift(
-      contactMessage
-    );
-
-
-    localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify(existing)
-    );
-
-
-    return contactMessage;
-
-  } catch (error) {
-
-    console.error(
-      "Unable to save contact message:",
-      error
-    );
-
-    return contactMessage;
-
-  }
-
-}
-
-
-/* =========================================================
-   GET CONTACT MESSAGES
-========================================================= */
-
-export function getContactMessages() {
-
-  try {
-
-    return JSON.parse(
-      localStorage.getItem(
-        STORAGE_KEY
-      ) || "[]"
-    );
-
-  } catch (error) {
-
-    console.error(
-      "Unable to read contact messages:",
-      error
-    );
-
-    return [];
-
-  }
-
-}
-
-
-/* =========================================================
-   MARK AS READ
-========================================================= */
-
-export function markMessageAsRead(
-  messageId
-) {
-
-  const messages =
-    getContactMessages();
-
-
-  const updated =
-    messages.map(
-      (message) => {
-
-        if (
-          message.id ===
-          messageId
-        ) {
-
-          return {
-            ...message,
-            read: true,
-          };
-
-        }
-
-        return message;
-
-      }
-    );
-
-
-  localStorage.setItem(
-    STORAGE_KEY,
-    JSON.stringify(updated)
-  );
-
-
-  return updated;
-
-}
-
-
-/* =========================================================
-   DELETE MESSAGE
-========================================================= */
-
-export function deleteContactMessage(
-  messageId
-) {
-
-  const messages =
-    getContactMessages();
-
-
-  const updated =
-    messages.filter(
-      (message) =>
-        message.id !== messageId
-    );
-
-
-  localStorage.setItem(
-    STORAGE_KEY,
-    JSON.stringify(updated)
-  );
-
-
-  return updated;
-
-}
-
-
-/* =========================================================
-   CLEAR MESSAGES
-========================================================= */
-
-export function clearContactMessages() {
-
-  localStorage.removeItem(
-    STORAGE_KEY
-  );
-
-}
-
-
-/* =========================================================
-   CREATE REPLY LINK
-========================================================= */
-
-export function createReplyLink({
-
-  email = "",
-
-  subject =
-    "Re: Your portfolio message",
-
-} = {}) {
-
-  const cleanEmail =
-    String(email).trim();
-
-
-  if (!cleanEmail) {
-
-    return "";
-
-  }
-
-
-  return (
-    `mailto:${encodeURIComponent(cleanEmail)}` +
-    `?subject=${encodeURIComponent(subject)}`
-  );
-
-}
-
-
-/* =========================================================
-   REPLY TO VISITOR
-========================================================= */
-
-export function replyToVisitor({
-
-  email = "",
-
-  subject =
-    "Re: Your portfolio message",
-
-} = {}) {
-
-  const replyLink =
-    createReplyLink({
-      email,
-      subject,
-    });
-
-
-  if (!replyLink) {
-
-    return false;
-
-  }
-
-
-  window.location.href =
-    replyLink;
-
-
-  return true;
-
-}
-
-
-/* =========================================================
-   SHOW BROWSER NOTIFICATION
-========================================================= */
-
-export async function showContactNotification(
-  contactMessage
-) {
+export async function getServiceWorkerRegistration() {
 
   if (
-    !notificationsSupported()
+    !("serviceWorker" in navigator)
   ) {
-
-    console.warn(
-      "Browser notifications are not supported."
-    );
 
     return null;
 
   }
 
 
-  let permission =
-    Notification.permission;
+  try {
+
+    const registration =
+      await navigator.serviceWorker.ready;
 
 
-  if (
-    permission ===
-    "default"
-  ) {
+    return registration;
 
-    permission =
-      await requestNotificationPermission();
+  } catch (error) {
+
+    console.error(
+      "Service Worker unavailable:",
+      error
+    );
+
+
+    return null;
 
   }
+
+}
+
+
+/* =========================================================
+   SHOW LOCAL NOTIFICATION
+========================================================= */
+
+export async function showNotification({
+
+  title =
+    "New message",
+
+  body =
+    "You have a new visitor message.",
+
+  conversationId = null,
+
+  tag =
+    "portfolio-chat",
+
+}) {
+
+  /*
+    Don't notify if Admin Chat is
+    currently viewing this conversation.
+  */
+
+  if (
+    isAdminChatActive(
+      conversationId
+    )
+  ) {
+
+    dispatchNotificationEvent(
+      "portfolio:chat-message-visible",
+      {
+        conversationId,
+      }
+    );
+
+
+    return null;
+
+  }
+
+
+  const permission =
+    await requestNotificationPermission();
 
 
   if (
@@ -408,95 +777,525 @@ export async function showContactNotification(
     "granted"
   ) {
 
+    return null;
+
+  }
+
+
+  const notification =
+    createNotification({
+
+      title,
+
+      message: body,
+
+      conversationId,
+
+      type: "chat",
+
+    });
+
+
+  /*
+    Prefer the Service Worker when
+    available.
+  */
+
+  const registration =
+    await getServiceWorkerRegistration();
+
+
+  if (registration) {
+
+    try {
+
+      await registration.showNotification(
+        title,
+        {
+
+          body,
+
+          icon:
+            `${import.meta.env.BASE_URL}favicon.ico`,
+
+          badge:
+            `${import.meta.env.BASE_URL}favicon.ico`,
+
+          tag,
+
+          renotify:
+            true,
+
+          data: {
+
+            conversationId,
+
+            url:
+              `${import.meta.env.BASE_URL}admin/chat`,
+
+          },
+
+        }
+      );
+
+
+      return notification;
+
+    } catch (error) {
+
+      console.warn(
+        "Service Worker notification failed:",
+        error
+      );
+
+    }
+
+  }
+
+
+  /*
+    Fallback for browsers where the
+    Service Worker isn't available.
+  */
+
+  try {
+
+    const browserNotification =
+      new Notification(
+        title,
+        {
+
+          body,
+
+          tag,
+
+        }
+      );
+
+
+    browserNotification.onclick =
+      () => {
+
+        window.focus();
+
+        browserNotification.close();
+
+        dispatchNotificationEvent(
+          "portfolio:notification-clicked",
+          {
+            conversationId,
+          }
+        );
+
+      };
+
+
+  } catch (error) {
+
     console.warn(
-      "Notification permission was not granted."
+      "Browser notification failed:",
+      error
     );
+
+  }
+
+
+  return notification;
+
+}
+
+
+/* =========================================================
+   NEW MESSAGE NOTIFICATION
+========================================================= */
+
+export async function notifyNewMessage({
+
+  conversationId,
+
+  visitorName =
+    "Visitor",
+
+  message,
+
+}) {
+
+  if (!message) {
 
     return null;
 
   }
 
 
-  const {
-
-    id,
-    name,
-    email,
-    message,
-
-  } =
-    contactMessage;
-
-
-  let preview =
-    message ||
-    "New portfolio message.";
-
+  /*
+    If admin is currently looking at
+    this conversation, don't send a
+    notification.
+  */
 
   if (
-    preview.length >
-    MAX_MESSAGE_PREVIEW
+    isAdminChatActive(
+      conversationId
+    )
   ) {
 
-    preview =
-      preview.slice(
-        0,
-        MAX_MESSAGE_PREVIEW
-      ) +
-      "...";
+    dispatchNotificationEvent(
+      "portfolio:chat-live-message",
+      {
+        conversationId,
+        visitorName,
+        message,
+      }
+    );
+
+
+    return null;
+
+  }
+
+
+  const notification =
+    await showNotification({
+
+      title:
+        `${visitorName} sent a message`,
+
+      body:
+        message,
+
+      conversationId,
+
+      tag:
+        `chat-${conversationId}`,
+
+    });
+
+
+  /*
+    Start the 5-minute reminder.
+  */
+
+  startUnansweredReminder({
+
+    conversationId,
+
+    visitorName,
+
+  });
+
+
+  return notification;
+
+}
+
+
+/* =========================================================
+   COMPATIBILITY EXPORT
+========================================================= */
+
+export async function notifyNewContact(
+  payload
+) {
+
+  return notifyNewMessage(
+    payload
+  );
+
+}
+
+
+/* =========================================================
+   UNANSWERED TIMER STORAGE
+========================================================= */
+
+function getUnansweredTimers() {
+
+  try {
+
+    return safeParse(
+
+      localStorage.getItem(
+        UNANSWERED_TIMERS_KEY
+      ),
+
+      {}
+
+    );
+
+  } catch {
+
+    return {};
+
+  }
+
+}
+
+
+/* =========================================================
+   SAVE UNANSWERED TIMERS
+========================================================= */
+
+function saveUnansweredTimers() {
+
+  try {
+
+    const timers = {};
+
+
+    unansweredTimers.forEach(
+      (_, conversationId) => {
+
+        timers[
+          conversationId
+        ] = true;
+
+      }
+    );
+
+
+    localStorage.setItem(
+
+      UNANSWERED_TIMERS_KEY,
+
+      JSON.stringify(
+        timers
+      )
+
+    );
+
+  } catch {
+
+    // Ignore.
+
+  }
+
+}
+
+
+/* =========================================================
+   START UNANSWERED REMINDER
+========================================================= */
+
+export function startUnansweredReminder({
+
+  conversationId,
+
+  visitorName =
+    "Visitor",
+
+}) {
+
+  if (!conversationId) {
+
+    return;
+
+  }
+
+
+  /*
+    Don't create duplicate timers.
+  */
+
+  if (
+    unansweredTimers.has(
+      conversationId
+    )
+  ) {
+
+    return;
+
+  }
+
+
+  /*
+    If admin is already looking at
+    the conversation, no reminder.
+  */
+
+  if (
+    isAdminChatActive(
+      conversationId
+    )
+  ) {
+
+    return;
+
+  }
+
+
+  const timer =
+    setTimeout(
+      async () => {
+
+        unansweredTimers.delete(
+          conversationId
+        );
+
+
+        saveUnansweredTimers();
+
+
+        /*
+          Check again after five minutes.
+        */
+
+        if (
+          isAdminChatActive(
+            conversationId
+          )
+        ) {
+
+          return;
+
+        }
+
+
+        await showNotification({
+
+          title:
+            "Unanswered message",
+
+          body:
+            `${visitorName} is waiting for a reply.`,
+
+          conversationId,
+
+          tag:
+            `unanswered-${conversationId}`,
+
+        });
+
+      },
+
+      UNANSWERED_DELAY
+
+    );
+
+
+  unansweredTimers.set(
+    conversationId,
+    timer
+  );
+
+
+  saveUnansweredTimers();
+
+}
+
+
+/* =========================================================
+   CANCEL UNANSWERED REMINDER
+========================================================= */
+
+export function cancelUnansweredReminder(
+  conversationId
+) {
+
+  if (!conversationId) {
+
+    return;
+
+  }
+
+
+  const timer =
+    unansweredTimers.get(
+      conversationId
+    );
+
+
+  if (timer) {
+
+    clearTimeout(
+      timer
+    );
+
+  }
+
+
+  unansweredTimers.delete(
+    conversationId
+  );
+
+
+  saveUnansweredTimers();
+
+}
+
+
+/* =========================================================
+   ADMIN REPLIED
+========================================================= */
+
+export function adminReplied(
+  conversationId
+) {
+
+  if (!conversationId) {
+
+    return;
+
+  }
+
+
+  cancelUnansweredReminder(
+    conversationId
+  );
+
+
+  /*
+    Remove normal message notifications
+    for the conversation after replying.
+  */
+
+  deleteConversationNotifications(
+    conversationId
+  );
+
+
+  dispatchNotificationEvent(
+    "portfolio:admin-replied",
+    {
+      conversationId,
+    }
+  );
+
+}
+
+
+/* =========================================================
+   PUSH SUBSCRIPTION
+========================================================= */
+
+export async function getPushSubscription() {
+
+  const registration =
+    await getServiceWorkerRegistration();
+
+
+  if (!registration) {
+
+    return null;
 
   }
 
 
   try {
 
-    const notification =
-      new Notification(
-
-        `New message from ${
-          name || "Visitor"
-        }`,
-
-        {
-
-          body:
-            `${email}\n${preview}`,
-
-          icon:
-            NOTIFICATION_ICON,
-
-          tag:
-            `portfolio-contact-${id}`,
-
-          renotify:
-            true,
-
-          requireInteraction:
-            true,
-
-        }
-
-      );
+    const subscription =
+      await registration.pushManager
+        .getSubscription();
 
 
-    notification.onclick =
-      () => {
-
-        window.focus();
-
-        notification.close();
-
-      };
-
-
-    return notification;
+    return subscription;
 
   } catch (error) {
 
     console.error(
-      "Notification creation error:",
+      "Could not get push subscription:",
       error
     );
+
 
     return null;
 
@@ -506,223 +1305,491 @@ export async function showContactNotification(
 
 
 /* =========================================================
-   RECEIVE CONTACT MESSAGE
+   STORE PUSH SUBSCRIPTION
 ========================================================= */
 
-export async function receiveContactMessage({
+function storePushSubscription(
+  subscription
+) {
 
-  name = "",
+  try {
 
-  email = "",
+    if (!subscription) {
 
-  message = "",
+      localStorage.removeItem(
+        PUSH_SUBSCRIPTION_KEY
+      );
 
-} = {}) {
+      return;
 
-  const cleanName =
-    String(name).trim();
-
-  const cleanEmail =
-    String(email).trim();
-
-  const cleanMessage =
-    String(message).trim();
+    }
 
 
-  if (!cleanName) {
+    localStorage.setItem(
 
-    throw new Error(
-      "Name is required."
+      PUSH_SUBSCRIPTION_KEY,
+
+      JSON.stringify(
+        subscription
+      )
+
+    );
+
+  } catch (error) {
+
+    console.warn(
+      "Could not store push subscription:",
+      error
     );
 
   }
-
-
-  if (!cleanEmail) {
-
-    throw new Error(
-      "Email is required."
-    );
-
-  }
-
-
-  if (!cleanMessage) {
-
-    throw new Error(
-      "Message is required."
-    );
-
-  }
-
-
-  const contactMessage =
-    saveContactMessage({
-
-      name:
-        cleanName,
-
-      email:
-        cleanEmail,
-
-      message:
-        cleanMessage,
-
-    });
-
-
-  await showContactNotification(
-    contactMessage
-  );
-
-
-  return contactMessage;
 
 }
 
 
 /* =========================================================
-   ⭐ NOTIFY NEW CONTACT
-   This is the function your FloatingContact.jsx imports.
+   GET STORED PUSH SUBSCRIPTION
 ========================================================= */
 
-export async function notifyNewContact({
+export function getStoredPushSubscription() {
 
-  name = "",
+  try {
 
-  email = "",
+    return safeParse(
 
-  message = "",
+      localStorage.getItem(
+        PUSH_SUBSCRIPTION_KEY
+      ),
 
-} = {}) {
+      null
 
-  return receiveContactMessage({
+    );
 
-    name,
+  } catch {
 
-    email,
+    return null;
 
-    message,
-
-  });
+  }
 
 }
 
 
 /* =========================================================
-   TEST NOTIFICATION
+   CREATE PUSH SUBSCRIPTION
 ========================================================= */
 
-export async function testNotification() {
+export async function subscribeToPush(
+  applicationServerKey
+) {
 
-  return showContactNotification({
+  if (
+    !applicationServerKey
+  ) {
 
-    id:
-      Date.now(),
-
-    name:
-      "Test Visitor",
-
-    email:
-      "test@example.com",
-
-    message:
-      "Your browser notification system is working.",
-
-  });
-
-}
+    console.warn(
+      "Push subscription requires a VAPID public key."
+    );
 
 
-/* =========================================================
-   ENABLE NOTIFICATIONS
-========================================================= */
+    return null;
 
-export async function enableNotifications() {
+  }
+
 
   const permission =
     await requestNotificationPermission();
 
 
   if (
-    permission ===
+    permission !==
     "granted"
   ) {
 
-    await testNotification();
+    return null;
 
   }
 
 
-  return permission;
+  const registration =
+    await getServiceWorkerRegistration();
+
+
+  if (!registration) {
+
+    return null;
+
+  }
+
+
+  try {
+
+    let subscription =
+      await registration.pushManager
+        .getSubscription();
+
+
+    if (!subscription) {
+
+      subscription =
+        await registration.pushManager
+          .subscribe({
+
+            userVisibleOnly:
+              true,
+
+            applicationServerKey,
+
+          });
+
+    }
+
+
+    storePushSubscription(
+      subscription.toJSON()
+    );
+
+
+    dispatchNotificationEvent(
+      "portfolio:push-subscribed",
+      {
+        subscription:
+          subscription.toJSON(),
+      }
+    );
+
+
+    return subscription;
+
+  } catch (error) {
+
+    console.error(
+      "Push subscription failed:",
+      error
+    );
+
+
+    return null;
+
+  }
 
 }
 
 
 /* =========================================================
-   UNREAD COUNT
+   UNSUBSCRIBE PUSH
 ========================================================= */
 
-export function getUnreadMessageCount() {
+export async function unsubscribeFromPush() {
 
-  return getContactMessages()
-    .filter(
-      (message) =>
-        message.read !== true
-    )
-    .length;
-
-}
+  const subscription =
+    await getPushSubscription();
 
 
-/* =========================================================
-   LATEST MESSAGE
-========================================================= */
+  if (!subscription) {
 
-export function getLatestContactMessage() {
+    return true;
 
-  const messages =
-    getContactMessages();
+  }
 
 
-  return (
-    messages[0] ||
-    null
-  );
+  try {
 
-}
+    await subscription.unsubscribe();
 
 
-/* =========================================================
-   REPLY TO SAVED MESSAGE
-========================================================= */
+    storePushSubscription(
+      null
+    );
 
-export function replyToMessage(
-  message
-) {
 
-  if (
-    !message ||
-    !message.email
-  ) {
+    dispatchNotificationEvent(
+      "portfolio:push-unsubscribed",
+      {}
+    );
+
+
+    return true;
+
+  } catch (error) {
+
+    console.error(
+      "Push unsubscribe failed:",
+      error
+    );
+
 
     return false;
 
   }
 
+}
 
-  return replyToVisitor({
 
-    email:
-      message.email,
+/* =========================================================
+   CHAT EVENT LISTENERS
+========================================================= */
 
-    subject:
-      `Re: Message from ${
-        message.name ||
-        "Visitor"
-      }`,
+function setupChatEventListeners() {
 
-  });
+  if (
+    typeof window ===
+    "undefined"
+  ) {
+
+    return () => {};
+
+  }
+
+
+  /* =======================================================
+     NEW CHAT MESSAGE
+  ======================================================= */
+
+  const handleNewMessage =
+    (event) => {
+
+      const message =
+        event.detail;
+
+
+      if (!message) {
+
+        return;
+
+      }
+
+
+      /*
+        Only visitor messages should
+        notify the admin.
+
+        If your database uses another
+        sender name, adjust this check.
+      */
+
+      if (
+        message.sender !==
+        "visitor"
+      ) {
+
+        return;
+
+      }
+
+
+      notifyNewMessage({
+
+        conversationId:
+          message.conversation_id,
+
+        visitorName:
+          message.visitor_name ||
+          "Visitor",
+
+        message:
+          message.message ||
+          message.content ||
+          "",
+
+      });
+
+    };
+
+
+  /* =======================================================
+     SINGLE CONVERSATION DELETED
+  ======================================================= */
+
+  const handleConversationDeleted =
+    (event) => {
+
+      const conversationId =
+        event.detail?.conversationId;
+
+
+      if (!conversationId) {
+
+        return;
+
+      }
+
+
+      deleteConversationNotifications(
+        conversationId
+      );
+
+    };
+
+
+  /* =======================================================
+     ALL CONVERSATIONS DELETED
+  ======================================================= */
+
+  const handleAllDeleted =
+    () => {
+
+      deleteAllNotifications();
+
+    };
+
+
+  window.addEventListener(
+
+    "portfolio:chat:new-message",
+
+    handleNewMessage
+
+  );
+
+
+  window.addEventListener(
+
+    "portfolio:conversation-deleted",
+
+    handleConversationDeleted
+
+  );
+
+
+  window.addEventListener(
+
+    "portfolio:all-conversations-deleted",
+
+    handleAllDeleted
+
+  );
+
+
+  return () => {
+
+    window.removeEventListener(
+
+      "portfolio:chat:new-message",
+
+      handleNewMessage
+
+    );
+
+
+    window.removeEventListener(
+
+      "portfolio:conversation-deleted",
+
+      handleConversationDeleted
+
+    );
+
+
+    window.removeEventListener(
+
+      "portfolio:all-conversations-deleted",
+
+      handleAllDeleted
+
+    );
+
+  };
+
+}
+
+
+/* =========================================================
+   GLOBAL EVENT DISPATCHER
+========================================================= */
+
+function dispatchNotificationEvent(
+  eventName,
+  detail
+) {
+
+  try {
+
+    window.dispatchEvent(
+
+      new CustomEvent(
+
+        eventName,
+
+        {
+          detail,
+        }
+
+      )
+
+    );
+
+  } catch {
+
+    // Ignore.
+
+  }
+
+}
+
+
+/* =========================================================
+   INITIALIZE NOTIFICATION SYSTEM
+========================================================= */
+
+export function initializeNotifications() {
+
+  if (
+    typeof window ===
+    "undefined"
+  ) {
+
+    return () => {};
+
+  }
+
+
+  const cleanup =
+    setupChatEventListeners();
+
+
+  /*
+    Let the application know the
+    notification system is ready.
+  */
+
+  dispatchNotificationEvent(
+
+    "portfolio:notifications-ready",
+
+    {}
+
+  );
+
+
+  return cleanup;
+
+}
+
+
+/* =========================================================
+   AUTO INITIALIZATION
+========================================================= */
+
+let cleanupNotificationSystem =
+  null;
+
+
+export function startNotificationSystem() {
+
+  if (
+    cleanupNotificationSystem
+  ) {
+
+    return cleanupNotificationSystem;
+
+  }
+
+
+  cleanupNotificationSystem =
+    initializeNotifications();
+
+
+  return cleanupNotificationSystem;
 
 }
 
@@ -733,40 +1800,54 @@ export function replyToMessage(
 
 export default {
 
-  notificationsSupported,
+  getNotifications,
 
-  getNotificationPermission,
+  createNotification,
 
-  requestNotificationPermission,
+  showNotification,
 
-  saveContactMessage,
-
-  getContactMessages,
-
-  markMessageAsRead,
-
-  deleteContactMessage,
-
-  clearContactMessages,
-
-  createReplyLink,
-
-  replyToVisitor,
-
-  showContactNotification,
-
-  receiveContactMessage,
+  notifyNewMessage,
 
   notifyNewContact,
 
-  testNotification,
+  markNotificationRead,
 
-  enableNotifications,
+  markAllNotificationsRead,
 
-  getUnreadMessageCount,
+  deleteNotification,
 
-  getLatestContactMessage,
+  deleteConversationNotifications,
 
-  replyToMessage,
+  deleteAllNotifications,
+
+  getUnreadNotificationCount,
+
+  setAdminChatActive,
+
+  getAdminChatState,
+
+  isAdminChatActive,
+
+  requestNotificationPermission,
+
+  getServiceWorkerRegistration,
+
+  getPushSubscription,
+
+  getStoredPushSubscription,
+
+  subscribeToPush,
+
+  unsubscribeFromPush,
+
+  startUnansweredReminder,
+
+  cancelUnansweredReminder,
+
+  adminReplied,
+
+  initializeNotifications,
+
+  startNotificationSystem,
 
 };

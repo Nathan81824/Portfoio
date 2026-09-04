@@ -1,0 +1,851 @@
+/* =========================================================
+   ADMIN CONVERSATION LIST
+========================================================= */
+
+.admin-conversation-list {
+  width: 100%;
+  height: 100%;
+
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  color:
+    var(--text-primary, #ffffff);
+
+  background:
+    rgba(255, 255, 255, 0.015);
+
+  overflow: hidden;
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.admin-conversation-header {
+  min-height: 58px;
+
+  padding:
+    0 1rem;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  flex-shrink: 0;
+
+  border-bottom:
+    1px solid
+    rgba(255, 255, 255, 0.07);
+
+  background:
+    rgba(255, 255, 255, 0.02);
+}
+
+
+.admin-conversation-header > div {
+  display: flex;
+
+  align-items: center;
+
+  gap: 0.6rem;
+}
+
+
+.admin-conversation-header span {
+  color:
+    #ff9f00;
+
+  font-size:
+    0.56rem;
+
+  font-weight:
+    800;
+
+  letter-spacing:
+    0.16em;
+
+  text-transform:
+    uppercase;
+}
+
+
+.admin-conversation-header strong {
+  min-width:
+    24px;
+
+  height:
+    22px;
+
+  padding:
+    0 0.4rem;
+
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  box-sizing:
+    border-box;
+
+  color:
+    #ffb52e;
+
+  border:
+    1px solid
+    rgba(255, 159, 0, 0.16);
+
+  border-radius:
+    999px;
+
+  background:
+    rgba(255, 159, 0, 0.06);
+
+  font-size:
+    0.58rem;
+
+  font-weight:
+    700;
+}
+
+
+/* =========================================================
+   CONVERSATIONS CONTAINER
+========================================================= */
+
+.admin-conversations {
+  flex: 1;
+
+  min-height: 0;
+
+  padding:
+    0.55rem;
+
+  display:
+    flex;
+
+  flex-direction:
+    column;
+
+  gap:
+    0.3rem;
+
+  overflow-y:
+    auto;
+
+  scrollbar-width:
+    thin;
+
+  scrollbar-color:
+    rgba(255, 159, 0, 0.3)
+    transparent;
+}
+
+
+/* =========================================================
+   SCROLLBAR
+========================================================= */
+
+.admin-conversations::-webkit-scrollbar {
+  width:
+    5px;
+}
+
+
+.admin-conversations::-webkit-scrollbar-track {
+  background:
+    transparent;
+}
+
+
+.admin-conversations::-webkit-scrollbar-thumb {
+  border-radius:
+    999px;
+
+  background:
+    rgba(255, 159, 0, 0.28);
+}
+
+
+.admin-conversations::-webkit-scrollbar-thumb:hover {
+  background:
+    rgba(255, 159, 0, 0.45);
+}
+
+
+/* =========================================================
+   CONVERSATION ITEM
+========================================================= */
+
+.admin-conversation {
+  position:
+    relative;
+
+  width:
+    100%;
+
+  min-height:
+    64px;
+
+  padding:
+    0.65rem 0.7rem;
+
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  gap:
+    0.65rem;
+
+  box-sizing:
+    border-box;
+
+  border:
+    1px solid
+    transparent;
+
+  border-radius:
+    11px;
+
+  color:
+    var(--text-secondary, #b8b8b8);
+
+  background:
+    transparent;
+
+  text-align:
+    left;
+
+  cursor:
+    pointer;
+
+  transition:
+    color 200ms ease,
+    background 200ms ease,
+    border-color 200ms ease,
+    transform 200ms ease;
+}
+
+
+.admin-conversation:hover {
+  color:
+    #ffffff;
+
+  background:
+    rgba(255, 255, 255, 0.035);
+
+  border-color:
+    rgba(255, 255, 255, 0.07);
+
+  transform:
+    translateX(2px);
+}
+
+
+/* =========================================================
+   ACTIVE CONVERSATION
+========================================================= */
+
+.admin-conversation.active {
+  color:
+    #ffffff;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(255, 159, 0, 0.09),
+      rgba(255, 159, 0, 0.025)
+    );
+
+  border-color:
+    rgba(255, 159, 0, 0.2);
+
+  box-shadow:
+    inset 3px 0 0
+    #ff9f00;
+}
+
+
+.admin-conversation.active:hover {
+  transform:
+    none;
+
+  border-color:
+    rgba(255, 159, 0, 0.28);
+}
+
+
+/* =========================================================
+   AVATAR
+========================================================= */
+
+.admin-conversation-avatar {
+  width:
+    36px;
+
+  height:
+    36px;
+
+  flex-shrink:
+    0;
+
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  color:
+    #ffad32;
+
+  border:
+    1px solid
+    rgba(255, 159, 0, 0.16);
+
+  border-radius:
+    50%;
+
+  background:
+    rgba(255, 159, 0, 0.06);
+
+  transition:
+    transform 200ms ease,
+    background 200ms ease,
+    border-color 200ms ease;
+}
+
+
+.admin-conversation:hover
+.admin-conversation-avatar {
+  background:
+    rgba(255, 159, 0, 0.1);
+
+  border-color:
+    rgba(255, 159, 0, 0.28);
+}
+
+
+.admin-conversation.active
+.admin-conversation-avatar {
+  background:
+    rgba(255, 159, 0, 0.12);
+
+  border-color:
+    rgba(255, 159, 0, 0.3);
+}
+
+
+/* =========================================================
+   CONVERSATION INFORMATION
+========================================================= */
+
+.admin-conversation-info {
+  min-width:
+    0;
+
+  flex:
+    1;
+
+  display:
+    flex;
+
+  flex-direction:
+    column;
+
+  gap:
+    0.25rem;
+}
+
+
+/* =========================================================
+   VISITOR NAME
+========================================================= */
+
+.admin-conversation-info strong {
+  display:
+    block;
+
+  overflow:
+    hidden;
+
+  color:
+    #eeeeee;
+
+  font-size:
+    0.72rem;
+
+  font-weight:
+    650;
+
+  line-height:
+    1.2;
+
+  text-overflow:
+    ellipsis;
+
+  white-space:
+    nowrap;
+}
+
+
+.admin-conversation.active
+.admin-conversation-info strong {
+  color:
+    #ffffff;
+}
+
+
+/* =========================================================
+   EMAIL
+========================================================= */
+
+.admin-conversation-info span {
+  min-width:
+    0;
+
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  gap:
+    0.3rem;
+
+  overflow:
+    hidden;
+
+  color:
+    #626262;
+
+  font-size:
+    0.55rem;
+
+  line-height:
+    1.2;
+
+  text-overflow:
+    ellipsis;
+
+  white-space:
+    nowrap;
+}
+
+
+.admin-conversation-info span svg {
+  flex-shrink:
+    0;
+
+  color:
+    #777777;
+}
+
+
+.admin-conversation.active
+.admin-conversation-info span {
+  color:
+    #858585;
+}
+
+
+/* =========================================================
+   STATUS DOT
+========================================================= */
+
+.admin-conversation-status {
+  width:
+    6px;
+
+  height:
+    6px;
+
+  flex-shrink:
+    0;
+
+  border-radius:
+    50%;
+
+  background:
+    #22c55e;
+
+  box-shadow:
+    0 0 8px
+    rgba(34, 197, 94, 0.45);
+
+  opacity:
+    0.75;
+}
+
+
+/* =========================================================
+   LOADING
+========================================================= */
+
+.admin-conversation-loading {
+  flex:
+    1;
+
+  min-height:
+    180px;
+
+  display:
+    flex;
+
+  flex-direction:
+    column;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  gap:
+    0.55rem;
+
+  color:
+    #707070;
+
+  font-size:
+    0.68rem;
+
+  text-align:
+    center;
+}
+
+
+.admin-conversation-spin {
+  color:
+    #ff9f00;
+
+  animation:
+    admin-conversation-spin 0.9s linear infinite;
+}
+
+
+@keyframes admin-conversation-spin {
+
+  from {
+    transform:
+      rotate(0deg);
+  }
+
+  to {
+    transform:
+      rotate(360deg);
+  }
+
+}
+
+
+/* =========================================================
+   EMPTY STATE
+========================================================= */
+
+.admin-conversation-empty {
+  flex:
+    1;
+
+  min-height:
+    250px;
+
+  padding:
+    1.5rem;
+
+  display:
+    flex;
+
+  flex-direction:
+    column;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  text-align:
+    center;
+}
+
+
+.admin-conversation-empty-icon {
+  width:
+    46px;
+
+  height:
+    46px;
+
+  margin-bottom:
+    0.75rem;
+
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  color:
+    #ff9f00;
+
+  border:
+    1px solid
+    rgba(255, 159, 0, 0.14);
+
+  border-radius:
+    13px;
+
+  background:
+    rgba(255, 159, 0, 0.05);
+}
+
+
+.admin-conversation-empty h3 {
+  margin:
+    0 0 0.35rem;
+
+  color:
+    #b8b8b8;
+
+  font-size:
+    0.75rem;
+
+  font-weight:
+    650;
+}
+
+
+.admin-conversation-empty p {
+  max-width:
+    220px;
+
+  margin:
+    0;
+
+  color:
+    #626262;
+
+  font-size:
+    0.6rem;
+
+  line-height:
+    1.5;
+}
+
+
+/* =========================================================
+   FOCUS
+========================================================= */
+
+.admin-conversation:focus-visible {
+  outline:
+    2px solid
+    #ff9f00;
+
+  outline-offset:
+    2px;
+}
+
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 1024px) {
+
+  .admin-conversation {
+    min-height:
+      60px;
+
+    padding:
+      0.6rem;
+  }
+
+
+  .admin-conversation-avatar {
+    width:
+      34px;
+
+    height:
+      34px;
+  }
+
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 768px) {
+
+  .admin-conversation-list {
+    max-height:
+      330px;
+  }
+
+
+  .admin-conversation-header {
+    min-height:
+      52px;
+
+    padding:
+      0 0.8rem;
+  }
+
+
+  .admin-conversation {
+    min-height:
+      58px;
+  }
+
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
+
+@media (max-width: 480px) {
+
+  .admin-conversation-list {
+    max-height:
+      280px;
+  }
+
+
+  .admin-conversation-header {
+    min-height:
+      48px;
+  }
+
+
+  .admin-conversation-header span {
+    font-size:
+      0.52rem;
+  }
+
+
+  .admin-conversation-header strong {
+    height:
+      20px;
+
+    min-width:
+      22px;
+
+    font-size:
+      0.54rem;
+  }
+
+
+  .admin-conversation {
+    min-height:
+      55px;
+
+    padding:
+      0.5rem;
+
+    gap:
+      0.5rem;
+  }
+
+
+  .admin-conversation-avatar {
+    width:
+      31px;
+
+    height:
+      31px;
+  }
+
+
+  .admin-conversation-avatar svg {
+    width:
+      15px;
+
+    height:
+      15px;
+  }
+
+
+  .admin-conversation-info strong {
+    font-size:
+      0.66rem;
+  }
+
+
+  .admin-conversation-info span {
+    font-size:
+      0.5rem;
+  }
+
+
+  .admin-conversation-status {
+    width:
+      5px;
+
+    height:
+      5px;
+  }
+
+}
+
+
+/* =========================================================
+   VERY SMALL MOBILE
+========================================================= */
+
+@media (max-width: 360px) {
+
+  .admin-conversation-list {
+    max-height:
+      250px;
+  }
+
+
+  .admin-conversation {
+    min-height:
+      52px;
+  }
+
+
+  .admin-conversation-info span {
+    display:
+      none;
+  }
+
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+  .admin-conversation-list *,
+  .admin-conversation-list *::before,
+  .admin-conversation-list *::after {
+
+    transition:
+      none !important;
+
+    animation:
+      none !important;
+  }
+
+}

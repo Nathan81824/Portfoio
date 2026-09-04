@@ -1,50 +1,20 @@
+
 import { useEffect, useState } from "react";
 
 import {
-  ArrowLeft,
   ArrowRight,
   ExternalLink,
-  LoaderCircle,
+  GitBranch,
+  RefreshCw,
 } from "lucide-react";
 
-import { FaGithub } from "react-icons/fa";
-
-import {
-  motion,
-  AnimatePresence,
-} from "framer-motion";
+import { Link } from "react-router-dom";
 
 import {
   projects as fallbackProjects,
-} from "../../javascript/projects/projects";
+  fetchProjects,
+} from "../../javascript/projects/projects.js";
 
-
-/* =========================================================
-   GITHUB API
-========================================================= */
-
-const GITHUB_API =
-  "https://api.github.com/users/Nathan81824/repos";
-
-
-/* =========================================================
-   SCREENSHOT SERVICE
-========================================================= */
-
-const getScreenshotUrl = (url) => {
-
-  if (!url) {
-    return "";
-  }
-
-  return (
-    "https://image.thum.io/get/" +
-    "width/1600/" +
-    "crop/900/" +
-    url
-  );
-
-};
 
 
 /* =========================================================
@@ -53,221 +23,125 @@ const getScreenshotUrl = (url) => {
 
 export default function ProjectsHero() {
 
-  /* =======================================================
-     STATE
-  ======================================================= */
+  const [projects, setProjects] = useState(
+    fallbackProjects || []
+  );
 
-  const [projects, setProjects] =
-    useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const [currentIndex, setCurrentIndex] =
-    useState(0);
-
-  const [loading, setLoading] =
-    useState(true);
+  const [error, setError] = useState("");
 
 
   /* =======================================================
-     FETCH PROJECTS
+     LOAD PROJECTS
   ======================================================= */
 
   useEffect(() => {
 
-    let cancelled = false;
+    let mounted = true;
 
 
-    async function fetchProjects() {
+    const loadProjects = async () => {
 
       try {
 
         setLoading(true);
 
-
-        const response =
-          await fetch(
-            `${GITHUB_API}?per_page=100&sort=updated`
-          );
+        setError("");
 
 
-        /* =================================================
-           GITHUB 403 / ERROR
-        ================================================= */
+        const result =
+          await fetchProjects();
 
-        if (!response.ok) {
 
-          throw new Error(
-            `GitHub returned ${response.status}`
-          );
-
+        if (!mounted) {
+          return;
         }
 
-
-        const repositories =
-          await response.json();
-
-
-        /* =================================================
-           ONLY REPOSITORIES WITH GITHUB PAGES
-        ================================================= */
 
         const githubProjects =
-          repositories
+          Array.isArray(result)
+            ? result.filter((project) => {
 
-            .filter(
-              (repo) =>
-                !repo.fork &&
-                repo.has_pages
-            )
+                const name =
+                  String(
+                    project?.name ||
+                    project?.title ||
+                    ""
+                  ).toLowerCase();
 
-            .map(
-              (repo) => {
 
                 const liveUrl =
-                  repo.homepage ||
-                  `https://${repo.owner.login}.github.io/${repo.name}/`;
+                  String(
+                    project?.liveUrl ||
+                    project?.pagesUrl ||
+                    project?.homepage ||
+                    ""
+                  );
 
 
-                return {
+                /* =========================================
+                   NEVER SHOW THE PORTFOLIO ITSELF
+                ========================================= */
 
-                  id:
-                    `github-${repo.id}`,
-
-                  name:
-                    repo.name,
-
-                  title:
-                    repo.name,
-
-                  description:
-                    repo.description ||
-                    "A modern web project.",
-
-                  language:
-                    repo.language ||
-                    "Web",
-
-                  technologies:
-                    repo.language
-                      ? [repo.language]
-                      : [],
-
-                  github:
-                    repo.html_url,
-
-                  githubUrl:
-                    repo.html_url,
-
-                  liveUrl:
-                    liveUrl,
-
-                  homepage:
-                    liveUrl,
-
-                  demo:
-                    liveUrl,
-
-                  source:
-                    "github",
-
-                  platform:
-                    "GitHub Pages",
-
-                  previewType:
-                    "screenshot",
-
-                };
-
-              }
-            );
+                if (
+                  name === "portfoio" ||
+                  name === "portfolio"
+                ) {
+                  return false;
+                }
 
 
-        /* =================================================
-           USE GITHUB DATA
-        ================================================= */
+                /* =========================================
+                   ONLY GITHUB PAGES PROJECTS
+                ========================================= */
 
-        if (
-          githubProjects.length > 0
-        ) {
+                return liveUrl.includes(
+                  "github.io"
+                );
 
-          if (!cancelled) {
-
-            setProjects(
-              githubProjects
-            );
-
-            setCurrentIndex(0);
-
-          }
-
-          return;
-
-        }
+              })
+            : [];
 
 
-        /* =================================================
-           FALLBACK
-        ================================================= */
+        setProjects(
+          githubProjects
+        );
 
-        if (!cancelled) {
+      } catch (err) {
 
-          setProjects(
-            Array.isArray(
-              fallbackProjects
-            )
-              ? fallbackProjects
-              : []
-          );
-
-          setCurrentIndex(0);
-
-        }
-
-      } catch (error) {
-
-        /*
-          GitHub API can return 403 because of
-          rate limiting.
-
-          Do not break the portfolio.
-        */
-
-        console.warn(
-          "GitHub API unavailable. Using projects.js.",
-          error
+        console.error(
+          "Failed to load GitHub Pages projects:",
+          err
         );
 
 
-        if (!cancelled) {
-
-          setProjects(
-            Array.isArray(
-              fallbackProjects
-            )
-              ? fallbackProjects
-              : []
-          );
-
-          setCurrentIndex(0);
-
+        if (!mounted) {
+          return;
         }
+
+
+        setError(
+          "Unable to load projects right now."
+        );
 
       } finally {
 
-        if (!cancelled) {
+        if (mounted) {
           setLoading(false);
         }
 
       }
 
-    }
+    };
 
 
-    fetchProjects();
+    loadProjects();
 
 
     return () => {
 
-      cancelled = true;
+      mounted = false;
 
     };
 
@@ -275,59 +149,203 @@ export default function ProjectsHero() {
 
 
   /* =======================================================
-     CURRENT PROJECT
+     PROJECT CARD
   ======================================================= */
 
-  const currentProject =
-    projects.length > 0
-      ? projects[
-          currentIndex %
-          projects.length
-        ]
-      : null;
+  const ProjectCard = ({
+    project,
+  }) => {
+
+    const title =
+      project?.title ||
+      project?.name ||
+      "Untitled Project";
 
 
-  /* =======================================================
-     NEXT
-  ======================================================= */
-
-  const nextProject = () => {
-
-    if (!projects.length) {
-      return;
-    }
+    const description =
+      project?.description ||
+      "A frontend project built with modern web technologies.";
 
 
-    setCurrentIndex(
-      (previousIndex) =>
-        (
-          previousIndex + 1
-        ) %
-        projects.length
-    );
-
-  };
+    const liveUrl =
+      project?.liveUrl ||
+      project?.pagesUrl ||
+      project?.homepage ||
+      "";
 
 
-  /* =======================================================
-     PREVIOUS
-  ======================================================= */
-
-  const previousProject = () => {
-
-    if (!projects.length) {
-      return;
-    }
+    const githubUrl =
+      project?.githubUrl ||
+      project?.htmlUrl ||
+      project?.repositoryUrl ||
+      "";
 
 
-    setCurrentIndex(
-      (previousIndex) =>
-        (
-          previousIndex -
-          1 +
-          projects.length
-        ) %
-        projects.length
+    const technologies =
+      Array.isArray(
+        project?.technologies
+      )
+        ? project.technologies
+        : [];
+
+
+    const screenshotUrl =
+      project?.screenshotUrl ||
+      project?.image ||
+      project?.imageUrl ||
+      "";
+
+
+    return (
+
+      <article className="projects-hero-card">
+
+
+        {/* =================================================
+            PROJECT IMAGE
+        ================================================= */}
+
+        <div className="projects-hero-card-image">
+
+          {screenshotUrl ? (
+
+            <img
+              src={screenshotUrl}
+              alt={`${title} preview`}
+              loading="lazy"
+            />
+
+          ) : (
+
+            <div
+              className="projects-hero-card-placeholder"
+              aria-hidden="true"
+            >
+              <GitBranch
+                size={34}
+                strokeWidth={1.4}
+              />
+            </div>
+
+          )}
+
+        </div>
+
+
+        {/* =================================================
+            PROJECT CONTENT
+        ================================================= */}
+
+        <div className="projects-hero-card-content">
+
+
+          <div className="projects-hero-card-source">
+
+            <GitBranch
+              size={14}
+              strokeWidth={1.8}
+            />
+
+            <span>
+              GitHub Pages
+            </span>
+
+          </div>
+
+
+          <h2>
+            {title}
+          </h2>
+
+
+          <p>
+            {description}
+          </p>
+
+
+          {/* =================================================
+              TECHNOLOGIES
+          ================================================= */}
+
+          {technologies.length > 0 && (
+
+            <div className="projects-hero-card-tech">
+
+              {technologies
+                .slice(0, 5)
+                .map((technology) => (
+
+                  <span
+                    key={technology}
+                  >
+                    {technology}
+                  </span>
+
+                ))}
+
+            </div>
+
+          )}
+
+
+          {/* =================================================
+              ACTIONS
+          ================================================= */}
+
+          <div className="projects-hero-card-actions">
+
+
+            {liveUrl && (
+
+              <a
+                href={liveUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="projects-hero-card-button projects-hero-card-button-primary"
+              >
+
+                <span>
+                  Live Demo
+                </span>
+
+                <ExternalLink
+                  size={16}
+                  strokeWidth={1.8}
+                />
+
+              </a>
+
+            )}
+
+
+            {githubUrl && (
+
+              <a
+                href={githubUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="projects-hero-card-button projects-hero-card-button-secondary"
+              >
+
+                <span>
+                  Source
+                </span>
+
+                <GitBranch
+                  size={16}
+                  strokeWidth={1.8}
+                />
+
+              </a>
+
+            )}
+
+          </div>
+
+        </div>
+
+      </article>
+
     );
 
   };
@@ -341,18 +359,13 @@ export default function ProjectsHero() {
 
     return (
 
-      <section
-        className="projects-hero"
-        id="projects"
-      >
+      <section className="projects-hero">
 
-        <div
-          className="projects-hero-loading"
-        >
+        <div className="projects-hero-loading">
 
-          <LoaderCircle
-            size={34}
-            className="projects-hero-loader"
+          <RefreshCw
+            size={24}
+            className="projects-hero-spin"
           />
 
           <span>
@@ -369,29 +382,78 @@ export default function ProjectsHero() {
 
 
   /* =======================================================
-     EMPTY
+     ERROR
   ======================================================= */
 
-  if (!currentProject) {
+  if (error) {
 
     return (
 
-      <section
-        className="projects-hero"
-        id="projects"
-      >
+      <section className="projects-hero">
 
-        <div
-          className="projects-hero-empty"
-        >
+        <div className="projects-hero-error">
+
+          <h2>
+            Projects unavailable
+          </h2>
+
+          <p>
+            {error}
+          </p>
+
+
+          <button
+            type="button"
+            onClick={() =>
+              window.location.reload()
+            }
+            className="projects-hero-retry"
+          >
+
+            <RefreshCw
+              size={16}
+            />
+
+            <span>
+              Try Again
+            </span>
+
+          </button>
+
+        </div>
+
+      </section>
+
+    );
+
+  }
+
+
+  /* =======================================================
+     EMPTY
+  ======================================================= */
+
+  if (projects.length === 0) {
+
+    return (
+
+      <section className="projects-hero">
+
+        <div className="projects-hero-empty">
+
+          <GitBranch
+            size={30}
+            strokeWidth={1.4}
+          />
 
           <h2>
             No projects available
           </h2>
 
           <p>
-            Add projects to projects.js
-            to display them here.
+            GitHub Pages projects will
+            appear here once they are
+            available.
           </p>
 
         </div>
@@ -404,62 +466,7 @@ export default function ProjectsHero() {
 
 
   /* =======================================================
-     PROJECT DATA
-  ======================================================= */
-
-  const projectName =
-    currentProject.name ||
-    currentProject.title ||
-    "Project";
-
-
-  const projectDescription =
-    currentProject.description ||
-    "A modern web project.";
-
-
-  const githubUrl =
-    currentProject.githubUrl ||
-    currentProject.github ||
-    currentProject.html_url ||
-    "";
-
-
-  const liveUrl =
-    currentProject.liveUrl ||
-    currentProject.homepage ||
-    currentProject.demo ||
-    currentProject.url ||
-    "";
-
-
-  const technologies =
-    Array.isArray(
-      currentProject.technologies
-    )
-      ? currentProject.technologies
-      : currentProject.language
-        ? [currentProject.language]
-        : [];
-
-
-  const platform =
-    currentProject.platform ||
-    (
-      currentProject.source === "github"
-        ? "GitHub Pages"
-        : ""
-    );
-
-
-  const screenshotUrl =
-    getScreenshotUrl(
-      liveUrl
-    );
-
-
-  /* =======================================================
-     RENDER
+     MAIN
   ======================================================= */
 
   return (
@@ -470,599 +477,78 @@ export default function ProjectsHero() {
     >
 
 
-      {/* ===================================================
-          BACKGROUND
-      =================================================== */}
+      {/* =================================================
+          HERO HEADER
+      ================================================= */}
 
-      <div
-        className="projects-hero-background"
-        aria-hidden="true"
-      >
+      <div className="projects-hero-header">
 
-        <div
-          className="
-            projects-hero-glow
-            projects-hero-glow-one
-          "
-        />
+        <div>
 
-        <div
-          className="
-            projects-hero-glow
-            projects-hero-glow-two
-          "
-        />
+          <span className="projects-hero-eyebrow">
+            MY WORK
+          </span>
 
-        <div
-          className="
-            projects-hero-grid
-          "
-        />
+          <h1>
+            Projects
+            <span>
+              .
+            </span>
+          </h1>
 
-      </div>
+          <p>
+            A selection of deployed projects
+            built with modern frontend
+            technologies.
+          </p>
+
+        </div>
 
 
-      {/* ===================================================
-          HEADER
-      =================================================== */}
-
-      <div
-        className="
-          projects-hero-header
-        "
-      >
-
-        <motion.span
-          className="
-            projects-hero-eyebrow
-          "
-
-          initial={{
-            opacity: 0,
-            y: 15,
-          }}
-
-          animate={{
-            opacity: 1,
-            y: 0,
-          }}
-
-          transition={{
-            duration: 0.6,
-          }}
-        >
-          Selected Projects
-        </motion.span>
-
-
-        <motion.h1
-
-          initial={{
-            opacity: 0,
-            y: 20,
-          }}
-
-          animate={{
-            opacity: 1,
-            y: 0,
-          }}
-
-          transition={{
-            duration: 0.7,
-            delay: 0.1,
-          }}
+        <Link
+          to="/projects"
+          className="projects-hero-view-all"
         >
 
-          Projects
-          <span>.</span>
-
-        </motion.h1>
-
-
-        <motion.p
-
-          initial={{
-            opacity: 0,
-            y: 15,
-          }}
-
-          animate={{
-            opacity: 1,
-            y: 0,
-          }}
-
-          transition={{
-            duration: 0.7,
-            delay: 0.2,
-          }}
-        >
-          A collection of projects
-          I've built and published
-          on the web.
-        </motion.p>
-
-      </div>
-
-
-      {/* ===================================================
-          SLIDER
-      =================================================== */}
-
-      <div
-        className="
-          projects-hero-slider
-        "
-      >
-
-
-        {/* =================================================
-            PREVIOUS
-        ================================================= */}
-
-        <button
-          type="button"
-
-          className="
-            projects-slider-arrow
-            projects-slider-prev
-          "
-
-          onClick={
-            previousProject
-          }
-
-          aria-label="
-            Previous project
-          "
-        >
-
-          <ArrowLeft
-            size={22}
-            strokeWidth={1.8}
-          />
-
-        </button>
-
-
-        {/* =================================================
-            CARD
-        ================================================= */}
-
-        <AnimatePresence
-          mode="wait"
-        >
-
-          <motion.article
-
-            key={
-              currentProject.id ||
-              projectName
-            }
-
-            className="
-              projects-hero-card
-            "
-
-            initial={{
-              opacity: 0,
-              x: 45,
-              scale: 0.98,
-            }}
-
-            animate={{
-              opacity: 1,
-              x: 0,
-              scale: 1,
-            }}
-
-            exit={{
-              opacity: 0,
-              x: -45,
-              scale: 0.98,
-            }}
-
-            transition={{
-              duration: 0.45,
-              ease: "easeOut",
-            }}
-          >
-
-
-            {/* =============================================
-                WEBSITE SCREENSHOT
-            ============================================= */}
-
-            <div
-              className="
-                projects-preview
-              "
-            >
-
-              {liveUrl ? (
-
-                <a
-                  href={liveUrl}
-
-                  target="_blank"
-
-                  rel="
-                    noopener noreferrer
-                  "
-
-                  className="
-                    projects-preview-link
-                  "
-
-                  aria-label={
-                    `Open ${projectName} live website`
-                  }
-                >
-
-                  <img
-                    src={screenshotUrl}
-
-                    alt={
-                      `${projectName} website preview`
-                    }
-
-                    className="
-                      projects-preview-image
-                    "
-
-                    loading="eager"
-
-                  />
-
-                  <div
-                    className="
-                      projects-preview-overlay
-                    "
-                  />
-
-                  <div
-                    className="
-                      projects-preview-open
-                    "
-                  >
-
-                    <ExternalLink
-                      size={20}
-                      strokeWidth={1.8}
-                    />
-
-                    <span>
-                      Open live site
-                    </span>
-
-                  </div>
-
-                </a>
-
-              ) : (
-
-                <div
-                  className="
-                    projects-preview-placeholder
-                  "
-                >
-
-                  <ExternalLink
-                    size={42}
-                    strokeWidth={1.4}
-                  />
-
-                  <span>
-                    Live preview unavailable
-                  </span>
-
-                </div>
-
-              )}
-
-            </div>
-
-
-            {/* =============================================
-                PROJECT INFORMATION
-            ============================================= */}
-
-            <div
-              className="
-                projects-hero-info
-              "
-            >
-
-
-              {/* PROJECT NUMBER */}
-
-              <div
-                className="
-                  projects-hero-project-number
-                "
-              >
-
-                <span>
-                  {String(
-                    currentIndex + 1
-                  ).padStart(
-                    2,
-                    "0"
-                  )}
-                </span>
-
-                <span>/</span>
-
-                <span>
-                  {String(
-                    projects.length
-                  ).padStart(
-                    2,
-                    "0"
-                  )}
-                </span>
-
-              </div>
-
-
-              {/* PROJECT NAME */}
-
-              <h2
-                className="
-                  projects-hero-project-name
-                "
-              >
-
-                <span
-                  className="
-                    projects-name-glow
-                  "
-                />
-
-                {projectName}
-
-              </h2>
-
-
-              {/* DESCRIPTION */}
-
-              <p
-                className="
-                  projects-hero-description
-                "
-              >
-
-                {projectDescription}
-
-              </p>
-
-
-              {/* TECHNOLOGIES */}
-
-              {technologies.length > 0 && (
-
-                <div
-                  className="
-                    projects-hero-technologies
-                  "
-                >
-
-                  {technologies.map(
-                    (
-                      technology,
-                      index
-                    ) => (
-
-                      <span
-                        key={
-                          `${technology}-${index}`
-                        }
-
-                        className="
-                          projects-hero-technology
-                        "
-                      >
-
-                        {technology}
-
-                      </span>
-
-                    )
-                  )}
-
-                </div>
-
-              )}
-
-
-              {/* PLATFORM */}
-
-              {platform && (
-
-                <div
-                  className="
-                    projects-hero-meta
-                  "
-                >
-
-                  <span
-                    className="
-                      projects-hero-source
-                    "
-                  >
-                    {platform}
-                  </span>
-
-                </div>
-
-              )}
-
-
-              {/* ACTIONS */}
-
-              <div
-                className="
-                  projects-hero-actions
-                "
-              >
-
-                {githubUrl && (
-
-                  <a
-                    href={githubUrl}
-
-                    target="_blank"
-
-                    rel="
-                      noopener noreferrer
-                    "
-
-                    className="
-                      projects-hero-button
-                      projects-hero-button-github
-                    "
-                  >
-
-                    <FaGithub
-                      size={18}
-                    />
-
-                    <span>
-                      GitHub
-                    </span>
-
-                  </a>
-
-                )}
-
-
-                {liveUrl && (
-
-                  <a
-                    href={liveUrl}
-
-                    target="_blank"
-
-                    rel="
-                      noopener noreferrer
-                    "
-
-                    className="
-                      projects-hero-button
-                      projects-hero-button-live
-                    "
-                  >
-
-                    <ExternalLink
-                      size={18}
-                      strokeWidth={1.8}
-                    />
-
-                    <span>
-                      Live Demo
-                    </span>
-
-                  </a>
-
-                )}
-
-              </div>
-
-            </div>
-
-          </motion.article>
-
-        </AnimatePresence>
-
-
-        {/* =================================================
-            NEXT
-        ================================================= */}
-
-        <button
-          type="button"
-
-          className="
-            projects-slider-arrow
-            projects-slider-next
-          "
-
-          onClick={
-            nextProject
-          }
-
-          aria-label="
-            Next project
-          "
-        >
+          <span>
+            View All
+          </span>
 
           <ArrowRight
-            size={22}
+            size={17}
             strokeWidth={1.8}
           />
 
-        </button>
+        </Link>
 
       </div>
 
 
-      {/* ===================================================
-          DOTS
-      =================================================== */}
+      {/* =================================================
+          PROJECT GRID
+      ================================================= */}
 
-      <div
-        className="
-          projects-hero-dots
-        "
-      >
+      <div className="projects-hero-grid">
 
-        {projects.map(
-          (
-            project,
-            index
-          ) => (
+        {projects
+          .slice(0, 6)
+          .map((project) => (
 
-            <button
-
+            <ProjectCard
               key={
                 project.id ||
-                project.name ||
-                index
+                project.name
               }
-
-              type="button"
-
-              className={
-                `projects-hero-dot ${
-                  index === currentIndex
-                    ? "active"
-                    : ""
-                }`
-              }
-
-              onClick={() =>
-                setCurrentIndex(
-                  index
-                )
-              }
-
-              aria-label={
-                `View ${
-                  project.name ||
-                  project.title ||
-                  "project"
-                }`
-              }
-
+              project={project}
             />
 
-          )
-        )}
+          ))}
 
       </div>
-
 
     </section>
 
   );
 
 }
+

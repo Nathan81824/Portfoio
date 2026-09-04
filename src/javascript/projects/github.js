@@ -1,22 +1,14 @@
-
 /* =========================================================
    GITHUB PROJECTS
-   Nathan — Frontend Developer Portfolio
+   GitHub Pages projects only
 
-   Location:
-   src/javascript/projects/github.js
-
-   PURPOSE
-   ---------------------------------------------------------
-   Handles:
-
-   - GitHub repository fetching
-   - Public repository filtering
-   - Fork filtering
-   - GitHub Pages detection
-   - Repository → project conversion
-   - GitHub / Live Demo URLs
-   - GitHub API 403 handling
+   Responsibilities:
+   - Fetch public GitHub repositories
+   - Exclude the portfolio repository
+   - Exclude forks
+   - Exclude archived repositories
+   - Detect GitHub Pages projects
+   - Convert repositories into project objects
 ========================================================= */
 
 
@@ -24,330 +16,307 @@
    GITHUB CONFIGURATION
 ========================================================= */
 
-export const githubConfig = {
+export const GITHUB_CONFIG = {
 
-  username:
-    "Nathan81824",
+  username: "Nathan81824",
 
-  apiUrl:
-    "https://api.github.com",
+  apiUrl: "https://api.github.com",
 
-  repositoryLimit:
-    100,
+  repositoryLimit: 100,
 
-  sort:
-    "updated",
+  sort: "updated",
 
-  onlyPublic:
-    true,
+  onlyPublic: true,
 
-  ignoreForks:
-    true,
+  ignoreForks: true,
 
-  onlyGitHubPages:
-    true,
+  ignoreArchived: true,
+
+  onlyGitHubPages: true,
+
+  excludedRepositories: [
+    "Portfoio",
+  ],
 
 };
 
 
 /* =========================================================
-   GITHUB PROFILE
+   NORMALIZE NAME
 ========================================================= */
 
-export const githubProfileUrl =
-  `https://github.com/${githubConfig.username}`;
-
-
-/* =========================================================
-   GITHUB REPOSITORIES PAGE
-========================================================= */
-
-export const githubRepositoriesUrl =
-  `https://github.com/${githubConfig.username}?tab=repositories`;
-
-
-/* =========================================================
-   CREATE API URL
-========================================================= */
-
-export function getGitHubRepositoriesUrl() {
-
-  const params =
-    new URLSearchParams({
-
-      per_page:
-        String(
-          githubConfig.repositoryLimit
-        ),
-
-      sort:
-        githubConfig.sort,
-
-    });
-
-
-  return (
-    `${githubConfig.apiUrl}/users/${githubConfig.username}/repos?${params}`
-  );
-
-}
-
-
-/* =========================================================
-   CREATE REPOSITORY URL
-========================================================= */
-
-export function getGitHubRepositoryUrl(
-  repositoryName
+function normalizeName(
+  name = ""
 ) {
 
-  if (
-    !repositoryName
-  ) {
-
-    return "#";
-
-  }
-
-
-  return (
-    `https://github.com/${githubConfig.username}/${repositoryName}`
-  );
+  return String(name)
+    .trim()
+    .toLowerCase();
 
 }
 
 
 /* =========================================================
-   CREATE GITHUB PAGES URL
+   CHECK EXCLUDED REPOSITORY
 ========================================================= */
 
-export function getGitHubPagesUrl(
+function isExcludedRepository(
   repository
 ) {
 
   if (
-    !repository ||
-    !repository.name
+    !repository?.name
   ) {
 
-    return "#";
+    return true;
 
   }
 
 
-  /*
-    GitHub can provide the actual Pages URL through
-    repository.homepage.
-
-    We prefer it when available.
-  */
-
-  if (
-    typeof repository.homepage === "string" &&
-    repository.homepage.trim()
-  ) {
-
-    return repository.homepage.trim();
-
-  }
+  const repositoryName =
+    normalizeName(
+      repository.name
+    );
 
 
-  /*
-    Standard GitHub Pages fallback.
-  */
+  return GITHUB_CONFIG
+    .excludedRepositories
+    .some(
+      (excludedName) =>
+        normalizeName(
+          excludedName
+        ) === repositoryName
+    );
 
-  const owner =
-    repository.owner?.login ||
-    githubConfig.username;
+}
 
+
+/* =========================================================
+   CHECK GITHUB PAGES URL
+========================================================= */
+
+function isGitHubPagesUrl(
+  url = ""
+) {
 
   return (
-    `https://${owner}.github.io/${repository.name}/`
+    typeof url === "string" &&
+    url.includes("github.io")
   );
 
 }
 
 
 /* =========================================================
-   CHECK IF REPOSITORY IS PUBLIC
+   BUILD GITHUB PAGES URL
 ========================================================= */
 
-export function isPublicRepository(
+/*
+  IMPORTANT:
+  This is the internal helper.
+
+  It is intentionally named differently from
+  the exported getGitHubPagesUrl() function
+  so there is no duplicate declaration.
+*/
+
+function buildGitHubPagesUrl(
   repository
 ) {
 
-  if (
-    !repository ||
-    typeof repository !== "object"
-  ) {
+  if (!repository) {
 
-    return false;
+    return "";
 
   }
 
 
-  return (
-    repository.private !== true
-  );
-
-}
-
-
-/* =========================================================
-   CHECK IF REPOSITORY IS A FORK
-========================================================= */
-
-export function isOriginalRepository(
-  repository
-) {
+  /* =======================================================
+     USE HOMEPAGE WHEN AVAILABLE
+  ======================================================= */
 
   if (
-    !repository ||
-    typeof repository !== "object"
+    isGitHubPagesUrl(
+      repository.homepage
+    )
   ) {
 
-    return false;
+    return repository.homepage;
 
   }
 
 
-  return (
-    repository.fork !== true
-  );
-
-}
-
-
-/* =========================================================
-   CHECK GITHUB PAGES
-========================================================= */
-
-export function hasGitHubPages(
-  repository
-) {
+  /* =======================================================
+     USE GITHUB PAGES FLAG
+  ======================================================= */
 
   if (
-    !repository ||
-    typeof repository !== "object"
-  ) {
-
-    return false;
-
-  }
-
-
-  return (
     repository.has_pages === true
+  ) {
+
+    const owner =
+      repository.owner?.login ||
+      GITHUB_CONFIG.username;
+
+
+    return (
+      `https://${owner}.github.io/` +
+      `${repository.name}/`
+    );
+
+  }
+
+
+  return "";
+
+}
+
+
+/* =========================================================
+   BUILD GITHUB REPOSITORY URL
+========================================================= */
+
+function buildGitHubRepositoryUrl(
+  repository
+) {
+
+  if (
+    repository?.html_url
+  ) {
+
+    return repository.html_url;
+
+  }
+
+
+  if (
+    repository?.owner?.login &&
+    repository?.name
+  ) {
+
+    return (
+      `https://github.com/` +
+      `${repository.owner.login}/` +
+      `${repository.name}`
+    );
+
+  }
+
+
+  return "";
+
+}
+
+
+/* =========================================================
+   GITHUB API REQUEST
+========================================================= */
+
+async function githubRequest(
+  endpoint,
+  options = {}
+) {
+
+  const response =
+    await fetch(
+      `${GITHUB_CONFIG.apiUrl}${endpoint}`,
+      {
+        ...options,
+
+        headers: {
+
+          Accept:
+            "application/vnd.github+json",
+
+          ...options.headers,
+
+        },
+
+      }
+    );
+
+
+  if (
+    !response.ok
+  ) {
+
+    let message =
+      `GitHub API error: ${response.status}`;
+
+
+    try {
+
+      const errorData =
+        await response.json();
+
+
+      if (
+        errorData?.message
+      ) {
+
+        message =
+          errorData.message;
+
+      }
+
+    } catch {
+
+      /*
+        Ignore JSON parsing errors.
+      */
+
+    }
+
+
+    throw new Error(
+      message
+    );
+
+  }
+
+
+  return response.json();
+
+}
+
+
+/* =========================================================
+   FETCH GITHUB REPOSITORIES
+========================================================= */
+
+export async function fetchGitHubRepositories() {
+
+  const username =
+    encodeURIComponent(
+      GITHUB_CONFIG.username
+    );
+
+
+  const endpoint =
+    `/users/${username}/repos` +
+    `?per_page=${GITHUB_CONFIG.repositoryLimit}` +
+    `&sort=${GITHUB_CONFIG.sort}` +
+    `&direction=desc`;
+
+
+  return githubRequest(
+    endpoint
   );
 
 }
 
 
 /* =========================================================
-   CHECK IF REPOSITORY SHOULD BE SHOWN
+   FILTER GITHUB PAGES REPOSITORIES
 ========================================================= */
 
-export function isGitHubProject(
-  repository
-) {
-
-  if (
-    !repository ||
-    typeof repository !== "object"
-  ) {
-
-    return false;
-
-  }
-
-
-  /*
-    Public repositories only.
-  */
-
-  if (
-    githubConfig.onlyPublic &&
-    !isPublicRepository(
-      repository
-    )
-  ) {
-
-    return false;
-
-  }
-
-
-  /*
-    Ignore forks.
-  */
-
-  if (
-    githubConfig.ignoreForks &&
-    !isOriginalRepository(
-      repository
-    )
-  ) {
-
-    return false;
-
-  }
-
-
-  /*
-    GitHub Pages only.
-  */
-
-  if (
-    githubConfig.onlyGitHubPages &&
-    !hasGitHubPages(
-      repository
-    )
-  ) {
-
-    return false;
-
-  }
-
-
-  return true;
-
-}
-
-
-/* =========================================================
-   NORMALIZE LANGUAGE
-========================================================= */
-
-export function normalizeLanguage(
-  language
-) {
-
-  if (
-    !language ||
-    typeof language !== "string"
-  ) {
-
-    return "Web";
-
-  }
-
-
-  return language;
-
-}
-
-
-/* =========================================================
-   NORMALIZE TOPICS
-========================================================= */
-
-export function normalizeTopics(
-  topics
+export function filterGitHubPagesRepositories(
+  repositories = []
 ) {
 
   if (
     !Array.isArray(
-      topics
+      repositories
     )
   ) {
 
@@ -356,16 +325,106 @@ export function normalizeTopics(
   }
 
 
-  return topics.filter(
-    (topic) =>
-      typeof topic === "string"
+  return repositories.filter(
+    (repository) => {
+
+      if (
+        !repository ||
+        typeof repository !== "object"
+      ) {
+
+        return false;
+
+      }
+
+
+      /* ===================================================
+         PUBLIC ONLY
+      =================================================== */
+
+      if (
+        GITHUB_CONFIG.onlyPublic &&
+        repository.private
+      ) {
+
+        return false;
+
+      }
+
+
+      /* ===================================================
+         IGNORE FORKS
+      =================================================== */
+
+      if (
+        GITHUB_CONFIG.ignoreForks &&
+        repository.fork
+      ) {
+
+        return false;
+
+      }
+
+
+      /* ===================================================
+         IGNORE ARCHIVED
+      =================================================== */
+
+      if (
+        GITHUB_CONFIG.ignoreArchived &&
+        repository.archived
+      ) {
+
+        return false;
+
+      }
+
+
+      /* ===================================================
+         EXCLUDE PORTFOLIO
+      =================================================== */
+
+      if (
+        isExcludedRepository(
+          repository
+        )
+      ) {
+
+        return false;
+
+      }
+
+
+      /* ===================================================
+         CHECK GITHUB PAGES
+      =================================================== */
+
+      const pagesUrl =
+        buildGitHubPagesUrl(
+          repository
+        );
+
+
+      if (
+        GITHUB_CONFIG.onlyGitHubPages &&
+        !pagesUrl
+      ) {
+
+        return false;
+
+      }
+
+
+      return true;
+
+    }
   );
 
 }
 
 
 /* =========================================================
-   REPOSITORY → PROJECT
+   CONVERT REPOSITORY TO PROJECT
 ========================================================= */
 
 export function repositoryToProject(
@@ -373,9 +432,8 @@ export function repositoryToProject(
 ) {
 
   if (
-    !isGitHubProject(
-      repository
-    )
+    !repository ||
+    typeof repository !== "object"
   ) {
 
     return null;
@@ -383,32 +441,30 @@ export function repositoryToProject(
   }
 
 
-  const githubUrl =
-    repository.html_url ||
-    getGitHubRepositoryUrl(
-      repository.name
-    );
-
-
   const liveUrl =
-    getGitHubPagesUrl(
+    buildGitHubPagesUrl(
       repository
     );
 
 
+  if (
+    GITHUB_CONFIG.onlyGitHubPages &&
+    !liveUrl
+  ) {
+
+    return null;
+
+  }
+
+
   return {
 
-    /* -----------------------------------------------------
-       ID
-    ----------------------------------------------------- */
+    /* =====================================================
+       BASIC INFORMATION
+    ===================================================== */
 
     id:
-      `github-${repository.id}`,
-
-
-    /* -----------------------------------------------------
-       NAME
-    ----------------------------------------------------- */
+      repository.id,
 
     name:
       repository.name,
@@ -416,52 +472,68 @@ export function repositoryToProject(
     title:
       repository.name,
 
-
-    /* -----------------------------------------------------
-       DESCRIPTION
-    ----------------------------------------------------- */
-
     description:
       repository.description ||
-      "A web project built with modern web technologies.",
+      "A project built with modern web technologies.",
 
 
-    /* -----------------------------------------------------
-       TECHNOLOGY
-    ----------------------------------------------------- */
+    /* =====================================================
+       URLS
+    ===================================================== */
 
-    language:
-      normalizeLanguage(
-        repository.language
+    liveUrl:
+
+      liveUrl,
+
+    homepage:
+
+      liveUrl,
+
+    pagesUrl:
+
+      liveUrl,
+
+    githubUrl:
+
+      buildGitHubRepositoryUrl(
+        repository
       ),
 
 
-    /* -----------------------------------------------------
-       GITHUB
-    ----------------------------------------------------- */
+    /* =====================================================
+       SCREENSHOT
+    ===================================================== */
 
-    githubUrl,
-
-    github:
-      githubUrl,
+    screenshotUrl:
+      "",
 
 
-    /* -----------------------------------------------------
-       LIVE WEBSITE
-    ----------------------------------------------------- */
+    /* =====================================================
+       TECHNOLOGIES
+    ===================================================== */
 
-    liveUrl,
+    technologies:
+      Array.isArray(
+        repository.topics
+      )
+        ? repository.topics
+        : [],
 
-    homepage:
-      liveUrl,
+    topics:
+      Array.isArray(
+        repository.topics
+      )
+        ? repository.topics
+        : [],
 
-    demo:
-      liveUrl,
+    language:
+      repository.language ||
+      "",
 
 
-    /* -----------------------------------------------------
+    /* =====================================================
        GITHUB INFORMATION
-    ----------------------------------------------------- */
+    ===================================================== */
 
     stars:
       repository.stargazers_count ||
@@ -471,25 +543,6 @@ export function repositoryToProject(
       repository.forks_count ||
       0,
 
-    watchers:
-      repository.watchers_count ||
-      0,
-
-
-    /* -----------------------------------------------------
-       TOPICS
-    ----------------------------------------------------- */
-
-    topics:
-      normalizeTopics(
-        repository.topics
-      ),
-
-
-    /* -----------------------------------------------------
-       DATES
-    ----------------------------------------------------- */
-
     createdAt:
       repository.created_at ||
       null,
@@ -498,10 +551,24 @@ export function repositoryToProject(
       repository.updated_at ||
       null,
 
+    visibility:
+      repository.visibility ||
+      "public",
 
-    /* -----------------------------------------------------
+    archived:
+      Boolean(
+        repository.archived
+      ),
+
+    fork:
+      Boolean(
+        repository.fork
+      ),
+
+
+    /* =====================================================
        SOURCE
-    ----------------------------------------------------- */
+    ===================================================== */
 
     source:
       "github-pages",
@@ -512,295 +579,194 @@ export function repositoryToProject(
 
 
 /* =========================================================
-   FETCH PUBLIC REPOSITORIES
-========================================================= */
-
-export async function fetchGitHubRepositories() {
-
-  const apiUrl =
-    getGitHubRepositoriesUrl();
-
-
-  let response;
-
-
-  try {
-
-    response =
-      await fetch(
-        apiUrl,
-        {
-
-          method:
-            "GET",
-
-          headers: {
-
-            Accept:
-              "application/vnd.github+json",
-
-          },
-
-        }
-      );
-
-  } catch (error) {
-
-    throw new Error(
-      "Unable to connect to GitHub."
-    );
-
-  }
-
-
-  /* =======================================================
-     HANDLE 403
-  ======================================================= */
-
-  if (
-    response.status === 403
-  ) {
-
-    const rateLimitRemaining =
-      response.headers.get(
-        "x-ratelimit-remaining"
-      );
-
-
-    const rateLimitReset =
-      response.headers.get(
-        "x-ratelimit-reset"
-      );
-
-
-    const error =
-      new Error(
-        "GitHub API rate limit exceeded."
-      );
-
-
-    error.code =
-      "GITHUB_RATE_LIMIT";
-
-
-    error.status =
-      403;
-
-
-    error.rateLimitRemaining =
-      rateLimitRemaining;
-
-
-    error.rateLimitReset =
-      rateLimitReset;
-
-
-    throw error;
-
-  }
-
-
-  /* =======================================================
-     HANDLE OTHER ERRORS
-  ======================================================= */
-
-  if (
-    !response.ok
-  ) {
-
-    const error =
-      new Error(
-        `GitHub returned ${response.status}.`
-      );
-
-
-    error.status =
-      response.status;
-
-
-    throw error;
-
-  }
-
-
-  /* =======================================================
-     PARSE RESPONSE
-  ======================================================= */
-
-  let repositories;
-
-
-  try {
-
-    repositories =
-      await response.json();
-
-  } catch (error) {
-
-    throw new Error(
-      "GitHub returned invalid JSON."
-    );
-
-  }
-
-
-  /* =======================================================
-     VALIDATE RESPONSE
-  ======================================================= */
-
-  if (
-    !Array.isArray(
-      repositories
-    )
-  ) {
-
-    throw new Error(
-      "GitHub returned invalid repository data."
-    );
-
-  }
-
-
-  return repositories;
-
-}
-
-
-/* =========================================================
    FETCH GITHUB PAGES PROJECTS
 ========================================================= */
 
-export async function fetchGitHubPagesProjects() {
+export async function fetchGitHubProjects() {
 
   const repositories =
     await fetchGitHubRepositories();
 
 
-  const projects =
-    repositories
+  const githubPagesRepositories =
+    filterGitHubPagesRepositories(
+      repositories
+    );
 
-      .filter(
-        isGitHubProject
-      )
 
+  const projectList =
+    githubPagesRepositories
       .map(
         repositoryToProject
       )
-
-      .filter(
-        Boolean
-      );
+      .filter(Boolean);
 
 
-  return projects;
+  /* =======================================================
+     DEBUG INFORMATION
+  ======================================================= */
+
+  console.log(
+    "GitHub repositories:",
+    repositories
+  );
+
+
+  console.log(
+    "GitHub Pages repositories:",
+    githubPagesRepositories
+  );
+
+
+  console.log(
+    "GitHub projects:",
+    projectList
+  );
+
+
+  return projectList;
 
 }
 
 
 /* =========================================================
-   GET PROJECT GITHUB URL
+   GET PROJECT BY NAME
 ========================================================= */
 
-export function getProjectGitHubUrl(
-  project
+export async function getGitHubProjectByName(
+  name
 ) {
 
-  if (
-    !project ||
-    typeof project !== "object"
-  ) {
+  if (!name) {
 
-    return "#";
+    return null;
 
   }
 
 
+  const projectList =
+    await fetchGitHubProjects();
+
+
+  const searchName =
+    normalizeName(
+      name
+    );
+
+
   return (
-    project.githubUrl ||
-    project.github ||
-    project.html_url ||
-    "#"
+    projectList.find(
+      (project) =>
+        normalizeName(
+          project.name
+        ) ===
+        searchName
+    ) ||
+    null
   );
 
 }
 
 
 /* =========================================================
-   GET PROJECT LIVE URL
+   GET PROJECT BY ID
 ========================================================= */
 
-export function getProjectLiveUrl(
-  project
+export async function getGitHubProjectById(
+  id
 ) {
 
   if (
-    !project ||
-    typeof project !== "object"
+    id === undefined ||
+    id === null
   ) {
 
-    return "#";
+    return null;
 
   }
 
 
+  const projectList =
+    await fetchGitHubProjects();
+
+
   return (
-    project.liveUrl ||
-    project.homepage ||
-    project.demo ||
-    project.url ||
-    "#"
+    projectList.find(
+      (project) =>
+        String(
+          project.id
+        ) ===
+        String(id)
+    ) ||
+    null
   );
 
 }
 
 
 /* =========================================================
-   GET PROJECT LANGUAGE
+   GET GITHUB REPOSITORY URL
 ========================================================= */
 
-export function getProjectLanguage(
-  project
+export function getGitHubRepositoryUrl(
+  repository
 ) {
 
   if (
-    !project ||
-    typeof project !== "object"
+    typeof repository === "string"
   ) {
 
-    return "Web";
+    return repository;
 
   }
 
 
-  return (
-    project.language ||
-    "Web"
+  return buildGitHubRepositoryUrl(
+    repository
   );
 
 }
 
 
 /* =========================================================
-   GET PROJECT TOPICS
+   GET GITHUB PAGES URL
 ========================================================= */
 
-export function getProjectTopics(
-  project
+export function getGitHubPagesUrl(
+  repository
 ) {
 
   if (
-    !project ||
-    !Array.isArray(
-      project.topics
+    typeof repository === "string"
+  ) {
+
+    return isGitHubPagesUrl(
+      repository
     )
-  ) {
-
-    return [];
+      ? repository
+      : "";
 
   }
 
 
-  return project.topics;
+  return buildGitHubPagesUrl(
+    repository
+  );
+
+}
+
+
+/* =========================================================
+   GET PROJECT COUNT
+========================================================= */
+
+export async function getGitHubProjectCount() {
+
+  const projectList =
+    await fetchGitHubProjects();
+
+
+  return projectList.length;
 
 }
 
@@ -809,4 +775,29 @@ export function getProjectTopics(
    DEFAULT EXPORT
 ========================================================= */
 
-export default githubConfig;
+const github = {
+
+  GITHUB_CONFIG,
+
+  fetchGitHubRepositories,
+
+  filterGitHubPagesRepositories,
+
+  repositoryToProject,
+
+  fetchGitHubProjects,
+
+  getGitHubProjectByName,
+
+  getGitHubProjectById,
+
+  getGitHubRepositoryUrl,
+
+  getGitHubPagesUrl,
+
+  getGitHubProjectCount,
+
+};
+
+
+export default github;

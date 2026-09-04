@@ -1,387 +1,598 @@
 /* =========================================================
-   PROJECT DATA
+   PROJECTS
    Nathan — Frontend Developer Portfolio
 
-   Location:
-   src/javascript/projects/projects.js
+   SOURCE:
+   → GitHub public repositories
 
-   PURPOSE
-   ---------------------------------------------------------
-   Manual / fallback project data.
+   FILTER:
+   → GitHub Pages projects only
 
-   Used when:
-   - GitHub API returns 403
-   - GitHub is temporarily unavailable
-   - Vercel data is unavailable
-   - Netlify data is unavailable
-   - A project needs custom information
+   EXCLUDED:
+   → Portfoio
 
-   IMPORTANT
-   ---------------------------------------------------------
-   API-generated projects should use the same structure
-   defined below so ProjectsHero.jsx can treat all projects
-   consistently.
+   SCREENSHOTS:
+   → Automatically generated with Thumb.io
+
+   NO:
+   → Vercel
+   → Netlify
 ========================================================= */
 
 
 /* =========================================================
-   PROJECTS
+   IMPORTS
 ========================================================= */
 
-export const projects = [
+import {
+  fetchGitHubProjects,
+} from "./github.js";
 
-  /* =======================================================
-     HEALTH CARE LOGISTICS
-  ======================================================= */
 
-  {
+/* =========================================================
+   FALLBACK PROJECTS
+========================================================= */
+
+export const projects = [];
+
+
+/* =========================================================
+   CONFIGURATION
+========================================================= */
+
+const PROJECT_CONFIG = {
+
+  onlyGitHubPages: true,
+
+  excludedRepositories: [
+    "Portfoio",
+  ],
+
+};
+
+
+/* =========================================================
+   NORMALIZE NAME
+========================================================= */
+
+function normalizeName(value = "") {
+
+  return String(value)
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+
+}
+
+
+/* =========================================================
+   CHECK EXCLUDED PROJECT
+========================================================= */
+
+function isExcludedRepository(project) {
+
+  if (!project) {
+    return true;
+  }
+
+
+  const name =
+    project.name ||
+    project.title ||
+    "";
+
+
+  const normalizedName =
+    normalizeName(name);
+
+
+  return PROJECT_CONFIG
+    .excludedRepositories
+    .some(
+      (excluded) =>
+        normalizeName(excluded) ===
+        normalizedName
+    );
+
+}
+
+
+/* =========================================================
+   CHECK GITHUB PAGES
+========================================================= */
+
+function isGitHubPagesProject(project) {
+
+  if (!project) {
+    return false;
+  }
+
+
+  const pagesUrl =
+    project.pagesUrl ||
+    project.liveUrl ||
+    project.homepage ||
+    "";
+
+
+  return String(pagesUrl)
+    .toLowerCase()
+    .includes("github.io");
+
+}
+
+
+/* =========================================================
+   NORMALIZE PROJECT
+========================================================= */
+
+function normalizeProject(project) {
+
+  if (!project) {
+    return null;
+  }
+
+
+  const title =
+    project.title ||
+    project.name ||
+    "Untitled Project";
+
+
+  const liveUrl =
+    project.liveUrl ||
+    project.pagesUrl ||
+    project.homepage ||
+    "";
+
+
+  return {
+
+    ...project,
+
     id:
-      "health-care-logistics",
+      project.id ||
+      project.name ||
+      title,
 
     name:
-      "Health Care Logistics",
+      project.name ||
+      title,
 
     title:
-      "Health Care Logistics",
+      title,
 
     description:
-      "A responsive healthcare logistics website designed to present medical transportation and logistics services.",
-
-    language:
-      "React",
-
-    technologies: [
-      "React",
-      "JavaScript",
-      "CSS",
-      "Responsive Design",
-    ],
-
-    github:
-      "https://github.com/Nathan81824/health-care-logistics",
+      project.description ||
+      "A frontend project built with modern web technologies.",
 
     githubUrl:
-      "https://github.com/Nathan81824/health-care-logistics",
-
-    liveUrl:
-      "https://health-care-logistics.vercel.app/",
-
-    homepage:
-      "https://health-care-logistics.vercel.app/",
-
-    demo:
-      "https://health-care-logistics.vercel.app/",
-
-    vercelUrl:
-      "https://health-care-logistics.vercel.app/",
-
-    netlifyUrl:
+      project.githubUrl ||
+      project.repository?.html_url ||
       "",
 
-    source:
-      "manual",
+    liveUrl:
+      liveUrl,
 
-    deployment:
-      "vercel",
+    homepage:
+      liveUrl,
+
+    pagesUrl:
+      liveUrl,
+
+    visible:
+      project.visible !== false,
 
     featured:
-      true,
-
-    show:
-      true,
-
-    order:
-      1,
-
-    screenshot:
-      "/project-screenshots/health-care-logistics.png",
-
-  },
-
-
-  /* =======================================================
-     TO-DO APP
-  ======================================================= */
-
-  {
-    id:
-      "todo-app",
-
-    name:
-      "Study Planner",
-
-    title:
-      "Study Planner",
-
-    description:
-      "A personal study planning application for organizing topics, schedules, progress, and daily learning tasks.",
-
-    language:
-      "React",
-
-    technologies: [
-      "React",
-      "JavaScript",
-      "CSS",
-      "Local Storage",
-      "Responsive Design",
-    ],
-
-    github:
-      "https://github.com/Nathan81824/TO_DO_APP",
-
-    githubUrl:
-      "https://github.com/Nathan81824/TO_DO_APP",
-
-    liveUrl:
-      "https://nathan81824.github.io/TO_DO_APP/",
-
-    homepage:
-      "https://nathan81824.github.io/TO_DO_APP/",
-
-    demo:
-      "https://nathan81824.github.io/TO_DO_APP/",
-
-    vercelUrl:
-      "",
-
-    netlifyUrl:
-      "",
+      Boolean(
+        project.featured
+      ),
 
     source:
-      "manual",
-
-    deployment:
       "github-pages",
 
-    featured:
-      true,
+    technologies:
+      Array.isArray(
+        project.technologies
+      )
+        ? project.technologies
+        : project.language
+          ? [project.language]
+          : [],
 
-    show:
-      true,
+  };
 
-    order:
-      2,
-
-    screenshot:
-      "/project-screenshots/todo-app.png",
-
-  },
+}
 
 
-  /* =======================================================
-     CALCULATOR
-  ======================================================= */
+/* =========================================================
+   AUTOMATIC THUMB.IO SCREENSHOT
+========================================================= */
 
-  {
-    id:
-      "calculator",
+function getAutomaticScreenshotUrl(
+  liveUrl
+) {
 
-    name:
-      "Calculator",
+  if (!liveUrl) {
+    return "";
+  }
 
-    title:
-      "Calculator",
 
-    description:
-      "A responsive calculator application with a clean interface and interactive controls.",
+  /*
+    Thumb.io captures the deployed
+    GitHub Pages website automatically.
 
-    language:
-      "JavaScript",
+    No image needs to be stored
+    inside the project.
+  */
 
-    technologies: [
-      "JavaScript",
-      "HTML",
-      "CSS",
-      "Responsive Design",
-    ],
+  return (
+    `https://image.thum.io/get/` +
+    `width/1400/` +
+    `crop/900/` +
+    `noanimate/` +
+    liveUrl
+  );
 
-    github:
-      "https://github.com/Nathan81824/Caculator",
+}
 
-    githubUrl:
-      "https://github.com/Nathan81824/Caculator",
 
-    liveUrl:
-      "https://nathan81824.github.io/Caculator/",
+/* =========================================================
+   ADD AUTOMATIC SCREENSHOT
+========================================================= */
 
-    homepage:
-      "https://nathan81824.github.io/Caculator/",
+function addProjectScreenshot(project) {
 
-    demo:
-      "https://nathan81824.github.io/Caculator/",
+  if (!project) {
+    return null;
+  }
 
-    vercelUrl:
-      "",
 
-    netlifyUrl:
-      "",
+  const liveUrl =
+    project.liveUrl ||
+    project.pagesUrl ||
+    project.homepage ||
+    "";
 
-    source:
-      "manual",
 
-    deployment:
-      "github-pages",
+  return {
 
-    featured:
-      false,
+    ...project,
 
-    show:
-      true,
+    screenshotUrl:
+      getAutomaticScreenshotUrl(
+        liveUrl
+      ),
 
-    order:
-      3,
+  };
 
-    screenshot:
-      "/project-screenshots/calculator.png",
+}
 
-  },
 
-];
+/* =========================================================
+   FETCH PROJECTS
+========================================================= */
+
+export async function fetchProjects() {
+
+  try {
+
+    const githubProjects =
+      await fetchGitHubProjects();
+
+
+    if (
+      !Array.isArray(
+        githubProjects
+      )
+    ) {
+
+      return [];
+
+    }
+
+
+    const filteredProjects =
+      githubProjects
+
+        /* -----------------------------------------------
+           EXCLUDE PORTFOIO
+        ----------------------------------------------- */
+
+        .filter(
+          (project) =>
+            !isExcludedRepository(
+              project
+            )
+        )
+
+        /* -----------------------------------------------
+           GITHUB PAGES ONLY
+        ----------------------------------------------- */
+
+        .filter(
+          (project) =>
+            !PROJECT_CONFIG.onlyGitHubPages ||
+            isGitHubPagesProject(
+              project
+            )
+        )
+
+
+        /* -----------------------------------------------
+           NORMALIZE
+        ----------------------------------------------- */
+
+        .map(
+          normalizeProject
+        )
+
+        .filter(
+          Boolean
+        )
+
+
+        /* -----------------------------------------------
+           AUTOMATIC SCREENSHOTS
+        ----------------------------------------------- */
+
+        .map(
+          addProjectScreenshot
+        )
+
+        .filter(
+          Boolean
+        );
+
+
+    return filteredProjects;
+
+  } catch (error) {
+
+    console.error(
+      "Failed to fetch GitHub Pages projects:",
+      error
+    );
+
+
+    return [];
+
+  }
+
+}
+
+
+/* =========================================================
+   REMOTE PROJECTS
+========================================================= */
+
+export async function getRemoteProjects() {
+
+  return fetchProjects();
+
+}
 
 
 /* =========================================================
    VISIBLE PROJECTS
 ========================================================= */
 
-export const visibleProjects =
-  projects
+export function visibleProjects(
+  projectList = projects
+) {
 
-    .filter(
-      (project) =>
-        project &&
-        project.show !== false
-    )
+  return (
+    Array.isArray(projectList)
+      ? projectList
+      : []
+  ).filter(
+    (project) =>
+      project &&
+      project.visible !== false
+  );
 
-    .sort(
-      (a, b) =>
-        (a.order || 999) -
-        (b.order || 999)
-    );
+}
 
 
 /* =========================================================
    FEATURED PROJECTS
 ========================================================= */
 
-export const featuredProjects =
-  visibleProjects.filter(
+export function featuredProjects(
+  projectList = projects
+) {
+
+  return visibleProjects(
+    projectList
+  ).filter(
     (project) =>
       project.featured === true
   );
 
+}
+
 
 /* =========================================================
-   FIND PROJECT BY ID
+   GET PROJECT BY ID
 ========================================================= */
 
 export function getProjectById(
+  projectList = projects,
   id
 ) {
 
-  return projects.find(
-    (project) =>
-      project.id === id
+  return (
+    projectList.find(
+      (project) =>
+        String(project.id) ===
+        String(id)
+    ) ||
+    null
   );
 
 }
 
 
 /* =========================================================
-   FIND PROJECT BY NAME
+   GET PROJECT BY NAME
 ========================================================= */
 
 export function getProjectByName(
+  projectList = projects,
   name
 ) {
 
-  if (
-    !name ||
-    typeof name !== "string"
-  ) {
-
-    return undefined;
-
-  }
+  const normalizedName =
+    normalizeName(name);
 
 
-  return projects.find(
-    (project) =>
-      project.name?.toLowerCase() ===
-      name.toLowerCase()
+  return (
+    projectList.find(
+      (project) =>
+        normalizeName(
+          project.name ||
+          project.title ||
+          ""
+        ) ===
+        normalizedName
+    ) ||
+    null
   );
 
 }
 
 
 /* =========================================================
-   GET PROJECT GITHUB URL
+   GITHUB URL
 ========================================================= */
 
 export function getProjectGitHubUrl(
   project
 ) {
 
-  if (
-    !project ||
-    typeof project !== "object"
-  ) {
-
-    return "#";
-
-  }
-
-
   return (
-    project.githubUrl ||
-    project.github ||
-    "#"
+    project?.githubUrl ||
+    project?.repository?.html_url ||
+    ""
   );
 
 }
 
 
 /* =========================================================
-   GET PROJECT LIVE URL
+   LIVE URL
 ========================================================= */
 
 export function getProjectLiveUrl(
   project
 ) {
 
-  if (
-    !project ||
-    typeof project !== "object"
-  ) {
-
-    return "#";
-
-  }
-
-
   return (
-    project.liveUrl ||
-    project.homepage ||
-    project.demo ||
-    project.url ||
-    "#"
+    project?.liveUrl ||
+    project?.pagesUrl ||
+    project?.homepage ||
+    ""
   );
 
 }
 
 
 /* =========================================================
-   GET PROJECT TECHNOLOGIES
+   TECHNOLOGIES
 ========================================================= */
 
 export function getProjectTechnologies(
   project
 ) {
 
+  return (
+    project?.technologies ||
+    []
+  );
+
+}
+
+
+/* =========================================================
+   IMAGE
+========================================================= */
+
+export function getProjectImage(
+  project
+) {
+
+  return (
+    project?.screenshotUrl ||
+    project?.image ||
+    project?.thumbnail ||
+    ""
+  );
+
+}
+
+
+/* =========================================================
+   SCREENSHOT URL
+========================================================= */
+
+export function getProjectScreenshotUrl(
+  project
+) {
+
+  return (
+    project?.screenshotUrl ||
+    ""
+  );
+
+}
+
+
+/* =========================================================
+   DEPLOYMENT
+========================================================= */
+
+export function getProjectDeployment(
+  project
+) {
+
+  return (
+    project?.liveUrl ||
+    project?.pagesUrl ||
+    project?.homepage ||
+    ""
+  );
+
+}
+
+
+/* =========================================================
+   PROJECT COUNT
+========================================================= */
+
+export function getProjectCount(
+  projectList = projects
+) {
+
+  return visibleProjects(
+    projectList
+  ).length;
+
+}
+
+
+/* =========================================================
+   SEARCH PROJECTS
+========================================================= */
+
+export function searchProjects(
+  projectList = projects,
+  query = ""
+) {
+
   if (
-    !project ||
     !Array.isArray(
-      project.technologies
+      projectList
     )
   ) {
 
@@ -390,61 +601,135 @@ export function getProjectTechnologies(
   }
 
 
-  return project.technologies;
+  const search =
+    String(query)
+      .trim()
+      .toLowerCase();
 
-}
 
-
-/* =========================================================
-   GET PROJECT SCREENSHOT
-========================================================= */
-
-export function getProjectScreenshot(
-  project
-) {
-
-  if (
-    !project ||
-    typeof project !== "object"
-  ) {
-
-    return "";
-
+  if (!search) {
+    return projectList;
   }
 
 
-  return (
-    project.screenshot ||
-    project.image ||
-    project.thumbnail ||
-    ""
+  return projectList.filter(
+    (project) => {
+
+      const title =
+        String(
+          project.title || ""
+        ).toLowerCase();
+
+
+      const description =
+        String(
+          project.description || ""
+        ).toLowerCase();
+
+
+      const technologies =
+        getProjectTechnologies(
+          project
+        )
+          .join(" ")
+          .toLowerCase();
+
+
+      return (
+        title.includes(search) ||
+        description.includes(search) ||
+        technologies.includes(search)
+      );
+
+    }
   );
 
 }
 
 
 /* =========================================================
-   GET PROJECT DEPLOYMENT
+   IS PROJECT VISIBLE
 ========================================================= */
 
-export function getProjectDeployment(
-  project
+export function isProjectVisible(project) {
+
+  return Boolean(
+    project &&
+    project.visible !== false
+  );
+
+}
+
+
+/* =========================================================
+   SORT PROJECTS
+========================================================= */
+
+export function sortProjects(
+  projectList = projects,
+  sort = "updated"
 ) {
 
   if (
-    !project ||
-    typeof project !== "object"
+    !Array.isArray(
+      projectList
+    )
   ) {
 
-    return "";
+    return [];
 
   }
 
 
-  return (
-    project.deployment ||
-    ""
-  );
+  const sorted = [
+    ...projectList,
+  ];
+
+
+  switch (sort) {
+
+    case "name":
+
+      return sorted.sort(
+        (a, b) =>
+          String(
+            a.title || ""
+          ).localeCompare(
+            String(
+              b.title || ""
+            )
+          )
+      );
+
+
+    case "created":
+
+      return sorted.sort(
+        (a, b) =>
+          new Date(
+            a.created_at || 0
+          ) -
+          new Date(
+            b.created_at || 0
+          )
+      );
+
+
+    case "updated":
+
+    default:
+
+      return sorted.sort(
+        (a, b) =>
+          new Date(
+            b.updated_at || 0
+          ) -
+          new Date(
+            a.updated_at || 0
+          )
+      );
+
+  }
 
 }
 
@@ -453,4 +738,40 @@ export function getProjectDeployment(
    DEFAULT EXPORT
 ========================================================= */
 
-export default projects;
+export default {
+
+  projects,
+
+  fetchProjects,
+
+  getRemoteProjects,
+
+  visibleProjects,
+
+  featuredProjects,
+
+  getProjectById,
+
+  getProjectByName,
+
+  getProjectGitHubUrl,
+
+  getProjectLiveUrl,
+
+  getProjectTechnologies,
+
+  getProjectImage,
+
+  getProjectScreenshotUrl,
+
+  getProjectDeployment,
+
+  getProjectCount,
+
+  searchProjects,
+
+  isProjectVisible,
+
+  sortProjects,
+
+};

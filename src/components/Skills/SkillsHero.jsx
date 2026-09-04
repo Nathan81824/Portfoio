@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+
 import {
   ArrowRight,
   ExternalLink,
@@ -9,9 +10,14 @@ import {
 import {
   visibleSkills,
   skillCategories,
-} from "../../javascript/skills/skills";
+} from "../../javascript/skills/skills.js";
 
-
+import {
+  playClick,
+  isSoundEnabled,
+  enableSound,
+  disableSound,
+} from "../../javascript/sounds/sound.js";
 
 
 /* =========================================================
@@ -28,68 +34,117 @@ export default function Skills() {
     useState("All");
 
   const [soundEnabled, setSoundEnabled] =
-    useState(true);
+    useState(
+      isSoundEnabled()
+    );
 
 
   /* =======================================================
      FILTER SKILLS
-     Automatically updates from skills.js
   ======================================================= */
 
-  const filteredSkills = useMemo(() => {
+  const filteredSkills =
+    useMemo(() => {
 
-    if (
-      !activeCategory ||
-      activeCategory === "All"
-    ) {
-      return visibleSkills;
-    }
+      if (
+        !activeCategory ||
+        activeCategory === "All"
+      ) {
 
-    return visibleSkills.filter(
-      (skill) =>
-        skill.category === activeCategory
-    );
+        return visibleSkills;
 
-  }, [activeCategory]);
+      }
+
+
+      return visibleSkills.filter(
+        (skill) =>
+          skill.category ===
+          activeCategory
+      );
+
+    }, [
+      activeCategory,
+    ]);
 
 
   /* =======================================================
-     SKILL SOUND
+     PLAY SKILL SOUND
   ======================================================= */
 
   const playSkillSound = () => {
 
-    if (!soundEnabled) {
+    if (
+      !soundEnabled
+    ) {
+
       return;
+
     }
 
-    try {
 
-      const audio =
-        new Audio("/sounds/click.mp3");
-
-      audio.volume = 0.25;
-
-      audio.currentTime = 0;
-
-      audio.play().catch(() => {});
-
-    } catch {
-      // Sound is optional.
-    }
+    playClick();
 
   };
 
 
   /* =======================================================
-     HANDLE SKILL CLICK
+     TOGGLE SOUND
   ======================================================= */
 
-  const handleSkillClick = () => {
+  const toggleSound = () => {
 
-    playSkillSound();
+    setSoundEnabled(
+      (previous) => {
+
+        const next =
+          !previous;
+
+
+        if (next) {
+
+          enableSound();
+
+        } else {
+
+          disableSound();
+
+        }
+
+
+        return next;
+
+      }
+    );
 
   };
+
+
+  /* =======================================================
+     HANDLE CATEGORY
+  ======================================================= */
+
+  const handleCategoryChange =
+    (category) => {
+
+      setActiveCategory(
+        category
+      );
+
+      playSkillSound();
+
+    };
+
+
+  /* =======================================================
+     HANDLE SKILL INTERACTION
+  ======================================================= */
+
+  const handleSkillInteraction =
+    () => {
+
+      playSkillSound();
+
+    };
 
 
   /* =======================================================
@@ -107,52 +162,80 @@ export default function Skills() {
           HERO / INTRO
       =================================================== */}
 
-      <section className="skills-section">
+      <section
+        className="skills-section"
+      >
 
-        <div className="skills-container">
-
+        <div
+          className="skills-container"
+        >
 
           {/* =================================================
               LEFT SIDE
           ================================================= */}
 
-          <div className="skills-intro">
+          <div
+            className="skills-intro"
+          >
 
-            {/* Eyebrow */}
+            {/* =================================================
+                EYEBROW
+            ================================================= */}
 
-            <span className="skills-eyebrow">
+            <span
+              className="skills-eyebrow"
+            >
               MY SKILLS
             </span>
 
 
-            {/* Heading */}
+            {/* =================================================
+                HEADING
+            ================================================= */}
 
-            <h1 className="skills-title">
+            <h1
+              className="skills-title"
+            >
 
               Technologies I use
-              <span className="skills-title-accent">
+
+              <span
+                className="
+                  skills-title-accent
+                "
+              >
                 .
               </span>
 
             </h1>
 
 
-            {/* Description */}
+            {/* =================================================
+                DESCRIPTION
+            ================================================= */}
 
-            <p className="skills-description">
-
-              I build modern, responsive and
-              interactive web experiences using
-              a combination of frontend
-              technologies, development tools
-              and animation libraries.
-
+            <p
+              className="
+                skills-description
+              "
+            >
+              I build modern, responsive
+              and interactive web
+              experiences using a
+              combination of frontend
+              technologies, development
+              tools and animation
+              libraries.
             </p>
 
 
-            {/* Skill count */}
+            {/* =================================================
+                SKILL COUNT
+            ================================================= */}
 
-            <div className="skills-count">
+            <div
+              className="skills-count"
+            >
 
               <strong>
                 {visibleSkills.length}
@@ -171,29 +254,38 @@ export default function Skills() {
 
             <button
               type="button"
-              className="skills-sound-button"
-              onClick={() =>
-                setSoundEnabled(
-                  (previous) => !previous
-                )
+              className="
+                skills-sound-button
+              "
+              onClick={
+                toggleSound
               }
               aria-label={
                 soundEnabled
                   ? "Disable skill sounds"
                   : "Enable skill sounds"
               }
+              aria-pressed={
+                soundEnabled
+              }
             >
 
               {soundEnabled ? (
+
                 <Volume2
                   size={17}
                   strokeWidth={1.8}
+                  aria-hidden="true"
                 />
+
               ) : (
+
                 <VolumeX
                   size={17}
                   strokeWidth={1.8}
+                  aria-hidden="true"
                 />
+
               )}
 
               <span>
@@ -206,7 +298,7 @@ export default function Skills() {
 
 
             {/* =================================================
-                CONTACT / CTA
+                CONTACT CTA
             ================================================= */}
 
             <a
@@ -221,6 +313,7 @@ export default function Skills() {
               <ArrowRight
                 size={17}
                 strokeWidth={1.8}
+                aria-hidden="true"
               />
 
             </a>
@@ -232,8 +325,9 @@ export default function Skills() {
               RIGHT SIDE
           ================================================= */}
 
-          <div className="skills-content">
-
+          <div
+            className="skills-content"
+          >
 
             {/* =================================================
                 CATEGORY FILTERS
@@ -251,19 +345,22 @@ export default function Skills() {
                     key={category}
                     type="button"
                     className={
-                      activeCategory === category
+                      activeCategory ===
+                      category
+
                         ? "skills-filter active"
+
                         : "skills-filter"
                     }
-                    onClick={() => {
-
-                      setActiveCategory(
+                    onClick={() =>
+                      handleCategoryChange(
                         category
-                      );
-
-                      playSkillSound();
-
-                    }}
+                      )
+                    }
+                    aria-pressed={
+                      activeCategory ===
+                      category
+                    }
                   >
 
                     {category}
@@ -280,21 +377,35 @@ export default function Skills() {
                 SKILL GRID
             ================================================= */}
 
-            <div className="skills-grid">
+            <div
+              className="skills-grid"
+            >
 
               {filteredSkills.map(
-                (skill, index) => (
+                (
+                  skill,
+                  index
+                ) => (
 
                   <article
-                    key={skill.id}
+                    key={
+                      skill.id ||
+                      `${skill.name}-${index}`
+                    }
+
                     className="skill-card"
+
                     style={{
-                      "--skill-index": index,
+                      "--skill-index":
+                        index,
+
                       "--skill-color":
-                        skill.color,
+                        skill.color ||
+                        "var(--accent-primary)",
                     }}
+
                     onMouseEnter={
-                      handleSkillClick
+                      handleSkillInteraction
                     }
                   >
 
@@ -302,39 +413,44 @@ export default function Skills() {
                         CARD TOP
                     ========================================= */}
 
-                    <div className="skill-card-top">
-
+                    <div
+                      className="
+                        skill-card-top
+                      "
+                    >
 
                       {/* Skill icon */}
 
                       <div
                         className="skill-icon"
+
                         style={{
                           color:
-                            skill.color,
+                            skill.color ||
+                            "var(--accent-primary)",
                         }}
+
+                        aria-hidden="true"
                       >
 
-                        {skill.icon ? (
-                          <span>
-                            {skill.label
-                              ?.charAt(0)
-                              ?.toUpperCase()}
-                          </span>
-                        ) : (
-                          <span>
-                            {skill.label
-                              ?.charAt(0)
-                              ?.toUpperCase()}
-                          </span>
-                        )}
+                        <span>
+                          {(
+                            skill.label ||
+                            skill.name ||
+                            "S"
+                          )
+                            .charAt(0)
+                            .toUpperCase()}
+                        </span>
 
                       </div>
 
 
                       {/* Skill level */}
 
-                      <span className="skill-level">
+                      <span
+                        className="skill-level"
+                      >
                         {skill.level}
                       </span>
 
@@ -345,7 +461,11 @@ export default function Skills() {
                         CARD CONTENT
                     ========================================= */}
 
-                    <div className="skill-card-content">
+                    <div
+                      className="
+                        skill-card-content
+                      "
+                    >
 
                       <h2>
                         {skill.name}
@@ -362,9 +482,15 @@ export default function Skills() {
                         PROGRESS
                     ========================================= */}
 
-                    <div className="skill-progress">
+                    <div
+                      className="skill-progress"
+                    >
 
-                      <div className="skill-progress-header">
+                      <div
+                        className="
+                          skill-progress-header
+                        "
+                      >
 
                         <span>
                           Proficiency
@@ -378,17 +504,32 @@ export default function Skills() {
 
 
                       <div
-                        className="skill-progress-track"
-                        aria-label={`${skill.name} proficiency ${skill.percentage}%`}
+                        className="
+                          skill-progress-track
+                        "
+                        role="progressbar"
+                        aria-valuemin="0"
+                        aria-valuemax="100"
+                        aria-valuenow={
+                          skill.percentage
+                        }
+                        aria-label={
+                          `${skill.name} proficiency ${skill.percentage}%`
+                        }
                       >
 
                         <span
-                          className="skill-progress-bar"
+                          className="
+                            skill-progress-bar
+                          "
+
                           style={{
                             width:
                               `${skill.percentage}%`,
+
                             background:
-                              skill.color,
+                              skill.color ||
+                              "var(--accent-primary)",
                           }}
                         />
 
@@ -401,7 +542,11 @@ export default function Skills() {
                         CARD FOOTER
                     ========================================= */}
 
-                    <div className="skill-card-footer">
+                    <div
+                      className="
+                        skill-card-footer
+                      "
+                    >
 
                       <span>
                         {skill.category}
@@ -414,18 +559,32 @@ export default function Skills() {
                           href={
                             skill.officialUrl
                           }
+
                           target="_blank"
-                          rel="noopener noreferrer"
-                          className="skill-official-link"
-                          aria-label={`Learn more about ${skill.name}`}
+
+                          rel="
+                            noopener noreferrer
+                          "
+
+                          className="
+                            skill-official-link
+                          "
+
+                          aria-label={
+                            `Learn more about ${skill.name}`
+                          }
+
                           onClick={(event) => {
+
                             event.stopPropagation();
+
                           }}
                         >
 
                           <ExternalLink
                             size={15}
                             strokeWidth={1.8}
+                            aria-hidden="true"
                           />
 
                         </a>
@@ -448,10 +607,13 @@ export default function Skills() {
 
             {filteredSkills.length === 0 && (
 
-              <div className="skills-empty">
+              <div
+                className="skills-empty"
+              >
 
                 <p>
-                  No skills found in this category.
+                  No skills found in this
+                  category.
                 </p>
 
               </div>
@@ -467,4 +629,5 @@ export default function Skills() {
     </main>
 
   );
+
 }

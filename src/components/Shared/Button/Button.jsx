@@ -1,13 +1,50 @@
+/* =========================================================
+   BUTTON
+   Nathan — Frontend Developer Portfolio
+
+   Reusable button component.
+
+   Supports:
+   - Primary / secondary / ghost variants
+   - Small / medium / large sizes
+   - Optional Lucide/icon component
+   - Normal buttons
+   - Internal React Router links
+   - External links
+   - Downloads
+   - Disabled state
+========================================================= */
+
+import {
+  Link,
+} from "react-router-dom";
+
+
+/* =========================================================
+   BUTTON
+========================================================= */
 
 export default function Button({
   children,
+
   variant = "primary",
+
   size = "md",
+
   icon: Icon,
+
   href,
+
   download = false,
+
+  external = false,
+
   className = "",
+
   disabled = false,
+
+  type = "button",
+
   ...props
 }) {
 
@@ -19,6 +56,9 @@ export default function Button({
     "btn",
     `btn-${variant}`,
     `btn-${size}`,
+    disabled
+      ? "btn-disabled"
+      : "",
     className,
   ]
     .filter(Boolean)
@@ -35,49 +75,185 @@ export default function Button({
         {children}
       </span>
 
+
       {Icon && (
-        <span className="btn-icon">
+
+        <span
+          className="btn-icon"
+          aria-hidden="true"
+        >
+
           <Icon
             size={18}
             strokeWidth={2}
           />
+
         </span>
+
       )}
+
     </>
   );
 
 
   /* =======================================================
-     LINK BUTTON
+     NO HREF
+     → NORMAL BUTTON
   ======================================================= */
 
-  if (href) {
+  if (!href) {
+
     return (
-      <a
-        href={href}
+
+      <button
+        type={type}
         className={classes}
-        download={download}
-        aria-disabled={disabled}
+        disabled={disabled}
         {...props}
       >
+
         {content}
-      </a>
+
+      </button>
+
     );
+
   }
 
 
   /* =======================================================
-     NORMAL BUTTON
+     DOWNLOAD
+     → NORMAL ANCHOR
+  ======================================================= */
+
+  if (download) {
+
+    return (
+
+      <a
+        href={href}
+        className={classes}
+        download
+        aria-disabled={
+          disabled
+            ? "true"
+            : undefined
+        }
+        onClick={
+          disabled
+            ? (event) => {
+                event.preventDefault();
+              }
+            : props.onClick
+        }
+        {...(
+          disabled
+            ? Object.fromEntries(
+                Object.entries(props)
+                  .filter(
+                    ([key]) =>
+                      key !== "onClick"
+                  )
+              )
+            : props
+        )}
+      >
+
+        {content}
+
+      </a>
+
+    );
+
+  }
+
+
+  /* =======================================================
+     EXTERNAL LINK
+  ======================================================= */
+
+  if (external) {
+
+    return (
+
+      <a
+        href={href}
+        className={classes}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-disabled={
+          disabled
+            ? "true"
+            : undefined
+        }
+        onClick={
+          disabled
+            ? (event) => {
+                event.preventDefault();
+              }
+            : props.onClick
+        }
+        {...(
+          disabled
+            ? Object.fromEntries(
+                Object.entries(props)
+                  .filter(
+                    ([key]) =>
+                      key !== "onClick"
+                  )
+              )
+            : props
+        )}
+      >
+
+        {content}
+
+      </a>
+
+    );
+
+  }
+
+
+  /* =======================================================
+     INTERNAL ROUTE
+     → REACT ROUTER LINK
   ======================================================= */
 
   return (
-    <button
-      type="button"
+
+    <Link
+      to={href}
       className={classes}
-      disabled={disabled}
-      {...props}
+      aria-disabled={
+        disabled
+          ? "true"
+          : undefined
+      }
+      onClick={
+        disabled
+          ? (event) => {
+              event.preventDefault();
+            }
+          : props.onClick
+      }
+      {...(
+        disabled
+          ? Object.fromEntries(
+              Object.entries(props)
+                .filter(
+                  ([key]) =>
+                    key !== "onClick"
+                )
+            )
+          : props
+      )}
     >
+
       {content}
-    </button>
+
+    </Link>
+
   );
+
 }

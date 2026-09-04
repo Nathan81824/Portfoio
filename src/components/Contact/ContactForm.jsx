@@ -1,4 +1,6 @@
+
 import { useState } from "react";
+
 import {
   Send,
   User,
@@ -8,13 +10,11 @@ import {
   AlertCircle,
 } from "lucide-react";
 
-import {
-  saveContactMessage,
-} from "../../javascript/contact/contactStorage";
+import dataStorage from "../../javascript/data/dataStorage.js";
 
 import {
   notifyNewContact,
-} from "../../javascript/data/notification/notification";
+} from "../../javascript/data/notification/notification.js";
 
 
 /* =========================================================
@@ -25,6 +25,10 @@ export default function ContactForm({
   onSubmitted,
 }) {
 
+  /* =======================================================
+     FORM STATE
+  ======================================================= */
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -32,14 +36,16 @@ export default function ContactForm({
   });
 
 
-  const [status, setStatus] = useState(
-    "idle"
-  );
+  /* =======================================================
+     STATUS
+  ======================================================= */
+
+  const [status, setStatus] =
+    useState("idle");
 
 
-  const [error, setError] = useState(
-    ""
-  );
+  const [error, setError] =
+    useState("");
 
 
   /* =======================================================
@@ -61,23 +67,19 @@ export default function ContactForm({
 
 
     if (status !== "idle") {
-
       setStatus("idle");
-
     }
 
 
     if (error) {
-
       setError("");
-
     }
 
   };
 
 
   /* =======================================================
-     VALIDATE
+     VALIDATE FORM
   ======================================================= */
 
   const validateForm = () => {
@@ -93,16 +95,12 @@ export default function ContactForm({
 
 
     if (!name) {
-
       return "Please enter your name.";
-
     }
 
 
     if (!email) {
-
       return "Please enter your email.";
-
     }
 
 
@@ -110,28 +108,18 @@ export default function ContactForm({
       /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 
-    if (
-      !emailPattern.test(email)
-    ) {
-
+    if (!emailPattern.test(email)) {
       return "Please enter a valid email address.";
-
     }
 
 
     if (!message) {
-
       return "Please enter a message.";
-
     }
 
 
-    if (
-      message.length > 1000
-    ) {
-
+    if (message.length > 1000) {
       return "Your message must be 1000 characters or less.";
-
     }
 
 
@@ -144,12 +132,9 @@ export default function ContactForm({
      SUBMIT
   ======================================================= */
 
-  const handleSubmit = (
-    event
-  ) => {
+  const handleSubmit = (event) => {
 
     event.preventDefault();
-
 
     setError("");
 
@@ -172,7 +157,7 @@ export default function ContactForm({
 
 
     /* =====================================================
-       CREATE MESSAGE
+       CREATE CONTACT MESSAGE
     ===================================================== */
 
     const now =
@@ -210,13 +195,26 @@ export default function ContactForm({
          SAVE MESSAGE
       =================================================== */
 
-      saveContactMessage(
+      if (
+        !dataStorage ||
+        typeof dataStorage.save !==
+          "function"
+      ) {
+
+        throw new Error(
+          "Contact message storage is unavailable."
+        );
+
+      }
+
+
+      dataStorage.save(
         contactMessage
       );
 
 
       /* ===================================================
-         NOTIFY
+         NOTIFICATION
       =================================================== */
 
       try {
@@ -253,7 +251,7 @@ export default function ContactForm({
 
 
       /* ===================================================
-         SUCCESS
+         CLEAR FORM
       =================================================== */
 
       setFormData({
@@ -262,6 +260,10 @@ export default function ContactForm({
         message: "",
       });
 
+
+      /* ===================================================
+         SUCCESS
+      =================================================== */
 
       setStatus(
         "success"
@@ -278,7 +280,6 @@ export default function ContactForm({
         );
 
       }
-
 
     } catch (
       submissionError
@@ -355,7 +356,10 @@ export default function ContactForm({
       {status === "success" && (
 
         <div
-          className="contact-form__status contact-form__status--success"
+          className="
+            contact-form__status
+            contact-form__status--success
+          "
           role="status"
         >
 
@@ -388,7 +392,10 @@ export default function ContactForm({
       {status === "error" && error && (
 
         <div
-          className="contact-form__status contact-form__status--error"
+          className="
+            contact-form__status
+            contact-form__status--error
+          "
           role="alert"
         >
 
@@ -512,7 +519,10 @@ export default function ContactForm({
             <span
               className={
                 characterCount >= 900
-                  ? "contact-form__counter contact-form__counter--warning"
+                  ? `
+                    contact-form__counter
+                    contact-form__counter--warning
+                  `
                   : "contact-form__counter"
               }
             >
@@ -585,4 +595,3 @@ export default function ContactForm({
   );
 
 }
-

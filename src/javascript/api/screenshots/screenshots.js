@@ -1,54 +1,63 @@
 /* =========================================================
-   PROJECT SCREENSHOTS
+   PROJECT SCREENSHOTS API
    Nathan — Frontend Developer Portfolio
 
    Location:
-   src/javascript/projects/screenshot.js
+   src/javascript/api/screenshots/screenshots.js
 
    PURPOSE
    ---------------------------------------------------------
-   Central screenshot configuration and helpers.
+   Provides project screenshot helpers.
 
-   Used by:
-   - ProjectsHero.jsx
-   - Project cards
-   - Project preview components
-   - Generated screenshot system
+   SCREENSHOT SYSTEM
+   ---------------------------------------------------------
+   GitHub / Vercel / Netlify
+        ↓
+   Project liveUrl
+        ↓
+   Thumb.io
+        ↓
+   Project screenshot URL
 
    IMPORTANT
    ---------------------------------------------------------
-   This file does NOT generate screenshots.
+   This file does NOT use Playwright.
 
-   Screenshot generation belongs in:
+   This file does NOT generate or store local PNG files.
 
-   src/javascript/scripts/
-   generate-project-screenshots.js
-
-   That script can use Playwright to visit the live
-   project and save an actual screenshot.
+   Thumb.io generates the project preview image from
+   the project's public live URL.
 ========================================================= */
 
 
 /* =========================================================
-   SCREENSHOT CONFIGURATION
+   THUMB.IO CONFIGURATION
 ========================================================= */
 
 export const screenshotConfig = {
 
   /* =======================================================
-     STORAGE
+     PROVIDER
   ======================================================= */
 
-  basePath:
-    "/project-screenshots/",
+  provider:
+    "thumb.io",
 
 
   /* =======================================================
-     DEFAULT IMAGE
+     BASE URL
+  ======================================================= */
+
+  baseUrl:
+    "https://image.thum.io/get/",
+
+
+  /* =======================================================
+     DEFAULT SCREENSHOT
   ======================================================= */
 
   defaultScreenshot:
-    "/project-screenshots/default.png",
+    "",
 
 
   /* =======================================================
@@ -71,22 +80,6 @@ export const screenshotConfig = {
 
 
   /* =======================================================
-     DEVICE SCALE
-  ======================================================= */
-
-  deviceScaleFactor:
-    1,
-
-
-  /* =======================================================
-     SCREENSHOT QUALITY
-  ======================================================= */
-
-  fullPage:
-    false,
-
-
-  /* =======================================================
      IMAGE LOADING
   ======================================================= */
 
@@ -105,91 +98,92 @@ export const screenshotConfig = {
 
 
 /* =========================================================
-   SANITIZE PROJECT NAME
+   NORMALIZE URL
 ========================================================= */
 
-export function sanitizeProjectName(
-  name
+export function normalizeScreenshotUrl(
+  url
 ) {
 
   if (
-    !name ||
-    typeof name !== "string"
+    !url ||
+    typeof url !== "string"
   ) {
 
-    return "project";
+    return "";
 
   }
 
 
-  return name
-
-    .trim()
-
-    .toLowerCase()
-
-    .replace(
-      /[^a-z0-9]+/g,
-      "-"
-    )
-
-    .replace(
-      /^-+|-+$/g,
-      ""
-
-    ) || "project";
+  return url.trim();
 
 }
 
 
 /* =========================================================
-   CREATE SCREENSHOT FILENAME
+   GET PROJECT LIVE URL
 ========================================================= */
 
-export function getScreenshotFilename(
+export function getScreenshotSourceUrl(
   project
 ) {
 
   if (
-    !project
+    !project ||
+    typeof project !== "object"
   ) {
 
-    return "project.png";
+    return "";
 
   }
 
 
-  const name =
-    project.slug ||
-    project.name ||
-    project.title ||
-    project.id ||
-    "project";
-
-
   return (
-    `${sanitizeProjectName(name)}${screenshotConfig.extension}`
+    project.liveUrl ||
+    project.homepage ||
+    project.demo ||
+    project.url ||
+    ""
   );
 
 }
 
 
 /* =========================================================
-   CREATE SCREENSHOT PATH
+   CREATE THUMB.IO URL
 ========================================================= */
 
-export function getScreenshotPath(
-  project
+export function getThumbIoScreenshot(
+  url
 ) {
 
-  const filename =
-    getScreenshotFilename(
-      project
+  const normalizedUrl =
+    normalizeScreenshotUrl(
+      url
     );
 
 
+  if (
+    !normalizedUrl
+  ) {
+
+    return "";
+
+  }
+
+
+  if (
+    normalizedUrl === "#"
+  ) {
+
+    return "";
+
+  }
+
+
   return (
-    `${screenshotConfig.basePath}${filename}`
+    `${screenshotConfig.baseUrl}` +
+    `${normalizedUrl}`
   );
 
 }
@@ -208,93 +202,104 @@ export function getProjectScreenshot(
     typeof project !== "object"
   ) {
 
-    return screenshotConfig.defaultScreenshot;
+    return (
+      screenshotConfig.defaultScreenshot
+    );
 
   }
 
 
-  /*
-    Prefer the explicitly assigned screenshot.
-  */
+  /* =======================================================
+     EXPLICIT SCREENSHOT
+  ======================================================= */
 
   if (
     typeof project.screenshot === "string" &&
     project.screenshot.trim()
   ) {
 
-    return project.screenshot;
+    return (
+      project.screenshot.trim()
+    );
 
   }
 
 
-  /*
-    Then try image.
-  */
+  /* =======================================================
+     IMAGE
+  ======================================================= */
 
   if (
     typeof project.image === "string" &&
     project.image.trim()
   ) {
 
-    return project.image;
+    return (
+      project.image.trim()
+    );
 
   }
 
 
-  /*
-    Then try thumbnail.
-  */
+  /* =======================================================
+     THUMBNAIL
+  ======================================================= */
 
   if (
     typeof project.thumbnail === "string" &&
     project.thumbnail.trim()
   ) {
 
-    return project.thumbnail;
+    return (
+      project.thumbnail.trim()
+    );
 
   }
 
 
-  /*
-    Finally generate the expected screenshot path.
-  */
+  /* =======================================================
+     THUMB.IO
+  ======================================================= */
 
-  return getScreenshotPath(
-    project
+  const liveUrl =
+    getScreenshotSourceUrl(
+      project
+    );
+
+
+  return (
+    getThumbIoScreenshot(
+      liveUrl
+    ) ||
+    screenshotConfig.defaultScreenshot
   );
 
 }
 
 
 /* =========================================================
-   CHECK SCREENSHOT
+   CHECK PROJECT SCREENSHOT
 ========================================================= */
 
 export function hasProjectScreenshot(
   project
 ) {
 
-  if (
-    !project ||
-    typeof project !== "object"
-  ) {
-
-    return false;
-
-  }
+  const screenshot =
+    getProjectScreenshot(
+      project
+    );
 
 
   return Boolean(
-    project.screenshot ||
-    project.image ||
-    project.thumbnail
+    screenshot
   );
 
 }
 
 
 /* =========================================================
-   PROJECT SCREENSHOT DATA
+   GET SCREENSHOT DATA
 ========================================================= */
 
 export function getScreenshotData(
@@ -313,6 +318,9 @@ export function getScreenshotData(
 
       alt:
         "Project screenshot",
+
+      loading:
+        screenshotConfig.loading,
 
     };
 
@@ -344,7 +352,7 @@ export function getScreenshotData(
 
 
 /* =========================================================
-   CHECK IF SCREENSHOT SHOULD BE GENERATED
+   CHECK IF SCREENSHOT CAN BE GENERATED
 ========================================================= */
 
 export function shouldGenerateScreenshot(
@@ -361,36 +369,15 @@ export function shouldGenerateScreenshot(
   }
 
 
-  /*
-    A project needs a live URL before the screenshot
-    generator can visit it.
-  */
-
   const liveUrl =
-    project.liveUrl ||
-    project.homepage ||
-    project.demo ||
-    project.url;
+    getScreenshotSourceUrl(
+      project
+    );
 
 
   if (
     !liveUrl ||
     liveUrl === "#"
-  ) {
-
-    return false;
-
-  }
-
-
-  /*
-    Don't regenerate an explicitly assigned screenshot
-    unless the project requests regeneration.
-  */
-
-  if (
-    project.screenshot &&
-    project.regenerateScreenshot !== true
   ) {
 
     return false;
@@ -404,35 +391,6 @@ export function shouldGenerateScreenshot(
 
 
 /* =========================================================
-   GET LIVE PROJECT URL
-========================================================= */
-
-export function getScreenshotSourceUrl(
-  project
-) {
-
-  if (
-    !project ||
-    typeof project !== "object"
-  ) {
-
-    return "#";
-
-  }
-
-
-  return (
-    project.liveUrl ||
-    project.homepage ||
-    project.demo ||
-    project.url ||
-    "#"
-  );
-
-}
-
-
-/* =========================================================
    CREATE SCREENSHOT JOB
 ========================================================= */
 
@@ -441,8 +399,9 @@ export function createScreenshotJob(
 ) {
 
   if (
-    !project ||
-    typeof project !== "object"
+    !shouldGenerateScreenshot(
+      project
+    )
   ) {
 
     return null;
@@ -456,8 +415,14 @@ export function createScreenshotJob(
     );
 
 
+  const screenshotUrl =
+    getThumbIoScreenshot(
+      sourceUrl
+    );
+
+
   if (
-    sourceUrl === "#"
+    !screenshotUrl
   ) {
 
     return null;
@@ -469,35 +434,21 @@ export function createScreenshotJob(
 
     id:
       project.id ||
-      sanitizeProjectName(
-        project.name ||
-        project.title
-      ),
+      project.name ||
+      project.title ||
+      "project",
 
     name:
       project.name ||
       project.title ||
       "Project",
 
-    url:
-      sourceUrl,
+    sourceUrl,
 
-    output:
-      getScreenshotPath(
-        project
-      ),
+    screenshotUrl,
 
-    width:
-      screenshotConfig.width,
-
-    height:
-      screenshotConfig.height,
-
-    deviceScaleFactor:
-      screenshotConfig.deviceScaleFactor,
-
-    fullPage:
-      screenshotConfig.fullPage,
+    provider:
+      screenshotConfig.provider,
 
   };
 
@@ -541,7 +492,7 @@ export function createScreenshotJobs(
 
 
 /* =========================================================
-   PROJECT IMAGE ERROR FALLBACK
+   GET SCREENSHOT FALLBACK
 ========================================================= */
 
 export function getScreenshotFallback(
@@ -552,12 +503,44 @@ export function getScreenshotFallback(
     project?.fallbackScreenshot
   ) {
 
-    return project.fallbackScreenshot;
+    return (
+      project.fallbackScreenshot
+    );
 
   }
 
 
-  return screenshotConfig.defaultScreenshot;
+  return (
+    screenshotConfig.defaultScreenshot
+  );
+
+}
+
+
+/* =========================================================
+   BUILD PROJECT SCREENSHOT URL
+========================================================= */
+
+export function buildProjectScreenshot(
+  project
+) {
+
+  const screenshot =
+    getProjectScreenshot(
+      project
+    );
+
+
+  return {
+
+    screenshot,
+
+    sourceUrl:
+      getScreenshotSourceUrl(
+        project
+      ),
+
+  };
 
 }
 

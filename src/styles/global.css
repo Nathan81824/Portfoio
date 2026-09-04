@@ -10,6 +10,9 @@
 @import "./components/Shared/shared.css";
 
 
+@import "./admin/admin.css";
+
+
 /* =========================================================
    PAGES
 ========================================================= */
@@ -23,7 +26,6 @@
 @import "./components/Contact/contact.css";
 
 @import "./components/Skills/skills.css";
-
 
 @import "./components/Error/error.css";
 
