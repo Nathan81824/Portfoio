@@ -1,96 +1,168 @@
 /* =========================================================
-   PORTFOLIO PUSH NOTIFICATION SERVICE WORKER
+   PORTFOLIO SERVICE WORKER
+   Nathan Portfolio
 ========================================================= */
-
-self.addEventListener("install", (event) => {
-  self.skipWaiting();
-});
-
-
-self.addEventListener("activate", (event) => {
-  event.waitUntil(
-    self.clients.claim()
-  );
-});
 
 
 /* =========================================================
-   PUSH EVENT
+   INSTALL
 ========================================================= */
 
-self.addEventListener("push", (event) => {
+self.addEventListener(
+  "install",
+  (event) => {
 
-  let data = {};
+    console.log(
+      "[SW] Installing..."
+    );
 
-  try {
-
-    data = event.data
-      ? event.data.json()
-      : {};
-
-  } catch {
-
-    data = {
-      title: "New message",
-      body: "You have a new visitor message.",
-    };
+    self.skipWaiting();
 
   }
+);
 
 
-  const title =
-    data.title ||
-    "New message";
+/* =========================================================
+   ACTIVATE
+========================================================= */
+
+self.addEventListener(
+  "activate",
+  (event) => {
+
+    event.waitUntil(
+
+      self.clients.claim()
+
+    );
+
+  }
+);
 
 
-  const options = {
+/* =========================================================
+   PUSH NOTIFICATION
+========================================================= */
 
-    body:
+self.addEventListener(
+  "push",
+  (event) => {
+
+    let data = {};
+
+
+    /* =====================================================
+       READ PUSH DATA
+    ===================================================== */
+
+    try {
+
+      if (event.data) {
+
+        data =
+          event.data.json();
+
+      }
+
+    } catch (error) {
+
+      console.warn(
+        "[SW] Could not parse push data:",
+        error
+      );
+
+
+      data = {
+
+        title:
+          "New message",
+
+        body:
+          "You have a new visitor message.",
+
+      };
+
+    }
+
+
+    /* =====================================================
+       NOTIFICATION DATA
+    ===================================================== */
+
+    const title =
+      data.title ||
+      "New message";
+
+
+    const body =
       data.body ||
-      "You have a new visitor message.",
-
-    icon:
-      data.icon ||
-      "/favicon.ico",
-
-    badge:
-      data.badge ||
-      "/favicon.ico",
-
-    tag:
-      data.tag ||
-      "portfolio-chat",
-
-    renotify: true,
-
-    requireInteraction:
-      false,
-
-    data: {
-
-      conversationId:
-        data.conversationId ||
-        null,
-
-      url:
-        data.url ||
-        "/",
-
-    },
-
-  };
+      "You have a new visitor message.";
 
 
-  event.waitUntil(
+    const conversationId =
+      data.conversationId ||
+      data.conversation_id ||
+      null;
 
-    self.registration.showNotification(
-      title,
-      options
-    )
 
-  );
+    const notificationUrl =
+      data.url ||
+      "./admin/chat";
 
-});
+
+    /* =====================================================
+       NOTIFICATION OPTIONS
+    ===================================================== */
+
+    const options = {
+
+      body,
+
+      icon:
+        data.icon ||
+        "./favicon.ico",
+
+      badge:
+        data.badge ||
+        "./favicon.ico",
+
+      tag:
+        data.tag ||
+        "portfolio-chat",
+
+      renotify:
+        true,
+
+      requireInteraction:
+        false,
+
+      data: {
+
+        conversationId,
+
+        url:
+          notificationUrl,
+
+      },
+
+    };
+
+
+    /* =====================================================
+       SHOW NOTIFICATION
+    ===================================================== */
+
+    event.waitUntil(
+
+      self.registration.showNotification(
+        title,
+        options
+      )
+
+    );
+
+  }
+);
 
 
 /* =========================================================
@@ -104,57 +176,123 @@ self.addEventListener(
     event.notification.close();
 
 
-    const url =
-      event.notification.data?.url ||
-      "/";
+    const notificationData =
+      event.notification.data ||
+      {};
+
+
+    const targetUrl =
+      notificationData.url ||
+      "./admin/chat";
 
 
     event.waitUntil(
 
       self.clients
         .matchAll({
-          type: "window",
-          includeUncontrolled: true,
+
+          type:
+            "window",
+
+          includeUncontrolled:
+            true,
+
         })
-        .then((clients) => {
 
-          /*
-            If the portfolio is already open,
-            focus it.
-          */
+        .then(
+          async (clients) => {
 
-          for (
-            const client of clients
-          ) {
+            /* =============================================
+               FIND EXISTING PORTFOLIO TAB
+            ============================================= */
 
-            if (
-              "focus" in client
+            for (
+              const client of clients
             ) {
 
-              return client.focus();
+              if (
+                "focus" in client
+              ) {
+
+                try {
+
+                  /*
+                    Tell the existing page which
+                    conversation was opened.
+                  */
+
+                  if (
+                    notificationData.conversationId
+                  ) {
+
+                    client.postMessage({
+
+                      type:
+                        "OPEN_CHAT_CONVERSATION",
+
+                      conversationId:
+                        notificationData
+                          .conversationId,
+
+                    });
+
+                  }
+
+
+                  await client.focus();
+
+                  return;
+
+                } catch {
+
+                  // Continue.
+
+                }
+
+              }
+
+            }
+
+
+            /* =============================================
+               OPEN PORTFOLIO
+            ============================================= */
+
+            if (
+              self.clients.openWindow
+            ) {
+
+              return self.clients.openWindow(
+                targetUrl
+              );
 
             }
 
           }
-
-
-          /*
-            Otherwise open the portfolio.
-          */
-
-          if (
-            self.clients.openWindow
-          ) {
-
-            return self.clients.openWindow(
-              url
-            );
-
-          }
-
-        })
+        )
 
     );
+
+  }
+);
+
+
+/* =========================================================
+   SERVICE WORKER MESSAGE
+========================================================= */
+
+self.addEventListener(
+  "message",
+  (event) => {
+
+    if (
+      event.data?.type ===
+      "SKIP_WAITING"
+    ) {
+
+      self.skipWaiting();
+
+    }
 
   }
 );
