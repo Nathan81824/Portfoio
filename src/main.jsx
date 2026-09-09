@@ -52,6 +52,7 @@ if (registration) {
   );
 }
 
+
 },
 
 onRegisterError(error) {
