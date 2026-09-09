@@ -1,9 +1,97 @@
+/* =========================================================
+   CORE RESET & FOUNDATION
+   ========================================================= */
+
 @import "./styles/core/reset.css";
+
 @import "./styles/core/variables.css";
+
 @import "./styles/core/theme.css";
+
 @import "./styles/core/typography.css";
+
+
+/* =========================================================
+   GLOBAL STYLES
+   ========================================================= */
+
 @import "./styles/global.css";
- @import "./styles/core/animations.css";
-@import "./styles/core/utilities.css"; 
+
+
+/* =========================================================
+   CORE UTILITIES & ANIMATIONS
+   ========================================================= */
+
+@import "./styles/core/animations.css";
+
+@import "./styles/core/utilities.css";
+
+
+/* =========================================================
+   COMPONENT / FEATURE STYLES
+   ========================================================= */
+
+@import "./styles/Offline/offline-game.css";
+@import "./styles/Detection/LoadingScreen/LoadingScreen.css";
+
+@import "./styles/Effects/BackgroundParticles.css";
+
+@import "./styles/Effects/Cursorglow.css";
+@import "./styles/Detection/Errors/Errors.css";
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
 
 /* @import "./styles/responsive/responsive.css"; */
+
+.page-transition {
+width: 100%;
+min-height: 100%;
+position: relative;
+}
+
+/* =========================================================
+PAGE TRANSITION LAYOUT
+========================================================= */
+
+.page-transition > * {
+width: 100%;
+}
+
+/* =========================================================
+PREVENT HORIZONTAL SHIFT DURING TRANSITION
+========================================================= */
+
+.page-transition {
+overflow-x: clip;
+}
+
+/* =========================================================
+SMOOTH PAGE RENDERING
+========================================================= */
+
+.page-transition,
+.page-transition * {
+backface-visibility: hidden;
+}
+
+/* =========================================================
+MOBILE
+========================================================= */
+
+@media (max-width: 768px) {
+.page-transition {
+width: 100%;
+}
+}
+
+/* =========================================================
+REDUCED MOTION
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+.page-transition {
+transition: none;
+}
+}

@@ -1,0 +1,125 @@
+/* =========================================
+   CURSOR GLOW
+   ========================================= */
+
+.cursor-glow {
+  position: fixed;
+  top: 0;
+  left: 0;
+
+  width: 260px;
+  height: 260px;
+
+  border-radius: 50%;
+
+  background: radial-gradient(
+    circle,
+    rgba(255, 159, 0, 0.16) 0%,
+    rgba(255, 138, 0, 0.09) 30%,
+    rgba(255, 138, 0, 0.035) 55%,
+    transparent 75%
+  );
+
+  filter: blur(12px);
+
+  pointer-events: none;
+
+  /*
+    Keeps the glow above the page background
+    but below normal content.
+  */
+  z-index: 1;
+
+  transform: translate(-50%, -50%);
+
+  will-change: transform;
+
+  opacity: 0;
+
+  transition: opacity 0.3s ease;
+}
+
+
+/* =========================================
+   SHOW GLOW
+   ========================================= */
+
+body:has(.cursor-glow) .cursor-glow {
+  opacity: 1;
+}
+
+
+/* =========================================
+   LIGHT THEME
+   ========================================= */
+
+.light-theme .cursor-glow {
+  background: radial-gradient(
+    circle,
+    rgba(255, 159, 0, 0.13) 0%,
+    rgba(255, 138, 0, 0.07) 30%,
+    rgba(255, 138, 0, 0.025) 55%,
+    transparent 75%
+  );
+}
+
+
+/* =========================================
+   DARK THEME
+   ========================================= */
+
+.dark-theme .cursor-glow {
+  background: radial-gradient(
+    circle,
+    rgba(255, 159, 0, 0.18) 0%,
+    rgba(255, 138, 0, 0.10) 30%,
+    rgba(255, 138, 0, 0.04) 55%,
+    transparent 75%
+  );
+}
+
+
+/* =========================================
+   REDUCED MOTION
+   ========================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .cursor-glow {
+    display: none;
+  }
+}
+
+
+/* =========================================
+   TOUCH DEVICES
+   ========================================= */
+
+@media (hover: none), (pointer: coarse) {
+  .cursor-glow {
+    display: none;
+  }
+}
+
+
+/* =========================================
+   SMALL SCREENS
+   ========================================= */
+
+@media (max-width: 768px) {
+  .cursor-glow {
+    width: 220px;
+    height: 220px;
+  }
+}
+
+
+/* =========================================
+   VERY LARGE SCREENS
+   ========================================= */
+
+@media (min-width: 1600px) {
+  .cursor-glow {
+    width: 300px;
+    height: 300px;
+  }
+}

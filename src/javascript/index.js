@@ -151,19 +151,24 @@ export {
 export {
   SOUND_CONFIG,
   SOUND_FILES,
+
   playSound,
   playClick,
   playNotification,
+
   enableSound,
   disableSound,
   toggleSound,
   isSoundEnabled,
+
   setSoundVolume,
   getSoundVolume,
+
   preloadSound,
   preloadSounds,
+
   clearSoundCache,
-} from "./sounds/sound.js";
+} from "./sound.js";
 
 
 /* =========================================================

@@ -1,1010 +1,1001 @@
 /* =========================================================
-   GLOBAL CSS ANIMATIONS
-   Nathan — Frontend Developer Portfolio
+GLOBAL CSS ANIMATIONS
+Nathan — Frontend Developer Portfolio
 
-   Location:
-   src/styles/animation.css
+Location:
+src/styles/animation.css
 
-   Framer Motion presets belong in:
-   src/javascript/utils/animations.js
+Framer Motion presets belong in:
+src/javascript/utils/animations.js
 ========================================================= */
 
-
 /* =========================================================
-   GLOW PULSE
+GLOW PULSE
 ========================================================= */
 
 @keyframes glowPulse {
+0%,
+100% {
+opacity: 0.65;
+transform: scale(0.9);
 
-  0%,
-  100% {
-    opacity: 0.65;
 
-    transform: scale(0.9);
+box-shadow:
+  0 0 4px var(--accent-primary),
+  0 0 10px var(--accent-secondary);
 
-    box-shadow:
-      0 0 4px rgba(255, 159, 0, 0.35),
-      0 0 10px rgba(255, 159, 0, 0.2);
-  }
 
-  50% {
-    opacity: 1;
-
-    transform: scale(1.2);
-
-    box-shadow:
-      0 0 6px rgba(255, 159, 0, 0.85),
-      0 0 16px rgba(255, 159, 0, 0.65),
-      0 0 30px rgba(255, 159, 0, 0.35);
-  }
 }
 
+50% {
+opacity: 1;
+transform: scale(1.2);
+
+
+box-shadow:
+  0 0 6px var(--accent-primary),
+  0 0 16px var(--accent-primary),
+  0 0 30px var(--accent-secondary);
+
+
+}
+}
 
 /* =========================================================
-   SOFT PULSE
+SOFT PULSE
 ========================================================= */
 
 @keyframes softPulse {
-
-  0%,
-  100% {
-    transform: scale(1);
-  }
-
-  50% {
-    transform: scale(1.04);
-  }
+0%,
+100% {
+transform: scale(1);
 }
 
+50% {
+transform: scale(1.04);
+}
+}
 
 /* =========================================================
-   FLOAT
+FLOAT
 ========================================================= */
 
 @keyframes float {
-
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-
-  50% {
-    transform: translateY(-8px);
-  }
+0%,
+100% {
+transform: translateY(0);
 }
 
+50% {
+transform: translateY(-8px);
+}
+}
 
 /* =========================================================
-   SLOW FLOAT
+SLOW FLOAT
 ========================================================= */
 
 @keyframes floatSlow {
-
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-
-  50% {
-    transform: translateY(-14px);
-  }
+0%,
+100% {
+transform: translateY(0);
 }
 
+50% {
+transform: translateY(-14px);
+}
+}
 
 /* =========================================================
-   FLOAT HORIZONTAL
+FLOAT HORIZONTAL
 ========================================================= */
 
 @keyframes floatHorizontal {
-
-  0%,
-  100% {
-    transform: translateX(0);
-  }
-
-  50% {
-    transform: translateX(8px);
-  }
+0%,
+100% {
+transform: translateX(0);
 }
 
+50% {
+transform: translateX(8px);
+}
+}
 
 /* =========================================================
-   ROTATE
+ROTATE
 ========================================================= */
 
 @keyframes rotate {
-
-  from {
-    transform: rotate(0deg);
-  }
-
-  to {
-    transform: rotate(360deg);
-  }
+from {
+transform: rotate(0deg);
 }
 
+to {
+transform: rotate(360deg);
+}
+}
 
 /* =========================================================
-   SLOW ROTATE
+SLOW ROTATE
 ========================================================= */
 
 @keyframes rotateSlow {
-
-  from {
-    transform: rotate(0deg);
-  }
-
-  to {
-    transform: rotate(360deg);
-  }
+from {
+transform: rotate(0deg);
 }
 
+to {
+transform: rotate(360deg);
+}
+}
 
 /* =========================================================
-   SHIMMER
+SHIMMER
 ========================================================= */
 
 @keyframes shimmer {
-
-  0% {
-    background-position: -200% center;
-  }
-
-  100% {
-    background-position: 200% center;
-  }
+0% {
+background-position: -200% center;
 }
 
+100% {
+background-position: 200% center;
+}
+}
 
 /* =========================================================
-   GRADIENT SHIFT
+GRADIENT SHIFT
 ========================================================= */
 
 @keyframes gradientShift {
-
-  0% {
-    background-position: 0% 50%;
-  }
-
-  50% {
-    background-position: 100% 50%;
-  }
-
-  100% {
-    background-position: 0% 50%;
-  }
+0% {
+background-position: 0% 50%;
 }
 
+50% {
+background-position: 100% 50%;
+}
+
+100% {
+background-position: 0% 50%;
+}
+}
 
 /* =========================================================
-   FADE IN
+FADE IN
 ========================================================= */
 
 @keyframes fadeIn {
-
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
-  }
+from {
+opacity: 0;
 }
 
+to {
+opacity: 1;
+}
+}
 
 /* =========================================================
-   FADE UP
+FADE UP
 ========================================================= */
 
 @keyframes fadeUp {
-
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+from {
+opacity: 0;
+transform: translateY(20px);
 }
 
+to {
+opacity: 1;
+transform: translateY(0);
+}
+}
 
 /* =========================================================
-   FADE DOWN
+FADE DOWN
 ========================================================= */
 
 @keyframes fadeDown {
-
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+from {
+opacity: 0;
+transform: translateY(-20px);
 }
 
+to {
+opacity: 1;
+transform: translateY(0);
+}
+}
 
 /* =========================================================
-   FADE LEFT
+FADE LEFT
 ========================================================= */
 
 @keyframes fadeLeft {
-
-  from {
-    opacity: 0;
-    transform: translateX(-20px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
+from {
+opacity: 0;
+transform: translateX(-20px);
 }
 
+to {
+opacity: 1;
+transform: translateX(0);
+}
+}
 
 /* =========================================================
-   FADE RIGHT
+FADE RIGHT
 ========================================================= */
 
 @keyframes fadeRight {
-
-  from {
-    opacity: 0;
-    transform: translateX(20px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
+from {
+opacity: 0;
+transform: translateX(20px);
 }
 
+to {
+opacity: 1;
+transform: translateX(0);
+}
+}
 
 /* =========================================================
-   SCALE IN
+SCALE IN
 ========================================================= */
 
 @keyframes scaleIn {
-
-  from {
-    opacity: 0;
-    transform: scale(0.94);
-  }
-
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
+from {
+opacity: 0;
+transform: scale(0.94);
 }
 
+to {
+opacity: 1;
+transform: scale(1);
+}
+}
 
 /* =========================================================
-   SCALE POP
+SCALE POP
 ========================================================= */
 
 @keyframes scalePop {
-
-  0% {
-    opacity: 0;
-    transform: scale(0.8);
-  }
-
-  70% {
-    opacity: 1;
-    transform: scale(1.04);
-  }
-
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
+0% {
+opacity: 0;
+transform: scale(0.8);
 }
 
+70% {
+opacity: 1;
+transform: scale(1.04);
+}
+
+100% {
+opacity: 1;
+transform: scale(1);
+}
+}
 
 /* =========================================================
-   BORDER GLOW
+BORDER GLOW
 ========================================================= */
 
 @keyframes borderGlow {
-
-  0%,
-  100% {
-    box-shadow:
-      0 0 0 rgba(255, 159, 0, 0);
-  }
-
-  50% {
-    box-shadow:
-      0 0 12px rgba(255, 159, 0, 0.35),
-      0 0 28px rgba(255, 159, 0, 0.18);
-  }
+0%,
+100% {
+box-shadow: 0 0 0 transparent;
 }
 
+50% {
+box-shadow:
+0 0 12px var(--accent-primary),
+0 0 28px var(--accent-secondary);
+}
+}
 
 /* =========================================================
-   ACCENT GLOW
+ACCENT GLOW
 ========================================================= */
 
 @keyframes accentGlow {
-
-  0%,
-  100% {
-    filter: brightness(1);
-  }
-
-  50% {
-    filter: brightness(1.12);
-  }
+0%,
+100% {
+filter: brightness(1);
 }
 
+50% {
+filter: brightness(1.12);
+}
+}
 
 /* =========================================================
-   STRONG ACCENT GLOW
+STRONG ACCENT GLOW
 ========================================================= */
 
 @keyframes accentGlowStrong {
+0%,
+100% {
+filter: brightness(1);
 
-  0%,
-  100% {
-    filter: brightness(1);
 
-    text-shadow:
-      0 0 4px rgba(255, 159, 0, 0.3);
-  }
+text-shadow:
+  0 0 4px var(--accent-primary);
 
-  50% {
-    filter: brightness(1.18);
 
-    text-shadow:
-      0 0 8px rgba(255, 159, 0, 0.7),
-      0 0 20px rgba(255, 159, 0, 0.45),
-      0 0 35px rgba(255, 159, 0, 0.2);
-  }
 }
 
+50% {
+filter: brightness(1.18);
+
+
+text-shadow:
+  0 0 8px var(--accent-primary),
+  0 0 20px var(--accent-secondary),
+  0 0 35px var(--accent-primary);
+
+
+}
+}
 
 /* =========================================================
-   SCROLL BOUNCE
+SCROLL BOUNCE
 ========================================================= */
 
 @keyframes scrollBounce {
-
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-
-  50% {
-    transform: translateY(7px);
-  }
+0%,
+100% {
+transform: translateY(0);
 }
 
+50% {
+transform: translateY(7px);
+}
+}
 
 /* =========================================================
-   BLINK
+BLINK
 ========================================================= */
 
 @keyframes blink {
-
-  0%,
-  45% {
-    opacity: 1;
-  }
-
-  50%,
-  100% {
-    opacity: 0.35;
-  }
+0%,
+45% {
+opacity: 1;
 }
 
+50%,
+100% {
+opacity: 0.35;
+}
+}
 
 /* =========================================================
-   PULSE OPACITY
+PULSE OPACITY
 ========================================================= */
 
 @keyframes pulseOpacity {
-
-  0%,
-  100% {
-    opacity: 0.4;
-  }
-
-  50% {
-    opacity: 1;
-  }
+0%,
+100% {
+opacity: 0.4;
 }
 
+50% {
+opacity: 1;
+}
+}
 
 /* =========================================================
-   REVEAL LEFT
+REVEAL LEFT
 ========================================================= */
 
 @keyframes revealLeft {
-
-  from {
-    opacity: 0;
-
-    clip-path:
-      inset(0 100% 0 0);
-  }
-
-  to {
-    opacity: 1;
-
-    clip-path:
-      inset(0 0 0 0);
-  }
+from {
+opacity: 0;
+clip-path: inset(0 100% 0 0);
 }
 
+to {
+opacity: 1;
+clip-path: inset(0 0 0 0);
+}
+}
 
 /* =========================================================
-   REVEAL RIGHT
+REVEAL RIGHT
 ========================================================= */
 
 @keyframes revealRight {
-
-  from {
-    opacity: 0;
-
-    clip-path:
-      inset(0 0 0 100%);
-  }
-
-  to {
-    opacity: 1;
-
-    clip-path:
-      inset(0 0 0 0);
-  }
+from {
+opacity: 0;
+clip-path: inset(0 0 0 100%);
 }
 
+to {
+opacity: 1;
+clip-path: inset(0 0 0 0);
+}
+}
 
 /* =========================================================
-   REVEAL UP
+REVEAL UP
 ========================================================= */
 
 @keyframes revealUp {
-
-  from {
-    opacity: 0;
-
-    clip-path:
-      inset(100% 0 0 0);
-
-    transform:
-      translateY(20px);
-  }
-
-  to {
-    opacity: 1;
-
-    clip-path:
-      inset(0 0 0 0);
-
-    transform:
-      translateY(0);
-  }
+from {
+opacity: 0;
+clip-path: inset(100% 0 0 0);
+transform: translateY(20px);
 }
 
+to {
+opacity: 1;
+clip-path: inset(0 0 0 0);
+transform: translateY(0);
+}
+}
 
 /* =========================================================
-   IMAGE ZOOM
+IMAGE ZOOM
 ========================================================= */
 
 @keyframes imageZoom {
-
-  from {
-    transform: scale(1);
-  }
-
-  to {
-    transform: scale(1.04);
-  }
+from {
+transform: scale(1);
 }
 
+to {
+transform: scale(1.04);
+}
+}
 
 /* =========================================================
-   GRADIENT FLOW
+GRADIENT FLOW
 ========================================================= */
 
 @keyframes gradientFlow {
-
-  0% {
-    background-position: 0% 50%;
-  }
-
-  50% {
-    background-position: 100% 50%;
-  }
-
-  100% {
-    background-position: 0% 50%;
-  }
+0% {
+background-position: 0% 50%;
 }
 
+50% {
+background-position: 100% 50%;
+}
+
+100% {
+background-position: 0% 50%;
+}
+}
 
 /* =========================================================
-   STATUS DOT
-   Main availability animation.
+STATUS DOT
 ========================================================= */
 
 @keyframes statusDot {
+0%,
+100% {
+opacity: 0.7;
+transform: scale(0.88);
 
-  0%,
-  100% {
-    opacity: 0.7;
 
-    transform:
-      scale(0.88);
+box-shadow:
+  0 0 3px var(--accent-primary),
+  0 0 8px var(--accent-secondary);
 
-    box-shadow:
-      0 0 3px rgba(255, 159, 0, 0.45),
-      0 0 8px rgba(255, 159, 0, 0.25);
-  }
 
-  50% {
-    opacity: 1;
-
-    transform:
-      scale(1.2);
-
-    box-shadow:
-      0 0 5px rgba(255, 159, 0, 1),
-      0 0 12px rgba(255, 159, 0, 0.85),
-      0 0 24px rgba(255, 159, 0, 0.55),
-      0 0 40px rgba(255, 159, 0, 0.25);
-  }
 }
 
+50% {
+opacity: 1;
+transform: scale(1.2);
+
+
+box-shadow:
+  0 0 5px var(--accent-primary),
+  0 0 12px var(--accent-primary),
+  0 0 24px var(--accent-secondary),
+  0 0 40px var(--accent-primary);
+
+
+}
+}
 
 /* =========================================================
-   STATUS RING
-   Expanding ring around availability dot.
+STATUS RING
 ========================================================= */
 
 @keyframes statusRing {
-
-  0% {
-    opacity: 0.7;
-
-    transform:
-      scale(0.8);
-  }
-
-  70% {
-    opacity: 0;
-
-    transform:
-      scale(2.2);
-  }
-
-  100% {
-    opacity: 0;
-
-    transform:
-      scale(2.4);
-  }
+0% {
+opacity: 0.7;
+transform: scale(0.8);
 }
 
+70% {
+opacity: 0;
+transform: scale(2.2);
+}
+
+100% {
+opacity: 0;
+transform: scale(2.4);
+}
+}
 
 /* =========================================================
-   STATUS GLOW
+STATUS GLOW
 ========================================================= */
 
 @keyframes statusGlow {
-
-  0%,
-  100% {
-    box-shadow:
-      0 0 4px rgba(255, 159, 0, 0.45),
-      0 0 10px rgba(255, 159, 0, 0.2);
-  }
-
-  50% {
-    box-shadow:
-      0 0 7px rgba(255, 159, 0, 1),
-      0 0 16px rgba(255, 159, 0, 0.75),
-      0 0 30px rgba(255, 159, 0, 0.4);
-  }
+0%,
+100% {
+box-shadow:
+0 0 4px var(--accent-primary),
+0 0 10px var(--accent-secondary);
 }
 
+50% {
+box-shadow:
+0 0 7px var(--accent-primary),
+0 0 16px var(--accent-primary),
+0 0 30px var(--accent-secondary);
+}
+}
 
 /* =========================================================
-   GLOBAL ANIMATION UTILITIES
-========================================================= */
-
-
-/* =========================================================
-   GLOW
+GLOBAL ANIMATION UTILITIES
 ========================================================= */
 
 .animate-glow {
-  animation:
-    glowPulse
-    2.2s
-    ease-in-out
-    infinite;
+animation: glowPulse 2.2s ease-in-out infinite;
 }
-
-
-/* =========================================================
-   SOFT PULSE
-========================================================= */
 
 .animate-pulse-soft {
-  animation:
-    softPulse
-    2.5s
-    ease-in-out
-    infinite;
+animation: softPulse 2.5s ease-in-out infinite;
 }
-
-
-/* =========================================================
-   FLOAT
-========================================================= */
 
 .animate-float {
-  animation:
-    float
-    3s
-    ease-in-out
-    infinite;
+animation: float 3s ease-in-out infinite;
 }
-
-
-/* =========================================================
-   SLOW FLOAT
-========================================================= */
 
 .animate-float-slow {
-  animation:
-    floatSlow
-    5s
-    ease-in-out
-    infinite;
+animation: floatSlow 5s ease-in-out infinite;
 }
-
-
-/* =========================================================
-   HORIZONTAL FLOAT
-========================================================= */
 
 .animate-float-horizontal {
-  animation:
-    floatHorizontal
-    4s
-    ease-in-out
-    infinite;
+animation: floatHorizontal 4s ease-in-out infinite;
 }
-
-
-/* =========================================================
-   ROTATE
-========================================================= */
 
 .animate-rotate {
-  animation:
-    rotate
-    8s
-    linear
-    infinite;
+animation: rotate 8s linear infinite;
 }
-
-
-/* =========================================================
-   SLOW ROTATE
-========================================================= */
 
 .animate-rotate-slow {
-  animation:
-    rotateSlow
-    20s
-    linear
-    infinite;
+animation: rotateSlow 20s linear infinite;
 }
-
-
-/* =========================================================
-   SHIMMER
-========================================================= */
 
 .animate-shimmer {
-  background-size:
-    200% auto;
-
-  animation:
-    shimmer
-    3s
-    linear
-    infinite;
+background-size: 200% auto;
+animation: shimmer 3s linear infinite;
 }
-
-
-/* =========================================================
-   GRADIENT
-========================================================= */
 
 .animate-gradient {
-  background-size:
-    200% 200%;
-
-  animation:
-    gradientShift
-    6s
-    ease
-    infinite;
+background-size: 200% 200%;
+animation: gradientShift 6s ease infinite;
 }
-
-
-/* =========================================================
-   ACCENT GLOW
-========================================================= */
 
 .animate-accent-glow {
-  animation:
-    accentGlow
-    2.5s
-    ease-in-out
-    infinite;
+animation: accentGlow 2.5s ease-in-out infinite;
 }
-
-
-/* =========================================================
-   STRONG ACCENT GLOW
-========================================================= */
 
 .animate-accent-glow-strong {
-  animation:
-    accentGlowStrong
-    2.5s
-    ease-in-out
-    infinite;
+animation: accentGlowStrong 2.5s ease-in-out infinite;
 }
-
-
-/* =========================================================
-   BORDER GLOW
-========================================================= */
 
 .animate-border-glow {
-  animation:
-    borderGlow
-    2.5s
-    ease-in-out
-    infinite;
+animation: borderGlow 2.5s ease-in-out infinite;
 }
-
-
-/* =========================================================
-   SCROLL
-========================================================= */
 
 .animate-scroll {
-  animation:
-    scrollBounce
-    1.5s
-    ease-in-out
-    infinite;
+animation: scrollBounce 1.5s ease-in-out infinite;
 }
-
-
-/* =========================================================
-   STATUS / AVAILABILITY
-========================================================= */
 
 .animate-status {
-  position: relative;
+position: relative;
 
-  display: inline-block;
+display: inline-block;
 
-  width: 8px;
-  height: 8px;
+width: 8px;
+height: 8px;
 
-  flex-shrink: 0;
+flex-shrink: 0;
 
-  border-radius: 50%;
+border-radius: var(--radius-full);
 
-  background:
-    #ff9f00;
+background: var(--accent-primary);
 
-  animation:
-    statusDot
-    2s
-    ease-in-out
-    infinite;
+animation: statusDot 2s ease-in-out infinite;
 }
-
-
-/* =========================================================
-   STATUS RING
-========================================================= */
 
 .animate-status::after {
-  content: "";
+content: "";
 
-  position: absolute;
+position: absolute;
+inset: 0;
 
-  inset: 0;
+border: 1px solid var(--border-accent);
+border-radius: var(--radius-full);
 
-  border:
-    1px solid
-    rgba(255, 159, 0, 0.65);
+pointer-events: none;
 
-  border-radius: 50%;
-
-  pointer-events: none;
-
-  animation:
-    statusRing
-    2s
-    ease-out
-    infinite;
+animation: statusRing 2s ease-out infinite;
 }
-
-
-/* =========================================================
-   STATUS GLOW ONLY
-========================================================= */
 
 .animate-status-glow {
-  animation:
-    statusGlow
-    2s
-    ease-in-out
-    infinite;
+animation: statusGlow 2s ease-in-out infinite;
 }
-
-
-/* =========================================================
-   PULSE OPACITY
-========================================================= */
 
 .animate-pulse-opacity {
-  animation:
-    pulseOpacity
-    2s
-    ease-in-out
-    infinite;
+animation: pulseOpacity 2s ease-in-out infinite;
 }
-
-
-/* =========================================================
-   BLINK
-========================================================= */
 
 .animate-blink {
-  animation:
-    blink
-    1.5s
-    ease-in-out
-    infinite;
+animation: blink 1.5s ease-in-out infinite;
 }
-
-
-/* =========================================================
-   REVEAL LEFT
-========================================================= */
 
 .animate-reveal-left {
-  animation:
-    revealLeft
-    0.8s
-    ease-out
-    forwards;
+animation: revealLeft 0.8s ease-out forwards;
 }
-
-
-/* =========================================================
-   REVEAL RIGHT
-========================================================= */
 
 .animate-reveal-right {
-  animation:
-    revealRight
-    0.8s
-    ease-out
-    forwards;
+animation: revealRight 0.8s ease-out forwards;
 }
-
-
-/* =========================================================
-   REVEAL UP
-========================================================= */
 
 .animate-reveal-up {
-  animation:
-    revealUp
-    0.8s
-    ease-out
-    forwards;
+animation: revealUp 0.8s ease-out forwards;
 }
-
-
-/* =========================================================
-   IMAGE ZOOM
-========================================================= */
 
 .animate-image-zoom {
-  animation:
-    imageZoom
-    8s
-    ease-in-out
-    alternate
-    infinite;
+animation: imageZoom 8s ease-in-out alternate infinite;
 }
-
-
-/* =========================================================
-   GRADIENT FLOW
-========================================================= */
 
 .animate-gradient-flow {
-  background-size:
-    200% 200%;
-
-  animation:
-    gradientFlow
-    6s
-    ease
-    infinite;
+background-size: 200% 200%;
+animation: gradientFlow 6s ease infinite;
 }
 
-
 /* =========================================================
-   ANIMATION DELAYS
-   Useful for cards and staggered content.
+ANIMATION DELAYS
 ========================================================= */
 
 .animate-delay-1 {
-  animation-delay: 100ms;
+animation-delay: 100ms;
 }
 
 .animate-delay-2 {
-  animation-delay: 200ms;
+animation-delay: 200ms;
 }
 
 .animate-delay-3 {
-  animation-delay: 300ms;
+animation-delay: 300ms;
 }
 
 .animate-delay-4 {
-  animation-delay: 400ms;
+animation-delay: 400ms;
 }
 
 .animate-delay-5 {
-  animation-delay: 500ms;
+animation-delay: 500ms;
 }
 
 .animate-delay-6 {
-  animation-delay: 600ms;
+animation-delay: 600ms;
 }
 
+/* =========================================================
+ABOUT PREVIEW
+========================================================= */
 
 /* =========================================================
-   ACCESSIBILITY
+MOVING ABOUT ARROW
+========================================================= */
+
+@keyframes aboutArrowMove {
+0%,
+100% {
+transform: translateX(0);
+}
+
+50% {
+transform: translateX(7px);
+}
+}
+
+.home-about-link svg {
+animation:
+aboutArrowMove
+1.4s
+ease-in-out
+infinite;
+
+will-change: transform;
+}
+
+/* =========================================================
+MOVING FOCUS CARD BORDER
+========================================================= */
+
+@property --about-border-angle {
+syntax: "<angle>";
+initial-value: 0deg;
+inherits: false;
+}
+
+/* =========================================================
+BORDER ROTATION
+========================================================= */
+
+@keyframes aboutBorderSpin {
+from {
+--about-border-angle: 0deg;
+}
+
+to {
+--about-border-angle: 360deg;
+}
+}
+
+/* =========================================================
+FOCUS CARD BASE
+========================================================= */
+
+.home-about-focus-card {
+position: relative;
+isolation: isolate;
+overflow: hidden;
+
+border: 1px solid transparent;
+
+background: var(--bg-card);
+
+transition:
+transform var(--transition-normal, 0.35s ease),
+background-color var(--transition-normal, 0.35s ease),
+box-shadow var(--transition-normal, 0.35s ease);
+}
+
+/* =========================================================
+MOVING PERIMETER BORDER
+========================================================= */
+
+.home-about-focus-card::before {
+content: "";
+
+position: absolute;
+inset: 0;
+
+z-index: -1;
+
+padding: 1px;
+
+border-radius: inherit;
+
+background: conic-gradient(
+from var(--about-border-angle),
+
+
+transparent 0deg,
+transparent 245deg,
+
+var(--accent-primary) 275deg,
+var(--accent-secondary) 305deg,
+
+transparent 335deg,
+transparent 360deg
+
+
+);
+
+animation:
+aboutBorderSpin
+var(--animation-border-speed, 5s)
+linear
+infinite;
+
+-webkit-mask:
+linear-gradient(#fff 0 0) content-box,
+linear-gradient(#fff 0 0);
+
+-webkit-mask-composite: xor;
+
+mask:
+linear-gradient(#fff 0 0) content-box,
+linear-gradient(#fff 0 0);
+
+mask-composite: exclude;
+
+pointer-events: none;
+
+will-change: transform;
+}
+
+/* =========================================================
+SUBTLE BORDER GLOW
+========================================================= */
+
+.home-about-focus-card::after {
+content: "";
+
+position: absolute;
+inset: 0;
+
+z-index: -2;
+
+border-radius: inherit;
+
+background:
+radial-gradient(
+circle at 50% 0%,
+var(--accent-primary),
+transparent 55%
+);
+
+opacity: 0;
+
+filter: blur(14px);
+
+transition:
+opacity var(--transition-normal, 0.35s ease);
+
+pointer-events: none;
+}
+
+/* =========================================================
+FOCUS CARD HOVER
+========================================================= */
+
+.home-about-focus-card:hover {
+transform: translateY(-6px);
+
+box-shadow:
+var(--shadow-soft),
+0 0 24px rgba(255, 159, 0, 0.08);
+}
+
+.home-about-focus-card:hover::before {
+animation-duration:
+var(--animation-border-hover-speed, 2.5s);
+}
+
+.home-about-focus-card:hover::after {
+opacity: 0.16;
+}
+
+/* =========================================================
+FOCUS CARD ICON
+========================================================= */
+
+.home-about-focus-icon {
+transition:
+transform var(--transition-normal, 0.35s ease),
+background-color var(--transition-normal, 0.35s ease),
+color var(--transition-normal, 0.35s ease);
+}
+
+.home-about-focus-card:hover .home-about-focus-icon {
+transform: translateY(-2px);
+
+background: var(--accent-primary);
+color: var(--color-black);
+}
+
+/* =========================================================
+HIGHLIGHT CARD
+========================================================= */
+
+.home-about-highlight {
+transition:
+transform var(--transition-normal, 0.35s ease),
+border-color var(--transition-normal, 0.35s ease),
+box-shadow var(--transition-normal, 0.35s ease);
+}
+
+.home-about-highlight:hover {
+transform: translateY(-5px);
+
+box-shadow: var(--shadow-accent);
+}
+
+/* =========================================================
+HIGHLIGHT ICON
+========================================================= */
+
+.home-about-highlight-icon {
+transition:
+transform var(--transition-normal, 0.35s ease),
+background-color var(--transition-normal, 0.35s ease),
+color var(--transition-normal, 0.35s ease);
+}
+
+.home-about-highlight:hover .home-about-highlight-icon {
+transform: rotate(-6deg) scale(1.05);
+
+background: var(--glass-background-hover);
+color: var(--accent-hover);
+}
+
+/* =========================================================
+MORE ABOUT ME
+========================================================= */
+
+.home-about-link {
+transition:
+color var(--transition-normal, 0.35s ease),
+gap var(--transition-normal, 0.35s ease);
+}
+
+.home-about-link:hover {
+gap: var(--space-4);
+color: var(--accent-hover);
+}
+
+/* =========================================================
+CTA BUTTON
+========================================================= */
+
+.home-about-bottom-link {
+transition:
+transform var(--transition-normal, 0.35s ease),
+box-shadow var(--transition-normal, 0.35s ease);
+}
+
+.home-about-bottom-link:hover {
+transform: translateY(-2px);
+
+box-shadow: var(--shadow-accent);
+}
+
+/* =========================================================
+CTA ICON
+========================================================= */
+
+.home-about-bottom-icon {
+transition:
+transform var(--transition-normal, 0.35s ease),
+background-color var(--transition-normal, 0.35s ease);
+}
+
+.home-about-bottom:hover .home-about-bottom-icon {
+transform: translateX(3px);
+
+background: var(--glass-background-hover);
+}
+
+/* =========================================================
+REDUCED MOTION
 ========================================================= */
 
 @media (prefers-reduced-motion: reduce) {
+*,
+*::before,
+*::after {
+animation-duration: 0.01ms !important;
+animation-iteration-count: 1 !important;
+animation-delay: 0ms !important;
+scroll-behavior: auto !important;
+}
 
-  *,
-  *::before,
-  *::after {
+.home-about-link svg,
+.home-about-focus-card::before {
+animation: none;
+}
 
-    animation-duration:
-      0.01ms !important;
+.home-about-focus-card:hover,
+.home-about-highlight:hover,
+.home-about-highlight:hover .home-about-highlight-icon,
+.home-about-focus-card:hover .home-about-focus-icon,
+.home-about-bottom:hover .home-about-bottom-icon {
+transform: none;
+}
 
-    animation-iteration-count:
-      1 !important;
-
-    animation-delay:
-      0ms !important;
-
-    scroll-behavior:
-      auto !important;
-  }
+.home-about-focus-card::after {
+opacity: 0;
+}
 }

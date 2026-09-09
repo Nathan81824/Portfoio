@@ -1,11 +1,75 @@
 /* =========================================================
 THEME SYSTEM
+
 Nathan — Frontend Developer Portfolio
 ========================================================= */
 
 /* =========================================================
+GLOBAL DESIGN TOKENS
+========================================================= */
+
+:root {
+
+/* -------------------------------------------------------
+Accent Colors
+------------------------------------------------------- */
+
+--accent-primary: #ff9f00;
+
+--accent-secondary: #ff8a00;
+
+--accent-hover: #ffb703;
+
+--accent-gradient:
+linear-gradient(
+135deg,
+var(--accent-primary),
+var(--accent-secondary)
+);
+
+/* -------------------------------------------------------
+Status Colors
+------------------------------------------------------- */
+
+--color-success: #22c55e;
+
+--color-error: #ef4444;
+
+--color-warning: #f59e0b;
+
+--color-info: #3b82f6;
+
+/* -------------------------------------------------------
+Base Colors
+------------------------------------------------------- */
+
+--color-black: #080808;
+
+--color-white: #ffffff;
+
+/* -------------------------------------------------------
+Radius
+------------------------------------------------------- */
+
+--radius-sm: 8px;
+
+--radius-md: 12px;
+
+--radius-lg: 16px;
+
+--radius-xl: 24px;
+
+--radius-full: 999px;
+
+/* -------------------------------------------------------
+Theme Transition
+------------------------------------------------------- */
+
+--transition-theme: 0.3s ease;
+}
+
+/* =========================================================
 DARK THEME
-Default theme
 ========================================================= */
 
 :root,
@@ -16,51 +80,95 @@ Backgrounds
 ------------------------------------------------------- */
 
 --bg-primary: #080808;
+
 --bg-secondary: #0d0d0d;
+
 --bg-tertiary: #141414;
 
---bg-card: rgba(255, 255, 255, 0.045);
---bg-card-hover: rgba(255, 255, 255, 0.075);
+/* -------------------------------------------------------
+Surfaces
+------------------------------------------------------- */
 
---bg-surface: rgba(255, 255, 255, 0.055);
+--surface-tertiary:
+rgba(255, 255, 255, 0.055);
 
---bg-glass: rgba(10, 10, 10, 0.58);
+--bg-card:
+rgba(255, 255, 255, 0.045);
 
---bg-glass-hover: rgba(20, 20, 20, 0.72);
+--bg-card-hover:
+rgba(255, 255, 255, 0.075);
+
+--bg-surface:
+rgba(255, 255, 255, 0.055);
+
+/* -------------------------------------------------------
+Glass
+------------------------------------------------------- */
+
+--bg-glass:
+rgba(10, 10, 10, 0.58);
+
+--bg-glass-hover:
+rgba(20, 20, 20, 0.72);
+
+--glass-background:
+rgba(255, 255, 255, 0.055);
+
+--glass-background-hover:
+rgba(255, 255, 255, 0.085);
+
+--glass-border:
+rgba(255, 255, 255, 0.1);
+
+--glass-highlight:
+rgba(255, 255, 255, 0.08);
+
+--glass-blur: 16px;
 
 /* -------------------------------------------------------
 Text
 ------------------------------------------------------- */
 
---text-primary: #ffffff;
+--text-primary:
+#ffffff;
 
---text-secondary: rgba(255, 255, 255, 0.72);
+--text-secondary:
+rgba(255, 255, 255, 0.72);
 
---text-tertiary: rgba(255, 255, 255, 0.52);
+--text-tertiary:
+rgba(255, 255, 255, 0.52);
 
---text-muted: rgba(255, 255, 255, 0.38);
+--text-muted:
+rgba(255, 255, 255, 0.38);
 
---text-disabled: rgba(255, 255, 255, 0.24);
+--text-disabled:
+rgba(255, 255, 255, 0.24);
 
 /* -------------------------------------------------------
 Borders
 ------------------------------------------------------- */
 
---border-primary: rgba(255, 255, 255, 0.08);
+--border-primary:
+rgba(255, 255, 255, 0.08);
 
---border-secondary: rgba(255, 255, 255, 0.13);
+--border-secondary:
+rgba(255, 255, 255, 0.13);
 
---border-strong: rgba(255, 255, 255, 0.2);
+--border-strong:
+rgba(255, 255, 255, 0.2);
 
---border-hover: rgba(255, 159, 0, 0.55);
+--border-hover:
+rgba(255, 159, 0, 0.55);
 
---border-accent: rgba(255, 138, 0, 0.65);
+--border-accent:
+rgba(255, 138, 0, 0.65);
 
 /* -------------------------------------------------------
 Shadows
 ------------------------------------------------------- */
 
---shadow-color: rgba(0, 0, 0, 0.45);
+--shadow-color:
+rgba(0, 0, 0, 0.45);
 
 --shadow-soft:
 0 8px 30px rgba(0, 0, 0, 0.2);
@@ -75,23 +183,7 @@ Shadows
 0 12px 35px rgba(255, 138, 0, 0.25);
 
 /* -------------------------------------------------------
-Glass
-------------------------------------------------------- */
-
---glass-background:
-rgba(255, 255, 255, 0.055);
-
---glass-background-hover:
-rgba(255, 255, 255, 0.085);
-
---glass-border:
-rgba(255, 255, 255, 0.1);
-
---glass-highlight:
-rgba(255, 255, 255, 0.08);
-
-/* -------------------------------------------------------
-Form Controls
+Inputs
 ------------------------------------------------------- */
 
 --input-background:
@@ -113,7 +205,8 @@ rgba(255, 255, 255, 0.38);
 Scrollbar
 ------------------------------------------------------- */
 
---scrollbar-track: #080808;
+--scrollbar-track:
+#080808;
 
 --scrollbar-thumb:
 rgba(255, 255, 255, 0.15);
@@ -126,136 +219,107 @@ rgba(255, 138, 0, 0.65);
 LIGHT THEME
 ========================================================= */
 
-.light-theme {
-
-/* -------------------------------------------------------
-Backgrounds
-------------------------------------------------------- */
-
---bg-primary: #fffaf3;
-
---bg-secondary: #ffffff;
-
---bg-tertiary: #f6f2eb;
-
---bg-card: rgba(20, 20, 20, 0.035);
-
---bg-card-hover: rgba(255, 138, 0, 0.07);
-
---bg-surface: rgba(20, 20, 20, 0.035);
-
---bg-glass:
-rgba(255, 255, 255, 0.72);
-
---bg-glass-hover:
-rgba(255, 255, 255, 0.9);
-
-/* -------------------------------------------------------
-Text
-------------------------------------------------------- */
-
---text-primary: #151515;
-
---text-secondary:
-rgba(21, 21, 21, 0.7);
-
---text-tertiary:
-rgba(21, 21, 21, 0.52);
-
---text-muted:
-rgba(21, 21, 21, 0.4);
-
---text-disabled:
-rgba(21, 21, 21, 0.25);
-
-/* -------------------------------------------------------
-Borders
-------------------------------------------------------- */
-
---border-primary:
-rgba(20, 20, 20, 0.08);
-
---border-secondary:
-rgba(20, 20, 20, 0.13);
-
---border-strong:
-rgba(20, 20, 20, 0.2);
-
---border-hover:
-rgba(255, 138, 0, 0.55);
-
---border-accent:
-rgba(255, 138, 0, 0.7);
-
-/* -------------------------------------------------------
-Shadows
-------------------------------------------------------- */
-
---shadow-color:
-rgba(20, 20, 20, 0.16);
-
---shadow-soft:
-0 8px 30px rgba(20, 20, 20, 0.08);
-
---shadow-medium:
-0 15px 45px rgba(20, 20, 20, 0.12);
-
---shadow-heavy:
-0 25px 70px rgba(20, 20, 20, 0.16);
-
---shadow-accent:
-0 12px 35px rgba(255, 138, 0, 0.2);
-
-/* -------------------------------------------------------
-Glass
-------------------------------------------------------- */
-
---glass-background:
-rgba(255, 255, 255, 0.72);
-
---glass-background-hover:
-rgba(255, 255, 255, 0.9);
-
---glass-border:
-rgba(20, 20, 20, 0.08);
-
---glass-highlight:
-rgba(255, 255, 255, 0.8);
-
-/* -------------------------------------------------------
-Form Controls
-------------------------------------------------------- */
-
---input-background:
-rgba(20, 20, 20, 0.035);
-
---input-background-focus:
-rgba(255, 138, 0, 0.05);
-
---input-border:
-rgba(20, 20, 20, 0.12);
-
---input-border-focus:
-rgba(255, 138, 0, 0.7);
-
---input-placeholder:
-rgba(20, 20, 20, 0.4);
-
-/* -------------------------------------------------------
-Scrollbar
-------------------------------------------------------- */
-
---scrollbar-track: #f6f2eb;
-
---scrollbar-thumb:
-rgba(20, 20, 20, 0.18);
-
---scrollbar-thumb-hover:
-rgba(255, 138, 0, 0.65);
-}
-
 /* =========================================================
-GLOBAL THEME TRANSITION
+   LIGHT THEME
+   ========================================================= */
+
+.light-theme {
+  /* =========================
+     BACKGROUNDS
+     ========================= */
+
+  --bg-primary: #f7f7f5;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #f0f0ed;
+
+  --surface-tertiary: #fafaf8;
+
+  --bg-card: #ffffff;
+  --bg-card-hover: #fdfdfb;
+  --bg-surface: #ffffff;
+
+
+  /* =========================
+     GLASS
+     ========================= */
+
+  --bg-glass: rgba(255, 255, 255, 0.82);
+  --bg-glass-hover: rgba(255, 255, 255, 0.96);
+
+  --glass-background: rgba(255, 255, 255, 0.82);
+  --glass-background-hover: rgba(255, 255, 255, 0.96);
+
+  --glass-border: rgba(20, 20, 20, 0.09);
+  --glass-highlight: rgba(255, 255, 255, 0.9);
+
+  --glass-blur: 16px;
+
+
+  /* =========================
+     TEXT
+     ========================= */
+
+  --text-primary: #171717;
+  --text-secondary: #5f5f5f;
+  --text-tertiary: #7a7a7a;
+  --text-muted: #999999;
+  --text-disabled: #b5b5b5;
+
+
+  /* =========================
+     BORDERS
+     ========================= */
+
+  --border-primary: #e5e5e1;
+  --border-secondary: #d6d6d1;
+  --border-strong: #c7c7c1;
+
+  --border-hover: rgba(255, 159, 0, 0.45);
+  --border-accent: rgba(255, 138, 0, 0.65);
+
+
+  /* =========================
+     SHADOWS
+     ========================= */
+
+  --shadow-color: rgba(20, 20, 20, 0.08);
+
+  --shadow-soft:
+    0 8px 30px rgba(20, 20, 20, 0.07);
+
+  --shadow-medium:
+    0 15px 45px rgba(20, 20, 20, 0.10);
+
+  --shadow-heavy:
+    0 25px 70px rgba(20, 20, 20, 0.14);
+
+  --shadow-accent:
+    0 12px 35px rgba(255, 138, 0, 0.16);
+
+
+  /* =========================
+     INPUTS
+     ========================= */
+
+  --input-background: #ffffff;
+  --input-background-focus: #fffaf2;
+
+  --input-border: #ddddda;
+  --input-border-focus: rgba(255, 138, 0, 0.65);
+
+  --input-placeholder: #999999;
+
+
+  /* =========================
+     SCROLLBAR
+     ========================= */
+
+  --scrollbar-track: #eeeeeb;
+  --scrollbar-thumb: #c9c9c4;
+  --scrollbar-thumb-hover: #ff9f00;
+}
+/* =========================================================
+GLOBAL THEME TRANSITIONS
 ========================================================= */
 
 html,
@@ -280,23 +344,27 @@ box-shadow var(--transition-theme);
 }
 
 /* =========================================================
-BODY THEME
+BODY
 ========================================================= */
 
 body {
-background-color: var(--bg-primary);
+background-color:
+var(--bg-primary);
 
-color: var(--text-primary);
+color:
+var(--text-primary);
 }
 
 /* =========================================================
-SELECTION
+TEXT SELECTION
 ========================================================= */
 
 ::selection {
-background: var(--accent-primary);
+background:
+var(--accent-primary);
 
-color: #080808;
+color:
+var(--color-black);
 }
 
 /* =========================================================
@@ -308,19 +376,24 @@ width: 9px;
 }
 
 ::-webkit-scrollbar-track {
-background: var(--scrollbar-track);
+background:
+var(--scrollbar-track);
 }
 
 ::-webkit-scrollbar-thumb {
-background: var(--scrollbar-thumb);
+background:
+var(--scrollbar-thumb);
 
-border-radius: var(--radius-full);
+border:
+2px solid var(--scrollbar-track);
 
-border: 2px solid var(--scrollbar-track);
+border-radius:
+var(--radius-full);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-background: var(--scrollbar-thumb-hover);
+background:
+var(--scrollbar-thumb-hover);
 }
 
 /* =========================================================
@@ -333,4 +406,28 @@ scrollbar-width: thin;
 scrollbar-color:
 var(--scrollbar-thumb)
 var(--scrollbar-track);
+}
+
+/* =========================================================
+REDUCED MOTION
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+html,
+body,
+button,
+input,
+textarea,
+select,
+a,
+section,
+header,
+footer,
+nav,
+main,
+article,
+aside {
+transition: none;
+}
 }

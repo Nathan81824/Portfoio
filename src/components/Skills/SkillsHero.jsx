@@ -3,21 +3,12 @@ import { useMemo, useState } from "react";
 import {
   ArrowRight,
   ExternalLink,
-  Volume2,
-  VolumeX,
 } from "lucide-react";
 
 import {
   visibleSkills,
   skillCategories,
 } from "../../javascript/skills/skills.js";
-
-import {
-  playClick,
-  isSoundEnabled,
-  enableSound,
-  disableSound,
-} from "../../javascript/sounds/sound.js";
 
 
 /* =========================================================
@@ -32,11 +23,6 @@ export default function Skills() {
 
   const [activeCategory, setActiveCategory] =
     useState("All");
-
-  const [soundEnabled, setSoundEnabled] =
-    useState(
-      isSoundEnabled()
-    );
 
 
   /* =======================================================
@@ -68,58 +54,6 @@ export default function Skills() {
 
 
   /* =======================================================
-     PLAY SKILL SOUND
-  ======================================================= */
-
-  const playSkillSound = () => {
-
-    if (
-      !soundEnabled
-    ) {
-
-      return;
-
-    }
-
-
-    playClick();
-
-  };
-
-
-  /* =======================================================
-     TOGGLE SOUND
-  ======================================================= */
-
-  const toggleSound = () => {
-
-    setSoundEnabled(
-      (previous) => {
-
-        const next =
-          !previous;
-
-
-        if (next) {
-
-          enableSound();
-
-        } else {
-
-          disableSound();
-
-        }
-
-
-        return next;
-
-      }
-    );
-
-  };
-
-
-  /* =======================================================
      HANDLE CATEGORY
   ======================================================= */
 
@@ -129,20 +63,6 @@ export default function Skills() {
       setActiveCategory(
         category
       );
-
-      playSkillSound();
-
-    };
-
-
-  /* =======================================================
-     HANDLE SKILL INTERACTION
-  ======================================================= */
-
-  const handleSkillInteraction =
-    () => {
-
-      playSkillSound();
 
     };
 
@@ -246,55 +166,6 @@ export default function Skills() {
               </span>
 
             </div>
-
-
-            {/* =================================================
-                SOUND BUTTON
-            ================================================= */}
-
-            <button
-              type="button"
-              className="
-                skills-sound-button
-              "
-              onClick={
-                toggleSound
-              }
-              aria-label={
-                soundEnabled
-                  ? "Disable skill sounds"
-                  : "Enable skill sounds"
-              }
-              aria-pressed={
-                soundEnabled
-              }
-            >
-
-              {soundEnabled ? (
-
-                <Volume2
-                  size={17}
-                  strokeWidth={1.8}
-                  aria-hidden="true"
-                />
-
-              ) : (
-
-                <VolumeX
-                  size={17}
-                  strokeWidth={1.8}
-                  aria-hidden="true"
-                />
-
-              )}
-
-              <span>
-                {soundEnabled
-                  ? "Sound On"
-                  : "Sound Off"}
-              </span>
-
-            </button>
 
 
             {/* =================================================
@@ -403,10 +274,6 @@ export default function Skills() {
                         skill.color ||
                         "var(--accent-primary)",
                     }}
-
-                    onMouseEnter={
-                      handleSkillInteraction
-                    }
                   >
 
                     {/* =========================================

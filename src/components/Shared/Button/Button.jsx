@@ -13,18 +13,21 @@
    - External links
    - Downloads
    - Disabled state
+   - Optional magnetic effect
 ========================================================= */
 
 import {
   Link,
 } from "react-router-dom";
 
+import MagneticButton from "./MagneticButton.jsx";
+
 
 /* =========================================================
    BUTTON
 ========================================================= */
 
-export default function Button({
+function Button({
   children,
 
   variant = "primary",
@@ -38,6 +41,12 @@ export default function Button({
   download = false,
 
   external = false,
+
+  magnetic = false,
+
+  magneticStrength = 0.25,
+
+  magneticDuration = 0.35,
 
   className = "",
 
@@ -75,62 +84,84 @@ export default function Button({
         {children}
       </span>
 
-
       {Icon && (
-
         <span
           className="btn-icon"
           aria-hidden="true"
         >
-
           <Icon
             size={18}
             strokeWidth={2}
           />
-
         </span>
-
       )}
-
     </>
   );
 
 
   /* =======================================================
-     NO HREF
-     → NORMAL BUTTON
+     MAGNETIC PROPS
+  ======================================================= */
+
+  const magneticProps = {
+    strength: magneticStrength,
+    duration: magneticDuration,
+  };
+
+
+  /* =======================================================
+     NORMAL BUTTON
   ======================================================= */
 
   if (!href) {
 
-    return (
+    if (magnetic) {
+      return (
+        <MagneticButton
+          {...magneticProps}
+          className={classes}
+          disabled={disabled}
+          type={type}
+          {...props}
+        >
+          {content}
+        </MagneticButton>
+      );
+    }
 
+    return (
       <button
         type={type}
         className={classes}
         disabled={disabled}
         {...props}
       >
-
         {content}
-
       </button>
-
     );
-
   }
 
 
   /* =======================================================
      DOWNLOAD
-     → NORMAL ANCHOR
+     → ANCHOR
   ======================================================= */
 
   if (download) {
 
-    return (
+    const handleClick = (event) => {
+      if (disabled) {
+        event.preventDefault();
+      }
 
-      <a
+      props.onClick?.(event);
+    };
+
+
+    return (
+      <MagneticButton
+        {...magneticProps}
+        as="a"
         href={href}
         className={classes}
         download
@@ -139,44 +170,40 @@ export default function Button({
             ? "true"
             : undefined
         }
-        onClick={
-          disabled
-            ? (event) => {
-                event.preventDefault();
-              }
-            : props.onClick
-        }
-        {...(
-          disabled
-            ? Object.fromEntries(
-                Object.entries(props)
-                  .filter(
-                    ([key]) =>
-                      key !== "onClick"
-                  )
-              )
-            : props
+        onClick={handleClick}
+        {...Object.fromEntries(
+          Object.entries(props).filter(
+            ([key]) =>
+              key !== "onClick"
+          )
         )}
       >
-
         {content}
-
-      </a>
-
+      </MagneticButton>
     );
-
   }
 
 
   /* =======================================================
      EXTERNAL LINK
+     → ANCHOR
   ======================================================= */
 
   if (external) {
 
-    return (
+    const handleClick = (event) => {
+      if (disabled) {
+        event.preventDefault();
+      }
 
-      <a
+      props.onClick?.(event);
+    };
+
+
+    return (
+      <MagneticButton
+        {...magneticProps}
+        as="a"
         href={href}
         className={classes}
         target="_blank"
@@ -186,32 +213,17 @@ export default function Button({
             ? "true"
             : undefined
         }
-        onClick={
-          disabled
-            ? (event) => {
-                event.preventDefault();
-              }
-            : props.onClick
-        }
-        {...(
-          disabled
-            ? Object.fromEntries(
-                Object.entries(props)
-                  .filter(
-                    ([key]) =>
-                      key !== "onClick"
-                  )
-              )
-            : props
+        onClick={handleClick}
+        {...Object.fromEntries(
+          Object.entries(props).filter(
+            ([key]) =>
+              key !== "onClick"
+          )
         )}
       >
-
         {content}
-
-      </a>
-
+      </MagneticButton>
     );
-
   }
 
 
@@ -220,9 +232,19 @@ export default function Button({
      → REACT ROUTER LINK
   ======================================================= */
 
-  return (
+  const handleLinkClick = (event) => {
+    if (disabled) {
+      event.preventDefault();
+    }
 
-    <Link
+    props.onClick?.(event);
+  };
+
+
+  return (
+    <MagneticButton
+      {...magneticProps}
+      as={Link}
       to={href}
       className={classes}
       aria-disabled={
@@ -230,30 +252,26 @@ export default function Button({
           ? "true"
           : undefined
       }
-      onClick={
-        disabled
-          ? (event) => {
-              event.preventDefault();
-            }
-          : props.onClick
-      }
-      {...(
-        disabled
-          ? Object.fromEntries(
-              Object.entries(props)
-                .filter(
-                  ([key]) =>
-                    key !== "onClick"
-                )
-            )
-          : props
+      onClick={handleLinkClick}
+      {...Object.fromEntries(
+        Object.entries(props).filter(
+          ([key]) =>
+            key !== "onClick"
+        )
       )}
     >
-
       {content}
-
-    </Link>
-
+    </MagneticButton>
   );
-
 }
+
+
+/* =========================================================
+   EXPORTS
+========================================================= */
+
+export {
+  MagneticButton,
+};
+
+export default Button;

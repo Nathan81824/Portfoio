@@ -1,19 +1,4 @@
-/* =========================================================
-   NAVBAR
-   Nathan — Frontend Developer Portfolio
-
-   Location:
-   src/components/Shared/Navbar/Navbar.jsx
-
-   Uses:
-   - useTheme
-   - centralized navigation data
-   - centralized personal data
-   - react-router-dom
-   - lucide-react
-========================================================= */
-
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import {
   Menu,
@@ -28,577 +13,499 @@ import {
   useLocation,
 } from "react-router-dom";
 
-
-/* =========================================================
-   DATA
-========================================================= */
-
 import {
   personalInfo,
   navigation,
 } from "../../../javascript/data/data.js";
 
+import useTheme from "../../../javascript/hooks/Theme/useTheme.js";
 
-/* =========================================================
-   HOOKS
-========================================================= */
+import Button, {
+  MagneticButton,
+} from "../Button/Button.jsx";
 
-import useTheme from
-  "../../../javascript/hooks/Theme/useTheme.js";
+import {
+  TextScramble,
+} from "../../Detection/Effects/Effects.jsx";
 
+function Navbar() {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
 
-
-
-/* =========================================================
-   NAVBAR
-========================================================= */
-
-export default function Navbar() {
-
-  /* =======================================================
-     MOBILE MENU
-  ======================================================= */
-
-  const [
-    menuOpen,
-    setMenuOpen,
-  ] = useState(false);
-
-
-  /* =======================================================
-     CURRENT ROUTE
-  ======================================================= */
-
-  const location =
-    useLocation();
-
-
-  /* =======================================================
-     THEME
-  ======================================================= */
+  const location = useLocation();
 
   const {
-    isDark,
+    darkMode,
     toggleTheme,
   } = useTheme();
 
-
-  /* =======================================================
-     NAVIGATION
-  ======================================================= */
-
   const navLinks =
-    Array.isArray(navigation)
-      ? navigation
-      : [];
-
-
-  /* =======================================================
-     RESUME
-  ======================================================= */
+    navigation?.main ||
+    navigation ||
+    [];
 
   const resumeUrl =
     `${import.meta.env.BASE_URL}resume.pdf`;
 
-
-  /* =======================================================
-     CLOSE MOBILE MENU
-  ======================================================= */
-
-  const closeMenu = () => {
-
-    setMenuOpen(false);
-
-  };
-
-
-  /* =======================================================
-     NAVIGATION HANDLER
-  ======================================================= */
-
-  const handleNavigation = () => {
-
-    closeMenu();
-
-  };
-
-
-  /* =======================================================
-     MOBILE MENU TOGGLE
-  ======================================================= */
-
-  const handleMenuToggle = () => {
-
-    setMenuOpen(
-      (previous) =>
-        !previous
-    );
-
-  };
-
-
-  /* =======================================================
-     ACTIVE ROUTE
-  ======================================================= */
-
-  const isActive = (
-    href
-  ) => {
-
-    if (!href) {
-      return false;
-    }
-
-
-    if (href === "/") {
-
-      return (
-        location.pathname === "/"
-      );
-
-    }
-
-
-    return (
-      location.pathname === href ||
-      location.pathname.startsWith(
-        `${href}/`
-      )
-    );
-
-  };
-
-
-  /* =======================================================
-     LOGO NAME
-  ======================================================= */
+  const logoName =
+    personalInfo?.name ||
+    "Portfolio";
 
   const logoLetter =
-    personalInfo?.displayName
-      ?.charAt(0)
-      ?.toUpperCase() || "N";
+    logoName.charAt(0).toUpperCase();
 
 
-  /* =======================================================
+  /* =========================================================
+     HANDLE NAVBAR SCROLL STATE
+  ========================================================= */
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(
+        window.scrollY > 40
+      );
+    };
+
+    handleScroll();
+
+    window.addEventListener(
+      "scroll",
+      handleScroll,
+      {
+        passive: true,
+      }
+    );
+
+    return () => {
+      window.removeEventListener(
+        "scroll",
+        handleScroll
+      );
+    };
+  }, []);
+
+
+  /* =========================================================
+     CLOSE MOBILE MENU WHEN ROUTE CHANGES
+  ========================================================= */
+
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [location.pathname]);
+
+
+  /* =========================================================
+     LOCK BODY SCROLL WHEN MOBILE MENU IS OPEN
+  ========================================================= */
+
+  useEffect(() => {
+    document.body.style.overflow =
+      menuOpen
+        ? "hidden"
+        : "";
+
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [menuOpen]);
+
+
+  /* =========================================================
+     MENU CONTROLS
+  ========================================================= */
+
+  const closeMenu = () => {
+    setMenuOpen(false);
+  };
+
+  const toggleMenu = () => {
+    setMenuOpen(
+      (previous) => !previous
+    );
+  };
+
+
+  /* =========================================================
+     ACTIVE NAVIGATION LINK
+  ========================================================= */
+
+  const isActive = (path) => {
+    if (path === "/") {
+      return location.pathname === "/";
+    }
+
+    return location.pathname.startsWith(
+      path
+    );
+  };
+
+
+  /* =========================================================
      RENDER
-  ======================================================= */
+  ========================================================= */
 
   return (
+    <header
+      className={`navbar ${
+        scrolled
+          ? "navbar-scrolled"
+          : "navbar-top"
+      }`}
+    >
 
-    <header className="navbar">
-
-
-      {/* ===================================================
+      {/* =====================================================
           NAVBAR CONTAINER
-      =================================================== */}
+      ===================================================== */}
 
       <div className="navbar-container">
 
 
-        {/* =================================================
+        {/* ===================================================
             LOGO
-        ================================================= */}
+        =================================================== */}
 
         <Link
           to="/"
           className="navbar-logo"
-          onClick={
-            handleNavigation
-          }
-          aria-label="Go to home"
+          onClick={closeMenu}
+          aria-label="Go to homepage"
         >
 
-          {logoLetter}
+          <span className="navbar-logo-mark">
+            {logoLetter}
+          </span>
+
+          <span className="navbar-logo-name">
+            <TextScramble
+              text={logoName}
+              duration={700}
+              delay={100}
+              className="text-scramble"
+            />
+          </span>
 
         </Link>
 
 
-        {/* =================================================
+        {/* ===================================================
             DESKTOP NAVIGATION
-        ================================================= */}
+        =================================================== */}
 
         <nav
           className="navbar-links"
           aria-label="Main navigation"
         >
 
-          {navLinks.map(
-            (link) => {
+          {navLinks.map((item) => {
+            const path =
+              item.path ||
+              item.href ||
+              "/";
 
-              if (
-                !link ||
-                !link.href
-              ) {
-                return null;
-              }
+            const label =
+              item.label ||
+              item.name ||
+              "";
 
-
-              return (
-
-                <Link
-                  key={
-                    link.id ||
-                    link.name ||
-                    link.href
-                  }
-                  to={link.href}
-                  className={
-                    `navbar-link ${
-                      isActive(
-                        link.href
-                      )
-                        ? "active"
-                        : ""
-                    }`
-                  }
-                  onClick={
-                    handleNavigation
-                  }
-                >
-
-                  {link.name}
-
-                </Link>
-
-              );
-
-            }
-          )}
+            return (
+              <Link
+                key={path}
+                to={path}
+                className={`navbar-link ${
+                  isActive(path)
+                    ? "active"
+                    : ""
+                }`}
+              >
+                {label}
+              </Link>
+            );
+          })}
 
         </nav>
 
 
-        {/* =================================================
-            RIGHT SIDE
-        ================================================= */}
+        {/* ===================================================
+            RIGHT SIDE CONTROLS
+        =================================================== */}
 
         <div className="navbar-right">
 
 
-          {/* ===============================================
-              THEME BUTTON
-          =============================================== */}
+          {/* =================================================
+              THEME TOGGLE
+          ================================================= */}
 
-          <button
+          <MagneticButton
             type="button"
             className="navbar-theme"
-            onClick={
-              toggleTheme
-            }
+            strength={0.2}
+            duration={0.3}
+            onClick={toggleTheme}
             aria-label={
-              isDark
-                ? "Switch to light mode"
-                : "Switch to dark mode"
+              darkMode
+                ? "Switch to light theme"
+                : "Switch to dark theme"
             }
             title={
-              isDark
-                ? "Switch to light mode"
-                : "Switch to dark mode"
+              darkMode
+                ? "Switch to light theme"
+                : "Switch to dark theme"
             }
           >
 
-            {isDark ? (
-
+            {darkMode ? (
               <Sun
-                size={17}
-                strokeWidth={1.8}
-                aria-hidden="true"
+                size={18}
+                strokeWidth={2}
               />
-
             ) : (
-
               <Moon
-                size={17}
-                strokeWidth={1.8}
-                aria-hidden="true"
+                size={18}
+                strokeWidth={2}
               />
-
             )}
 
-          </button>
+          </MagneticButton>
 
 
-          {/* ===============================================
-              DESKTOP RESUME
-          =============================================== */}
+          {/* =================================================
+              DESKTOP RESUME BUTTON
+          ================================================= */}
 
-          <a
-            href={resumeUrl}
-            className="
-              navbar-resume
-              navbar-resume-desktop
-            "
-            download
-          >
+          <div className="navbar-resume-desktop">
 
-            <span>
-              Resume
-            </span>
-
-            <span
-              className="navbar-resume-icon"
-              aria-hidden="true"
+            <Button
+              as="a"
+              href={resumeUrl}
+              download
+              magnetic
+              magneticStrength={0.15}
+              className="navbar-resume"
             >
 
               <Download
-                size={15}
-                strokeWidth={1.8}
+                size={17}
+                strokeWidth={2}
+                className="navbar-resume-icon"
               />
 
-            </span>
+              <span>
+                Resume
+              </span>
 
-          </a>
+            </Button>
+
+          </div>
 
 
-          {/* ===============================================
+          {/* =================================================
               MOBILE MENU BUTTON
-          =============================================== */}
+          ================================================= */}
 
-          <button
+          <MagneticButton
             type="button"
             className="navbar-menu-button"
-            onClick={
-              handleMenuToggle
-            }
+            strength={0.2}
+            duration={0.3}
+            onClick={toggleMenu}
             aria-label={
               menuOpen
                 ? "Close navigation menu"
                 : "Open navigation menu"
             }
-            aria-expanded={
-              menuOpen
-            }
-            aria-controls="mobile-navigation"
+            aria-expanded={menuOpen}
           >
 
             {menuOpen ? (
-
               <X
-                size={19}
-                strokeWidth={1.8}
-                aria-hidden="true"
+                size={24}
+                strokeWidth={2}
               />
-
             ) : (
-
               <Menu
-                size={19}
-                strokeWidth={1.8}
-                aria-hidden="true"
+                size={24}
+                strokeWidth={2}
               />
-
             )}
 
-          </button>
+          </MagneticButton>
 
         </div>
 
       </div>
 
 
-      {/* ===================================================
+      {/* =====================================================
           MOBILE MENU
-      =================================================== */}
+      ===================================================== */}
 
-      {menuOpen && (
-
-        <div
-          id="mobile-navigation"
-          className="navbar-mobile-menu"
-          role="dialog"
-          aria-label="Mobile navigation"
-        >
-
-
-          {/* =============================================
-              MOBILE HEADER
-          ============================================= */}
-
-          <div
-            className="navbar-mobile-header"
-          >
-
-            <div>
-
-              <span
-                className="navbar-mobile-label"
-              >
-                Navigation
-              </span>
-
-              <h3>
-                Explore
-              </h3>
-
-            </div>
+      <div
+        className={`navbar-mobile-menu ${
+          menuOpen
+            ? "navbar-mobile-menu-open"
+            : ""
+        }`}
+      >
 
 
-            {/* =========================================
-                CLOSE BUTTON
-            ========================================= */}
+        {/* ===================================================
+            MOBILE MENU HEADER
+        =================================================== */}
 
-            <button
-              type="button"
-              className="navbar-mobile-close"
-              onClick={
-                closeMenu
-              }
-              aria-label="Close navigation menu"
-            >
+        <div className="navbar-mobile-header">
 
-              <X
-                size={18}
-                strokeWidth={1.8}
-                aria-hidden="true"
+          <div>
+
+            <span className="navbar-mobile-label">
+              <TextScramble
+                text="Navigation"
+                duration={500}
+                className="text-scramble"
               />
+            </span>
 
-            </button>
+            <h3>
+              <TextScramble
+                text="Menu"
+                duration={600}
+                delay={100}
+                className="text-scramble"
+              />
+            </h3>
 
           </div>
 
 
-          {/* =============================================
-              MOBILE LINKS
-          ============================================= */}
-
-          <nav
-            className="navbar-mobile-links"
-            aria-label="Mobile navigation"
+          <MagneticButton
+            type="button"
+            className="navbar-mobile-close"
+            strength={0.18}
+            duration={0.3}
+            onClick={closeMenu}
+            aria-label="Close navigation menu"
           >
 
-            {navLinks.map(
-              (link, index) => {
+            <X
+              size={22}
+              strokeWidth={2}
+            />
 
-                if (
-                  !link ||
-                  !link.href
-                ) {
-                  return null;
-                }
+          </MagneticButton>
 
-
-                return (
-
-                  <Link
-                    key={
-                      link.id ||
-                      link.name ||
-                      link.href
-                    }
-                    to={link.href}
-                    className={
-                      `navbar-mobile-link ${
-                        isActive(
-                          link.href
-                        )
-                          ? "active"
-                          : ""
-                      }`
-                    }
-                    onClick={
-                      handleNavigation
-                    }
-                  >
-
-                    <span
-                      className="
-                        navbar-mobile-number
-                      "
-                    >
-
-                      {String(
-                        index + 1
-                      ).padStart(
-                        2,
-                        "0"
-                      )}
-
-                    </span>
+        </div>
 
 
-                    <span
-                      className="
-                        navbar-mobile-link-text
-                      "
-                    >
+        {/* ===================================================
+            MOBILE NAVIGATION LINKS
+        =================================================== */}
 
-                      {link.name}
+        <nav
+          className="navbar-mobile-links"
+          aria-label="Mobile navigation"
+        >
 
-                    </span>
+          {navLinks.map(
+            (item, index) => {
+              const path =
+                item.path ||
+                item.href ||
+                "/";
 
-                  </Link>
+              const label =
+                item.label ||
+                item.name ||
+                "";
 
-                );
+              return (
+                <Link
+                  key={path}
+                  to={path}
+                  className={`navbar-mobile-link ${
+                    isActive(path)
+                      ? "active"
+                      : ""
+                  }`}
+                  onClick={closeMenu}
+                >
 
-              }
-            )}
+                  <span className="navbar-mobile-number">
+                    {String(
+                      index + 1
+                    ).padStart(2, "0")}
+                  </span>
 
-          </nav>
+                  <span className="navbar-mobile-link-text">
+                    {label}
+                  </span>
+
+                </Link>
+              );
+            }
+          )}
+
+        </nav>
 
 
-          {/* =============================================
-              MOBILE RESUME
-          ============================================= */}
+        {/* ===================================================
+            MOBILE RESUME BUTTON
+        =================================================== */}
 
-          <a
+        <div className="navbar-resume-mobile">
+
+          <Button
+            as="a"
             href={resumeUrl}
-            className="
-              navbar-resume
-              navbar-resume-mobile
-            "
             download
+            magnetic
+            magneticStrength={0.15}
+            className="navbar-resume"
+            onClick={closeMenu}
           >
+
+            <Download
+              size={17}
+              strokeWidth={2}
+              className="navbar-resume-icon"
+            />
 
             <span>
               Download Resume
             </span>
 
-            <span
-              className="navbar-resume-icon"
-              aria-hidden="true"
-            >
-
-              <Download
-                size={16}
-                strokeWidth={1.8}
-              />
-
-            </span>
-
-          </a>
-
-
-          {/* =============================================
-              MOBILE FOOTER
-          ============================================= */}
-
-          <div
-            className="navbar-mobile-footer"
-          >
-
-            <span>
-              {personalInfo?.profession ||
-                "FRONTEND DEVELOPER"}
-            </span>
-
-            <span
-              className="navbar-mobile-dot"
-              aria-hidden="true"
-            />
-
-            <span>
-              {personalInfo?.displayName ||
-                "NATHAN"}
-            </span>
-
-          </div>
+          </Button>
 
         </div>
 
-      )}
+
+        {/* ===================================================
+            MOBILE FOOTER
+        =================================================== */}
+
+        <div className="navbar-mobile-footer">
+
+          <span className="navbar-mobile-dot" />
+
+          <span>
+            {personalInfo?.profession ||
+              personalInfo?.role ||
+              "Frontend Developer"}
+          </span>
+
+          <span>
+            •
+          </span>
+
+          <span>
+            {logoName}
+          </span>
+
+        </div>
+
+      </div>
 
     </header>
-
   );
-
 }
+
+export default Navbar;

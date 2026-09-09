@@ -1,90 +1,64 @@
 /* =========================================================
-GLOBAL RESET
-Nathan — Frontend Developer Portfolio
+   GLOBAL RESET
+   Nathan — Frontend Developer Portfolio
 ========================================================= */
 
 /* =========================================================
-BOX SIZING
-========================================================= */
-/* =========================================================
-   GLOBAL RESET
+   BOX SIZING + BASE RESET
 ========================================================= */
 
 *,
 *::before,
 *::after {
   box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
+
+/* =========================================================
+   HTML
+========================================================= */
 
 html {
+  font-size: 100%;
+  scroll-behavior: smooth;
+
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
   width: 100%;
-  max-width: 100%;
-
-  margin: 0;
-  padding: 0;
-
   overflow-x: hidden;
 }
+
+/* =========================================================
+   BODY
+========================================================= */
 
 body {
+  min-width: 320px;
   width: 100%;
-  max-width: 100%;
+  min-height: 100vh;
 
-  margin: 0;
-  padding: 0;
+  text-rendering: optimizeLegibility;
 
   overflow-x: hidden;
 }
+
+/* =========================================================
+   ROOT APP WRAPPER
+========================================================= */
 
 #root {
   width: 100%;
-  max-width: 100%;
-
-  margin: 0;
-  padding: 0;
-
+  min-height: 100vh;
   overflow-x: hidden;
 }
-*,
-*::before,
-*::after {
-box-sizing: border-box;
-}
 
 /* =========================================================
-DOCUMENT
-========================================================= */
-
-html {
-margin: 0;
-padding: 0;
-
-font-size: 100%;
-
-scroll-behavior: smooth;
-
--webkit-text-size-adjust: 100%;
-text-size-adjust: 100%;
-
--webkit-font-smoothing: antialiased;
--moz-osx-font-smoothing: grayscale;
-}
-
-/* =========================================================
-BODY
-========================================================= */
-
-body {
-margin: 0;
-padding: 0;
-
-min-width: 320px;
-
-text-rendering: optimizeLegibility;
-}
-
-/* =========================================================
-HEADINGS
+   TYPOGRAPHY RESET
 ========================================================= */
 
 h1,
@@ -93,253 +67,174 @@ h3,
 h4,
 h5,
 h6 {
-margin: 0;
-padding: 0;
-
-font-size: inherit;
-font-weight: inherit;
+  font-size: inherit;
+  font-weight: inherit;
 }
-
-/* =========================================================
-PARAGRAPHS
-========================================================= */
 
 p {
-margin: 0;
-padding: 0;
+  margin: 0;
 }
 
 /* =========================================================
-LINKS
+   LINKS
 ========================================================= */
 
 a {
-color: inherit;
-text-decoration: none;
+  color: inherit;
+  text-decoration: none;
 }
 
 /* =========================================================
-LISTS
+   LISTS
 ========================================================= */
 
 ul,
 ol {
-margin: 0;
-padding: 0;
-
-list-style: none;
+  list-style: none;
 }
 
 /* =========================================================
-BUTTONS
+   BUTTONS + FORMS
 ========================================================= */
 
 button,
 input,
 textarea,
 select {
-margin: 0;
-
-font: inherit;
+  font: inherit;
+  color: inherit;
+  outline: none;
 }
 
 button {
-padding: 0;
-
-border: 0;
-
-background: none;
-
-color: inherit;
-
-cursor: pointer;
+  background: none;
+  border: none;
+  cursor: pointer;
 }
 
 button:disabled {
-cursor: not-allowed;
-}
-
-/* =========================================================
-FORMS
-========================================================= */
-
-input,
-textarea,
-select {
-border-radius: 0;
+  cursor: not-allowed;
 }
 
 textarea {
-resize: vertical;
-}
-
-input,
-textarea,
-select,
-button {
-outline: none;
+  resize: vertical;
 }
 
 /* =========================================================
-MEDIA
+   MEDIA ELEMENTS
 ========================================================= */
 
 img,
 picture,
-svg,
 video,
-canvas {
-display: block;
-
-max-width: 100%;
-}
-
-/* =========================================================
-IMAGES
-========================================================= */
-
-img {
-height: auto;
-
-border-style: none;
-
-vertical-align: middle;
-}
-
-/* =========================================================
-SVG
-========================================================= */
-
+canvas,
 svg {
-flex-shrink: 0;
+  display: block;
+  max-width: 100%;
 }
 
 /* =========================================================
-VIDEO
-========================================================= */
-
-video {
-max-width: 100%;
-
-vertical-align: middle;
-}
-
-/* =========================================================
-TABLES
+   TABLES
 ========================================================= */
 
 table {
-border-collapse: collapse;
-border-spacing: 0;
+  border-collapse: collapse;
+  border-spacing: 0;
 }
 
 /* =========================================================
-FIELDSET
+   FIELDSET / LEGEND
 ========================================================= */
 
 fieldset {
-margin: 0;
-padding: 0;
-
-border: 0;
+  border: 0;
+  margin: 0;
+  padding: 0;
 }
-
-/* =========================================================
-LEGEND
-========================================================= */
 
 legend {
-padding: 0;
+  padding: 0;
 }
 
 /* =========================================================
-BLOCKQUOTES
+   BLOCKQUOTES
 ========================================================= */
 
 blockquote,
 q {
-quotes: none;
+  quotes: none;
 }
 
 blockquote::before,
 blockquote::after,
 q::before,
 q::after {
-content: "";
+  content: "";
 }
 
 /* =========================================================
-HORIZONTAL RULE
+   HORIZONTAL RULE
 ========================================================= */
 
 hr {
-height: 0;
-
-margin: 0;
-
-border: 0;
-border-top: 1px solid currentColor;
-
-color: inherit;
+  border: 0;
+  border-top: 1px solid currentColor;
 }
 
 /* =========================================================
-CODE
+   CODE
 ========================================================= */
 
 pre,
 code,
 kbd,
 samp {
-font-family: monospace;
+  font-family: monospace;
 }
 
 /* =========================================================
-SUB / SUP
+   SUB / SUP
 ========================================================= */
 
 sub,
 sup {
-position: relative;
-
-font-size: 75%;
-line-height: 0;
-
-vertical-align: baseline;
+  font-size: 75%;
+  line-height: 0;
+  position: relative;
+  vertical-align: baseline;
 }
 
 sup {
-top: -0.5em;
+  top: -0.5em;
 }
 
 sub {
-bottom: -0.25em;
+  bottom: -0.25em;
 }
 
 /* =========================================================
-ACCESSIBILITY
+   ACCESSIBILITY
 ========================================================= */
 
 :focus-visible {
-outline: 2px solid currentColor;
-outline-offset: 3px;
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
 }
 
 /* =========================================================
-REDUCED MOTION
+   REDUCED MOTION
 ========================================================= */
 
 @media (prefers-reduced-motion: reduce) {
-html {
-scroll-behavior: auto;
-}
+  html {
+    scroll-behavior: auto;
+  }
 
-*,
-*::before,
-*::after {
-animation-duration: 0.01ms !important;
-animation-iteration-count: 1 !important;
-transition-duration: 0.01ms !important;
-scroll-behavior: auto !important;
-}
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

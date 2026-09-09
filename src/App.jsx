@@ -1,22 +1,7 @@
-import {
-  Routes,
-  Route,
-  useLocation,
-  Link,
-} from "react-router-dom";
-
-
-/* =========================================================
-   SHARED
-========================================================= */
+import { Routes, Route, useLocation } from "react-router-dom";
 
 import Navbar from "./components/Shared/Navbar/Navbar.jsx";
 import Footer from "./components/Shared/Footer/Footer.jsx";
-
-
-/* =========================================================
-   PUBLIC PAGES
-========================================================= */
 
 import Home from "./pages/Home.jsx";
 import About from "./pages/About.jsx";
@@ -24,295 +9,122 @@ import Skills from "./pages/Skills.jsx";
 import Projects from "./pages/Projects.jsx";
 import Contact from "./pages/Contact.jsx";
 
-
-/* =========================================================
-   ADMIN
-========================================================= */
-
 import AdminLogin from "./pages/Admin/AdminLogin.jsx";
 import AdminChat from "./pages/Admin/Admin.jsx";
+
 import ProtectedAdmin from "./components/Admin/ProtectedAdmin.jsx";
-
-
-/* =========================================================
-   CHAT
-========================================================= */
-
 import ChatController from "./components/Contact/ChatController.jsx";
 
-
-/* =========================================================
-   DATA
-========================================================= */
+import NotFound from "./components/Detection/Error/NotFound.jsx";
+import ServerError from "./components/Detection/Error/ServerError.jsx";
 
 import { getData } from "./javascript/data/data.js";
+import PageTransition from "./components/Detection/Effects/PageTransition/PageTransition.jsx";
+
+/* =====================================================
+PUBLIC PORTFOLIO
+===================================================== */
+
+function PublicPortfolio() {
+const data = getData();
+
+return (
+<> <Navbar data={data} />
+
+<PageTransition>
+
+  <Routes>
+    <Route
+      path="/"
+      element={<Home data={data} />}
+    />
+
+    <Route
+      path="/about"
+      element={<About data={data} />}
+    />
+
+    <Route
+      path="/skills"
+      element={<Skills data={data} />}
+    />
+
+    <Route
+      path="/projects"
+      element={<Projects data={data} />}
+    />
+
+    <Route
+      path="/contact"
+      element={<Contact data={data} />}
+    />
+  </Routes>
+
+  </PageTransition>
+
+  <Footer data={data} />
+
+  <ChatController data={data} />
+</>
 
 
-/* =========================================================
-   APP CONTENT
-========================================================= */
-
-function AppContent() {
-
-  const location = useLocation();
-
-
-  /* =======================================================
-     WEBSITE DATA
-  ======================================================= */
-
-  const data = getData();
-
-
-  /* =======================================================
-     ADMIN ROUTE CHECK
-  ======================================================= */
-
-  const isAdminRoute =
-    location.pathname.startsWith("/admin");
-
-
-  return (
-    <>
-
-      {/* ===================================================
-          PUBLIC NAVBAR
-      =================================================== */}
-
-      {!isAdminRoute && (
-        <Navbar />
-      )}
-
-
-      {/* ===================================================
-          ROUTES
-      =================================================== */}
-
-      <Routes>
-
-
-        {/* =================================================
-            HOME
-        ================================================= */}
-
-        <Route
-          path="/"
-          element={
-            <Home
-              data={data}
-            />
-          }
-        />
-
-
-        {/* =================================================
-            ABOUT
-        ================================================= */}
-
-        <Route
-          path="/about"
-          element={
-            <About
-              data={data}
-            />
-          }
-        />
-
-
-        {/* =================================================
-            SKILLS
-        ================================================= */}
-
-        <Route
-          path="/skills"
-          element={
-            <Skills
-              data={data}
-            />
-          }
-        />
-
-
-        {/* =================================================
-            PROJECTS
-        ================================================= */}
-
-        <Route
-          path="/projects"
-          element={
-            <Projects
-              data={data}
-            />
-          }
-        />
-
-
-        {/* =================================================
-            CONTACT
-        ================================================= */}
-
-        <Route
-          path="/contact"
-          element={
-            <Contact
-              data={data}
-            />
-          }
-        />
-
-
-        {/* =================================================
-            ADMIN LOGIN
-        ================================================= */}
-
-        <Route
-          path="/admin/login"
-          element={
-            <AdminLogin />
-          }
-        />
-
-
-        {/* =================================================
-            ADMIN DASHBOARD
-        ================================================= */}
-
-        <Route
-          path="/admin"
-          element={
-            <ProtectedAdmin>
-              <AdminChat />
-            </ProtectedAdmin>
-          }
-        />
-
-
-        {/* =================================================
-            ADMIN CHAT
-        ================================================= */}
-
-        <Route
-          path="/admin/chat"
-          element={
-            <ProtectedAdmin>
-              <AdminChat />
-            </ProtectedAdmin>
-          }
-        />
-
-
-        {/* =================================================
-            404
-        ================================================= */}
-
-        <Route
-          path="*"
-          element={
-            <NotFound />
-          }
-        />
-
-      </Routes>
-
-
-      {/* ===================================================
-          PUBLIC FOOTER
-      ================================================= */}
-
-      {!isAdminRoute && (
-        <Footer />
-      )}
-
-
-      {/* ===================================================
-          PUBLIC CHAT
-      ================================================= */}
-
-      {!isAdminRoute && (
-        <ChatController />
-      )}
-
-    </>
-  );
+);
 }
 
+/* =====================================================
+APP
+===================================================== */
 
-/* =========================================================
-   NOT FOUND
-========================================================= */
+function App() {
+const location = useLocation();
 
-function NotFound() {
+const pathname = location.pathname;
 
-  return (
-    <main
-      style={{
-        minHeight: "70vh",
-        display: "grid",
-        placeItems: "center",
-        padding: "2rem",
-        textAlign: "center",
-      }}
-    >
+/* =====================================================
+500 ERROR PAGE
+===================================================== */
 
-      <div>
-
-        <p
-          style={{
-            marginBottom: "0.5rem",
-            color: "var(--accent-primary)",
-            fontWeight: 700,
-          }}
-        >
-          404
-        </p>
-
-
-        <h1>
-          Page not found
-        </h1>
-
-
-        <p
-          style={{
-            marginTop: "0.75rem",
-            color: "var(--text-secondary)",
-          }}
-        >
-          The page you're looking for doesn't exist.
-        </p>
-
-
-        <Link
-          to="/"
-          style={{
-            display: "inline-flex",
-            marginTop: "1.5rem",
-            padding: "0.7rem 1rem",
-            borderRadius: "999px",
-            background: "var(--accent-gradient)",
-            color: "var(--text-dark)",
-            textDecoration: "none",
-            fontWeight: 700,
-          }}
-        >
-          Back Home
-        </Link>
-
-      </div>
-
-    </main>
-  );
+if (pathname === "/500") {
+return <ServerError />;
 }
 
+/* =====================================================
+ADMIN ROUTES
+===================================================== */
 
-/* =========================================================
-   APP
-========================================================= */
-
-export default function App() {
-
-  return (
-    <AppContent />
-  );
-
+if (pathname === "/admin/login") {
+return <AdminLogin />;
 }
+
+if (
+pathname === "/admin" ||
+pathname === "/admin/chat"
+) {
+return ( <ProtectedAdmin> <AdminChat /> </ProtectedAdmin>
+);
+}
+
+/* =====================================================
+VALID PUBLIC ROUTES
+===================================================== */
+
+const publicRoutes = [
+"/",
+"/about",
+"/skills",
+"/projects",
+"/contact",
+];
+
+if (publicRoutes.includes(pathname)) {
+return <PublicPortfolio />;
+}
+
+/* =====================================================
+404 — STANDALONE
+===================================================== */
+
+return <NotFound />;
+}
+
+export default App;

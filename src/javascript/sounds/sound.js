@@ -1,511 +1,259 @@
-/* =========================================================
-   SOUND SYSTEM
-   Nathan — Frontend Developer Portfolio
 
-   Location:
-   src/javascript/utils/sound.js
+import jumpSound from "../../assets/sounds/jump.mp3";
+import clickSound from "../../assets/sounds/click.mp3";
+import errorSound from "../../assets/sounds/error.mp3";
+import gameOverSound from "../../assets/sounds/gameover.mp3";
+import gameBonusSound from "../../assets/sounds/GameBonus.mp3";
+import victorySound from "../../assets/sounds/victory.mp3";
+import notificationSound from "../../assets/sounds/notification.mp3";
 
-   PURPOSE
-   ---------------------------------------------------------
-   Central sound utility for the portfolio.
-
-   Future uses:
-   - Button clicks
-   - Navbar interactions
-   - Notifications
-   - Project slider
-   - Theme toggle
-   - Menu open / close
-   - Success / error feedback
-
-   Sounds:
-   ---------------------------------------------------------
-   /src/assets/sounds/click.mp3
-   /src/assets/sounds/notification.mp3
-
-   IMPORTANT
-   ---------------------------------------------------------
-   Sounds are NEVER played automatically.
-
-   A component must explicitly call a sound function.
-========================================================= */
-
-
-/* =========================================================
-   SOUND FILES
-========================================================= */
-
-import clickSoundFile from "../../assets/sounds/click.mp3";
-
-
-
-/* =========================================================
-   SOUND CONFIGURATION
-========================================================= */
+// =========================================================
+// SOUND CONFIG
+// =========================================================
 
 export const SOUND_CONFIG = {
-
-  /* =======================================================
-     MASTER VOLUME
-  ======================================================= */
-
-  volume:
-    0.35,
-
-
-  /* =======================================================
-     DEFAULT VOLUME
-  ======================================================= */
-
-  clickVolume:
-    0.35,
-
-  notificationVolume:
-    0.4,
-
-
-  /* =======================================================
-     ENABLED BY DEFAULT
-  ======================================================= */
-
-  enabled:
-    true,
-
+  enabled: true,
+  volume: 0.35,
 };
 
-
-/* =========================================================
-   SOUND FILES
-========================================================= */
+// =========================================================
+// SOUND FILES
+// =========================================================
 
 export const SOUND_FILES = {
-
-  click:
-    clickSoundFile,
-
-
-
+  jump: jumpSound,
+  click: clickSound,
+  error: errorSound,
+  gameover: gameOverSound,
+  GameBonus: gameBonusSound,
+  victory: victorySound,
+  notification: notificationSound,
 };
 
+// =========================================================
+// SOUND CACHE
+// =========================================================
 
-/* =========================================================
-   SOUND STATE
-========================================================= */
+const soundCache = new Map();
 
-let soundEnabled =
-  SOUND_CONFIG.enabled;
+// =========================================================
+// SOUND STATE
+// =========================================================
 
+let soundEnabled = SOUND_CONFIG.enabled;
+let soundVolume = SOUND_CONFIG.volume;
 
-/* =========================================================
-   AUDIO CACHE
-   ---------------------------------------------------------
-   Keeps Audio objects ready for reuse.
-========================================================= */
+// =========================================================
+// CREATE / GET SOUND
+// =========================================================
 
-const audioCache =
-  new Map();
-
-
-/* =========================================================
-   CREATE AUDIO
-========================================================= */
-
-function createAudio(
-  src
-) {
-
-  if (
-    typeof window === "undefined"
-  ) {
+function getSound(name) {
+  if (!SOUND_FILES[name]) {
+    console.warn(
+      `[Sound] Sound "${name}" does not exist.`
+    );
 
     return null;
-
   }
 
+  if (!soundCache.has(name)) {
+    const audio = new Audio(
+      SOUND_FILES[name]
+    );
 
-  if (
-    audioCache.has(src)
-  ) {
+    audio.preload = "auto";
+    audio.volume = soundVolume;
 
-    return audioCache.get(src);
-
+    soundCache.set(
+      name,
+      audio
+    );
   }
 
-
-  const audio =
-    new Audio(src);
-
-
-  audio.preload =
-    "auto";
-
-
-  audio.volume =
-    SOUND_CONFIG.volume;
-
-
-  audioCache.set(
-    src,
-    audio
-  );
-
-
-  return audio;
-
+  return soundCache.get(name);
 }
 
+// =========================================================
+// PLAY SOUND
+// =========================================================
 
-/* =========================================================
-   PLAY SOUND
-========================================================= */
-
-export function playSound(
-  src,
-  volume = SOUND_CONFIG.volume
-) {
-
-  if (
-    !soundEnabled
-  ) {
-
+export function playSound(name) {
+  if (!soundEnabled) {
     return;
-
   }
 
+  const sound = getSound(name);
 
-  if (
-    typeof window === "undefined"
-  ) {
-
+  if (!sound) {
     return;
-
   }
-
-
-  if (
-    !src
-  ) {
-
-    return;
-
-  }
-
 
   try {
+    sound.pause();
 
-    const audio =
-      createAudio(src);
+    sound.currentTime = 0;
 
+    sound.volume = soundVolume;
 
-    if (
-      !audio
-    ) {
-
-      return;
-
-    }
-
-
-    /* =====================================================
-       RESET AUDIO
-    ===================================================== */
-
-    audio.pause();
-
-    audio.currentTime =
-      0;
-
-
-    /* =====================================================
-       SET VOLUME
-    ===================================================== */
-
-    audio.volume =
-      Math.min(
-        Math.max(
-          volume,
-          0
-        ),
-        1
-      );
-
-
-    /* =====================================================
-       PLAY
-    ===================================================== */
-
-    const playPromise =
-      audio.play();
-
-
-    /*
-      Browsers can reject audio playback if it violates
-      their autoplay/user-interaction rules.
-
-      We silently handle that case.
-    */
+    const promise =
+      sound.play();
 
     if (
-      playPromise &&
-      typeof playPromise.catch ===
+      promise &&
+      typeof promise.catch ===
         "function"
     ) {
-
-      playPromise.catch(
-        () => {}
-      );
-
+      promise.catch(() => {
+        // Browser may block audio
+        // before user interaction.
+      });
     }
-
   } catch (error) {
-
     console.warn(
-      "Unable to play sound:",
+      `[Sound] Could not play "${name}".`,
       error
     );
-
   }
-
 }
 
+// =========================================================
+// PLAY CLICK
+// =========================================================
 
-/* =========================================================
-   CLICK SOUND
-========================================================= */
-
-export function playClick(
-  volume = SOUND_CONFIG.clickVolume
-) {
-
-  playSound(
-    SOUND_FILES.click,
-    volume
-  );
-
+export function playClick() {
+  playSound("click");
 }
 
+// =========================================================
+// PLAY NOTIFICATION
+// =========================================================
 
-/* =========================================================
-   NOTIFICATION SOUND
-========================================================= */
-
-export function playNotification(
-  volume =
-    SOUND_CONFIG.notificationVolume
-) {
-
-  playSound(
-    SOUND_FILES.notification,
-    volume
-  );
-
+export function playNotification() {
+  playSound("notification");
 }
 
-
-/* =========================================================
-   ENABLE SOUND
-========================================================= */
+// =========================================================
+// ENABLE SOUND
+// =========================================================
 
 export function enableSound() {
+  soundEnabled = true;
 
-  soundEnabled =
-    true;
+  SOUND_CONFIG.enabled = true;
 
+  return soundEnabled;
 }
 
-
-/* =========================================================
-   DISABLE SOUND
-========================================================= */
+// =========================================================
+// DISABLE SOUND
+// =========================================================
 
 export function disableSound() {
+  soundEnabled = false;
 
-  soundEnabled =
-    false;
+  SOUND_CONFIG.enabled = false;
 
+  return soundEnabled;
 }
 
-
-/* =========================================================
-   TOGGLE SOUND
-========================================================= */
+// =========================================================
+// TOGGLE SOUND
+// =========================================================
 
 export function toggleSound() {
+  soundEnabled = !soundEnabled;
 
-  soundEnabled =
-    !soundEnabled;
-
+  SOUND_CONFIG.enabled =
+    soundEnabled;
 
   return soundEnabled;
-
 }
 
-
-/* =========================================================
-   GET SOUND STATE
-========================================================= */
+// =========================================================
+// CHECK SOUND STATE
+// =========================================================
 
 export function isSoundEnabled() {
-
   return soundEnabled;
-
 }
 
+// =========================================================
+// SET VOLUME
+// =========================================================
 
-/* =========================================================
-   SET MASTER VOLUME
-========================================================= */
+export function setSoundVolume(volume) {
+  const nextVolume = Math.min(
+    Math.max(Number(volume) || 0, 0),
+    1
+  );
 
-export function setSoundVolume(
-  volume
-) {
-
-  const safeVolume =
-    Math.min(
-      Math.max(
-        Number(volume) || 0,
-        0
-      ),
-      1
-    );
-
+  soundVolume = nextVolume;
 
   SOUND_CONFIG.volume =
-    safeVolume;
+    nextVolume;
 
-
-  /*
-    Update already-created audio objects.
-  */
-
-  audioCache.forEach(
-    (audio) => {
-
-      audio.volume =
-        safeVolume;
-
+  soundCache.forEach(
+    (sound) => {
+      sound.volume =
+        nextVolume;
     }
   );
 
+  return soundVolume;
 }
 
-
-/* =========================================================
-   GET MASTER VOLUME
-========================================================= */
+// =========================================================
+// GET VOLUME
+// =========================================================
 
 export function getSoundVolume() {
-
-  return SOUND_CONFIG.volume;
-
+  return soundVolume;
 }
 
+// =========================================================
+// PRELOAD ONE SOUND
+// =========================================================
 
-/* =========================================================
-   PRELOAD SOUND
-========================================================= */
+export function preloadSound(name) {
+  const sound = getSound(name);
 
-export function preloadSound(
-  src
-) {
-
-  if (
-    typeof window === "undefined"
-  ) {
-
-    return null;
-
+  if (!sound) {
+    return;
   }
 
-
-  if (
-    !src
-  ) {
-
-    return null;
-
-  }
-
-
-  return createAudio(
-    src
-  );
-
+  sound.load();
 }
 
+// =========================================================
+// PRELOAD MULTIPLE SOUNDS
+// =========================================================
 
-/* =========================================================
-   PRELOAD ALL SOUNDS
-========================================================= */
-
-export function preloadSounds() {
-
-  Object.values(
+export function preloadSounds(
+  names = Object.keys(
     SOUND_FILES
-  ).forEach(
-    (src) => {
-
-      preloadSound(
-        src
-      );
-
+  )
+) {
+  names.forEach(
+    (name) => {
+      preloadSound(name);
     }
   );
-
 }
 
-
-/* =========================================================
-   CLEAR AUDIO CACHE
-========================================================= */
+// =========================================================
+// CLEAR SOUND CACHE
+// =========================================================
 
 export function clearSoundCache() {
+  soundCache.forEach(
+    (sound) => {
+      sound.pause();
 
-  audioCache.forEach(
-    (audio) => {
+      sound.currentTime = 0;
 
-      audio.pause();
-
-      audio.currentTime =
-        0;
-
+      sound.src = "";
     }
   );
 
-
-  audioCache.clear();
-
+  soundCache.clear();
 }
-
-
-/* =========================================================
-   DEFAULT EXPORT
-========================================================= */
-
-export default {
-
-  playSound,
-
-  playClick,
-
-  playNotification,
-
-  enableSound,
-
-  disableSound,
-
-  toggleSound,
-
-  isSoundEnabled,
-
-  setSoundVolume,
-
-  getSoundVolume,
-
-  preloadSound,
-
-  preloadSounds,
-
-  clearSoundCache,
-
-};

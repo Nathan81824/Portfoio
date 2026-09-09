@@ -1,0 +1,615 @@
+/* =====================================================
+SERVER ERROR PAGE
+===================================================== */
+
+.server-error-page {
+position: relative;
+min-height: 100vh;
+width: 100%;
+
+display: flex;
+align-items: center;
+justify-content: center;
+
+overflow: hidden;
+
+padding: 40px 20px;
+
+background:
+radial-gradient(
+circle at 50% 38%,
+rgba(255, 159, 0, 0.055),
+transparent 36%
+),
+var(--bg-primary);
+
+color: var(--text-primary);
+}
+
+/* =====================================================
+BACKGROUND GRID
+===================================================== */
+
+.server-error-grid {
+position: absolute;
+inset: 0;
+
+pointer-events: none;
+
+opacity: 0.45;
+
+background-image:
+linear-gradient(
+rgba(255, 255, 255, 0.025) 1px,
+transparent 1px
+),
+linear-gradient(
+90deg,
+rgba(255, 255, 255, 0.025) 1px,
+transparent 1px
+);
+
+background-size: 55px 55px;
+
+mask-image:
+radial-gradient(
+circle at center,
+black 0%,
+transparent 75%
+);
+}
+
+/* =====================================================
+GLOW EFFECTS
+===================================================== */
+
+.server-error-glow {
+position: absolute;
+
+width: 420px;
+height: 420px;
+
+border-radius: 50%;
+
+pointer-events: none;
+
+filter: blur(90px);
+
+opacity: 0.15;
+}
+
+.server-error-glow-one {
+top: -180px;
+left: -160px;
+
+background: var(--accent-primary);
+}
+
+.server-error-glow-two {
+right: -180px;
+bottom: -180px;
+
+background: var(--accent-secondary);
+}
+
+/* =====================================================
+CONTENT
+===================================================== */
+
+.server-error-container {
+position: relative;
+z-index: 2;
+
+width: min(100%, 650px);
+
+display: flex;
+flex-direction: column;
+align-items: center;
+
+text-align: center;
+}
+
+/* =====================================================
+LOGO
+===================================================== */
+
+.server-error-logo {
+display: flex;
+align-items: center;
+justify-content: center;
+
+margin-bottom: 22px;
+
+will-change: transform;
+}
+
+.server-error-logo-circle {
+position: relative;
+
+width: 72px;
+height: 72px;
+
+display: flex;
+align-items: center;
+justify-content: center;
+
+padding: 3px;
+
+border-radius: 50%;
+
+background: var(--accent-gradient);
+
+box-shadow:
+0 0 20px rgba(255, 159, 0, 0.22),
+0 0 50px rgba(255, 159, 0, 0.08);
+
+overflow: hidden;
+}
+
+.server-error-logo-circle::before {
+content: "";
+
+position: absolute;
+inset: 3px;
+
+border-radius: 50%;
+
+background: var(--bg-primary);
+
+z-index: 0;
+}
+
+.server-error-logo-image {
+position: relative;
+z-index: 1;
+
+width: 60px;
+height: 60px;
+
+display: block;
+
+object-fit: cover;
+
+border-radius: 50%;
+}
+
+/* =====================================================
+ERROR CODE
+===================================================== */
+
+.server-error-code {
+position: relative;
+
+font-size: clamp(7rem, 20vw, 11rem);
+
+font-weight: 900;
+
+line-height: 0.85;
+
+letter-spacing: -0.08em;
+
+color: transparent;
+
+background:
+linear-gradient(
+135deg,
+var(--text-primary),
+var(--accent-primary),
+var(--accent-secondary)
+);
+
+background-clip: text;
+-webkit-background-clip: text;
+
+-webkit-text-fill-color: transparent;
+
+text-shadow:
+0 0 45px rgba(255, 159, 0, 0.08);
+
+user-select: none;
+
+will-change: transform;
+}
+
+/* =====================================================
+WARNING ICON
+===================================================== */
+
+.server-error-icon {
+width: 54px;
+height: 54px;
+
+margin-top: 26px;
+margin-bottom: 18px;
+
+display: flex;
+align-items: center;
+justify-content: center;
+
+border: 1px solid var(--border-accent);
+
+border-radius: 50%;
+
+color: var(--accent-primary);
+
+background: var(--bg-card);
+
+box-shadow:
+0 0 25px rgba(255, 159, 0, 0.12),
+inset 0 0 20px rgba(255, 159, 0, 0.04);
+
+backdrop-filter: blur(var(--glass-blur));
+
+will-change: transform;
+}
+
+/* =====================================================
+TITLE
+===================================================== */
+
+.server-error-title {
+margin: 0;
+
+font-size: clamp(2rem, 5vw, 3rem);
+
+font-weight: 700;
+
+line-height: 1.15;
+
+letter-spacing: -0.035em;
+
+color: var(--text-primary);
+}
+
+/* =====================================================
+DESCRIPTION
+===================================================== */
+
+.server-error-description {
+max-width: 520px;
+
+margin: 16px auto 0;
+
+font-size: 1rem;
+
+line-height: 1.75;
+
+color: var(--text-secondary);
+}
+
+/* =====================================================
+STATUS
+===================================================== */
+
+.server-error-status {
+position: relative;
+
+display: inline-flex;
+align-items: center;
+gap: 8px;
+
+margin-top: 20px;
+
+padding: 7px 13px;
+
+border: 1px solid var(--border-primary);
+
+border-radius: var(--radius-full);
+
+background: var(--bg-card);
+
+color: var(--text-tertiary);
+
+font-size: 0.75rem;
+
+font-weight: 600;
+
+letter-spacing: 0.08em;
+
+text-transform: uppercase;
+
+backdrop-filter: blur(var(--glass-blur));
+}
+
+.server-error-status::before {
+content: "";
+
+width: 6px;
+height: 6px;
+
+border-radius: 50%;
+
+background: var(--accent-primary);
+
+box-shadow:
+0 0 10px var(--accent-primary);
+}
+
+/* =====================================================
+ACTIONS
+===================================================== */
+
+.server-error-actions {
+display: flex;
+align-items: center;
+justify-content: center;
+
+gap: 12px;
+
+margin-top: 30px;
+
+width: 100%;
+}
+
+/* =====================================================
+BUTTON BASE
+===================================================== */
+
+.server-error-button {
+min-height: 48px;
+
+display: inline-flex;
+align-items: center;
+justify-content: center;
+
+gap: 9px;
+
+padding: 0 20px;
+
+border-radius: var(--radius-md);
+
+font-family: inherit;
+
+font-size: 0.9rem;
+
+font-weight: 600;
+
+text-decoration: none;
+
+cursor: pointer;
+
+transition:
+transform 0.3s ease,
+background 0.3s ease,
+border-color 0.3s ease,
+box-shadow 0.3s ease,
+color 0.3s ease;
+}
+
+/* =====================================================
+PRIMARY — TRY AGAIN
+===================================================== */
+
+.server-error-button-primary {
+border: 1px solid transparent;
+
+background: var(--accent-gradient);
+
+color: #080808;
+
+box-shadow:
+0 10px 30px rgba(255, 138, 0, 0.18);
+}
+
+.server-error-button-primary:hover {
+transform: translateY(-3px);
+
+box-shadow:
+0 15px 40px rgba(255, 138, 0, 0.28);
+}
+
+.server-error-button-primary svg {
+transition: transform 0.5s ease;
+}
+
+.server-error-button-primary:hover svg {
+transform: rotate(180deg);
+}
+
+/* =====================================================
+SECONDARY — HOME
+===================================================== */
+
+.server-error-button-secondary {
+border: 1px solid var(--border-secondary);
+
+background: var(--bg-card);
+
+color: var(--text-primary);
+
+backdrop-filter: blur(var(--glass-blur));
+}
+
+.server-error-button-secondary:hover {
+transform: translateY(-3px);
+
+border-color: var(--border-accent);
+
+background: var(--bg-card-hover);
+
+color: var(--accent-primary);
+
+box-shadow:
+0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+/* =====================================================
+BACK LINK
+===================================================== */
+
+.server-error-back {
+display: inline-flex;
+align-items: center;
+justify-content: center;
+
+gap: 7px;
+
+margin-top: 24px;
+
+padding: 0;
+
+border: 0;
+
+background: transparent;
+
+color: var(--text-muted);
+
+font-family: inherit;
+
+font-size: 0.82rem;
+
+cursor: pointer;
+
+transition:
+color 0.3s ease,
+transform 0.3s ease;
+}
+
+.server-error-back:hover {
+color: var(--accent-primary);
+
+transform: translateX(-3px);
+}
+
+.server-error-back svg {
+transition: transform 0.3s ease;
+}
+
+.server-error-back:hover svg {
+transform: translateX(-3px);
+}
+
+/* =====================================================
+LIGHT THEME
+===================================================== */
+
+.light-theme .server-error-grid {
+background-image:
+linear-gradient(
+rgba(20, 20, 20, 0.035) 1px,
+transparent 1px
+),
+linear-gradient(
+90deg,
+rgba(20, 20, 20, 0.035) 1px,
+transparent 1px
+);
+}
+
+.light-theme .server-error-code {
+text-shadow:
+0 0 40px rgba(255, 159, 0, 0.12);
+}
+
+.light-theme .server-error-button-secondary {
+box-shadow:
+0 8px 25px rgba(20, 20, 20, 0.06);
+}
+
+/* =====================================================
+RESPONSIVE
+===================================================== */
+
+@media (max-width: 700px) {
+
+.server-error-page {
+padding: 30px 18px;
+}
+
+.server-error-logo-circle {
+width: 64px;
+height: 64px;
+}
+
+.server-error-logo-image {
+width: 52px;
+height: 52px;
+}
+
+.server-error-code {
+font-size: clamp(6rem, 28vw, 8rem);
+}
+
+.server-error-icon {
+width: 50px;
+height: 50px;
+
+
+margin-top: 22px;
+
+
+}
+
+.server-error-title {
+font-size: 2rem;
+}
+
+.server-error-description {
+font-size: 0.92rem;
+
+
+line-height: 1.7;
+
+
+}
+
+.server-error-actions {
+flex-direction: column;
+
+
+max-width: 280px;
+
+
+}
+
+.server-error-button {
+width: 100%;
+}
+}
+
+/* =====================================================
+SMALL MOBILE
+===================================================== */
+
+@media (max-width: 400px) {
+
+.server-error-page {
+padding: 25px 15px;
+}
+
+.server-error-code {
+font-size: 5.5rem;
+}
+
+.server-error-title {
+font-size: 1.7rem;
+}
+
+.server-error-description {
+font-size: 0.88rem;
+}
+
+.server-error-status {
+font-size: 0.68rem;
+}
+}
+
+/* =====================================================
+REDUCED MOTION
+===================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+.server-error-logo,
+.server-error-code,
+.server-error-icon,
+.server-error-glow {
+animation: none !important;
+transform: none !important;
+}
+
+.server-error-button,
+.server-error-back {
+transition: none;
+}
+}

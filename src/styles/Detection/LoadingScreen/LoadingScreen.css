@@ -1,0 +1,627 @@
+/* =========================================================
+   LOADING SCREEN
+========================================================= */
+
+.loading-screen {
+  position: fixed;
+  inset: 0;
+
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  overflow: hidden;
+
+  background: var(--bg-primary);
+
+  color: var(--text-primary);
+
+  z-index: 99999;
+
+  isolation: isolate;
+}
+
+
+/* =========================================================
+   BACKGROUND
+========================================================= */
+
+.loading-screen::before {
+  content: "";
+
+  position: absolute;
+  inset: 0;
+
+  background:
+    radial-gradient(
+      circle at 50% 50%,
+      rgba(255, 159, 0, 0.035),
+      transparent 55%
+    );
+
+  pointer-events: none;
+
+  z-index: -3;
+}
+
+
+/* =========================================================
+   SUBTLE GRID
+========================================================= */
+
+.loading-screen::after {
+  content: "";
+
+  position: absolute;
+  inset: 0;
+
+  background-image:
+    linear-gradient(
+      rgba(255, 255, 255, 0.025) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.025) 1px,
+      transparent 1px
+    );
+
+  background-size: 55px 55px;
+
+  mask-image: linear-gradient(
+    to bottom,
+    transparent,
+    black 20%,
+    black 80%,
+    transparent
+  );
+
+  pointer-events: none;
+
+  z-index: -2;
+}
+
+
+/* =========================================================
+   CONTENT
+========================================================= */
+
+.loading-content {
+  position: relative;
+
+  width: min(90%, 460px);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  text-align: center;
+
+  z-index: 5;
+}
+
+
+/* =========================================================
+   LOGO
+========================================================= */
+
+.loading-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin-bottom: 28px;
+
+  will-change: transform;
+}
+
+
+/* =========================================================
+   LOGO CIRCLE
+========================================================= */
+
+.loading-logo-circle {
+  position: relative;
+
+  width: 70px;
+  height: 70px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 3px;
+
+  border-radius: 50%;
+
+  background: var(--accent-gradient);
+
+  box-shadow:
+    0 0 18px rgba(255, 159, 0, 0.2),
+    0 0 40px rgba(255, 159, 0, 0.08);
+
+  animation:
+    logo-border-spin 4s linear infinite;
+
+  overflow: hidden;
+}
+
+
+/* =========================================================
+   LOGO INNER BACKGROUND
+========================================================= */
+
+.loading-logo-circle::before {
+  content: "";
+
+  position: absolute;
+  inset: 3px;
+
+  border-radius: 50%;
+
+  background: var(--bg-primary);
+
+  z-index: 0;
+}
+
+
+/* =========================================================
+   LOGO IMAGE
+========================================================= */
+
+.loading-logo-image {
+  position: relative;
+
+  z-index: 1;
+
+  display: block;
+
+  width: 58px;
+  height: 58px;
+
+  object-fit: cover;
+
+  border-radius: 50%;
+}
+
+
+/* =========================================================
+   LOGO BORDER ANIMATION
+========================================================= */
+
+@keyframes logo-border-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
+/* =========================================================
+   MESSAGE
+========================================================= */
+
+.loading-message {
+  margin: 0 0 26px;
+
+  max-width: 360px;
+
+  color: var(--text-secondary);
+
+  font-size: 0.95rem;
+
+  line-height: 1.6;
+
+  letter-spacing: 0.01em;
+}
+
+
+/* =========================================================
+   PROGRESS WRAPPER
+========================================================= */
+
+.loading-progress-wrapper {
+  width: min(100%, 390px);
+
+  display: flex;
+  align-items: center;
+
+  gap: 14px;
+
+  margin-bottom: 18px;
+}
+
+
+/* =========================================================
+   PROGRESS TRACK
+========================================================= */
+
+.loading-progress-track {
+  position: relative;
+
+  flex: 1;
+
+  height: 5px;
+
+  overflow: hidden;
+
+  border-radius: var(--radius-full);
+
+  background: var(--surface-tertiary);
+
+  border: 1px solid var(--border-primary);
+
+  box-shadow:
+    inset 0 1px 3px rgba(0, 0, 0, 0.25);
+}
+
+
+/* =========================================================
+   PROGRESS BAR
+========================================================= */
+
+.loading-progress {
+  position: absolute;
+
+  top: 0;
+  left: 0;
+
+  width: 0%;
+  height: 100%;
+
+  border-radius: inherit;
+
+  background: var(--accent-gradient);
+
+  box-shadow:
+    0 0 10px rgba(255, 159, 0, 0.35),
+    0 0 20px rgba(255, 159, 0, 0.15);
+
+  will-change: width;
+}
+
+
+/* =========================================================
+   PROGRESS SHINE
+========================================================= */
+
+.loading-progress::after {
+  content: "";
+
+  position: absolute;
+
+  top: 0;
+  right: 0;
+
+  width: 70px;
+  height: 100%;
+
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.45),
+    transparent
+  );
+
+  animation: loading-progress-shine 2.5s ease-in-out infinite;
+}
+
+
+/* =========================================================
+   PROGRESS SHINE ANIMATION
+========================================================= */
+
+@keyframes loading-progress-shine {
+  0% {
+    transform: translateX(-80px);
+    opacity: 0;
+  }
+
+  30% {
+    opacity: 0;
+  }
+
+  50% {
+    opacity: 1;
+  }
+
+  70% {
+    opacity: 0;
+  }
+
+  100% {
+    transform: translateX(80px);
+    opacity: 0;
+  }
+}
+
+
+/* =========================================================
+   PERCENTAGE
+========================================================= */
+
+.loading-percentage {
+  min-width: 42px;
+
+  color: var(--text-primary);
+
+  font-size: 0.8rem;
+
+  font-weight: 600;
+
+  font-variant-numeric: tabular-nums;
+
+  letter-spacing: 0.04em;
+}
+
+
+/* =========================================================
+   STATUS
+========================================================= */
+
+.loading-status {
+  position: relative;
+
+  display: inline-flex;
+  align-items: center;
+
+  gap: 8px;
+
+  color: var(--text-muted);
+
+  font-size: 0.72rem;
+
+  letter-spacing: 0.08em;
+
+  text-transform: uppercase;
+}
+
+
+/* =========================================================
+   STATUS DOT
+========================================================= */
+
+.loading-status::before {
+  content: "";
+
+  width: 6px;
+  height: 6px;
+
+  flex-shrink: 0;
+
+  border-radius: 50%;
+
+  background: var(--accent-primary);
+
+  box-shadow:
+    0 0 8px rgba(255, 159, 0, 0.65);
+
+  animation: loading-status-pulse 1.5s ease-in-out infinite;
+}
+
+
+/* =========================================================
+   STATUS PULSE
+========================================================= */
+
+@keyframes loading-status-pulse {
+  0%,
+  100% {
+    opacity: 0.4;
+    transform: scale(0.85);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+
+/* =========================================================
+   BACKGROUND GLOW
+========================================================= */
+
+.loading-glow {
+  position: absolute;
+
+  width: 280px;
+  height: 280px;
+
+  border-radius: 50%;
+
+  background: var(--accent-primary);
+
+  filter: blur(100px);
+
+  opacity: 0.055;
+
+  pointer-events: none;
+
+  z-index: -1;
+
+  will-change: transform;
+}
+
+
+/* =========================================================
+   GLOW ONE
+========================================================= */
+
+.loading-glow-one {
+  top: 12%;
+  left: 15%;
+}
+
+
+/* =========================================================
+   GLOW TWO
+========================================================= */
+
+.loading-glow-two {
+  right: 12%;
+  bottom: 10%;
+}
+
+
+/* =========================================================
+   LIGHT THEME
+========================================================= */
+
+.light-theme .loading-screen::after {
+  background-image:
+    linear-gradient(
+      rgba(20, 20, 20, 0.025) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      rgba(20, 20, 20, 0.025) 1px,
+      transparent 1px
+    );
+}
+
+
+.light-theme .loading-progress-track {
+  background: rgba(20, 20, 20, 0.045);
+
+  border-color: rgba(20, 20, 20, 0.08);
+
+  box-shadow:
+    inset 0 1px 3px rgba(20, 20, 20, 0.08);
+}
+
+
+.light-theme .loading-logo-circle::before {
+  background: var(--bg-primary);
+}
+
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 1024px) {
+  .loading-content {
+    width: min(88%, 430px);
+  }
+
+  .loading-logo-circle {
+    width: 66px;
+    height: 66px;
+  }
+
+  .loading-logo-image {
+    width: 54px;
+    height: 54px;
+  }
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 768px) {
+  .loading-content {
+    width: min(88%, 360px);
+  }
+
+  .loading-logo {
+    margin-bottom: 24px;
+  }
+
+  .loading-logo-circle {
+    width: 62px;
+    height: 62px;
+  }
+
+  .loading-logo-image {
+    width: 50px;
+    height: 50px;
+  }
+
+  .loading-message {
+    max-width: 300px;
+
+    margin-bottom: 22px;
+
+    font-size: 0.88rem;
+  }
+
+  .loading-progress-wrapper {
+    width: 100%;
+
+    gap: 11px;
+  }
+
+  .loading-progress-track {
+    height: 4px;
+  }
+
+  .loading-percentage {
+    min-width: 38px;
+
+    font-size: 0.74rem;
+  }
+
+  .loading-status {
+    font-size: 0.66rem;
+  }
+
+  .loading-glow {
+    width: 220px;
+    height: 220px;
+
+    filter: blur(80px);
+  }
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
+
+@media (max-width: 480px) {
+  .loading-content {
+    width: 86%;
+  }
+
+  .loading-logo-circle {
+    width: 58px;
+    height: 58px;
+  }
+
+  .loading-logo-image {
+    width: 46px;
+    height: 46px;
+  }
+
+  .loading-message {
+    font-size: 0.84rem;
+  }
+
+  .loading-progress-wrapper {
+    gap: 9px;
+  }
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .loading-logo-circle,
+  .loading-progress::after,
+  .loading-status::before {
+    animation: none;
+  }
+}

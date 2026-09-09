@@ -25,7 +25,7 @@ import {
 ========================================================= */
 
 import {
-  ArrowDown,
+  // ArrowDown,
   ArrowRight,
   Download,
 } from "lucide-react";
@@ -598,7 +598,7 @@ export default function Hero() {
             SCROLL INDICATOR
         ================================================= */}
 
-        <Link
+        {/* <Link
           to="/"
           className="hero-scroll"
           aria-label="Scroll to About section"
@@ -658,7 +658,7 @@ export default function Hero() {
 
           </motion.div>
 
-        </Link>
+        </Link> */}
 
       </div>
 

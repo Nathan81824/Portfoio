@@ -1,93 +1,63 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
+import { registerSW } from "virtual:pwa-register";
 
 import App from "./App.jsx";
-import { ThemeProvider } from "./context/ThemeContext.jsx";
+
+import {
+ThemeProvider,
+} from "./components/Detection/context/ThemeContext.jsx";
+
+import Detection from "./components/Detection/Detection.jsx";
 
 import "./index.css";
 
+/* =====================================================
+GITHUB PAGES BASE PATH
+===================================================== */
 
-/* =========================================================
-   BASE URL
-========================================================= */
+const basename = "/Portfoio";
 
-const basename =
-  import.meta.env.BASE_URL.replace(
-    /\/$/,
-    ""
-  );
+/* =====================================================
+SERVICE WORKER
+===================================================== */
 
+registerSW({
+immediate: true,
 
-/* =========================================================
-   SERVICE WORKER
-========================================================= */
+onOfflineReady() {
+console.log("✅ App is ready to work offline.");
+},
 
-if ("serviceWorker" in navigator) {
+onNeedRefresh() {
+console.log("🔄 New version of the app is available.");
+},
 
-  window.addEventListener(
-    "load",
-    () => {
-
-      const serviceWorkerPath =
-        `${import.meta.env.BASE_URL}sw.js`;
+onRegisteredSW(swUrl, registration) {
+console.log("✅ Service Worker registered:", swUrl);
 
 
-      navigator.serviceWorker
-        .register(
-          serviceWorkerPath
-        )
-
-        .then(
-          (registration) => {
-
-            console.log(
-              "Service Worker registered:",
-              registration.scope
-            );
-
-          }
-        )
-
-        .catch(
-          (error) => {
-
-            console.error(
-              "Service Worker registration failed:",
-              error
-            );
-
-          }
-        );
-
-    }
-  );
-
+if (registration) {
+  console.log("✅ Offline caching is active.");
 }
 
 
-/* =========================================================
-   REACT APP
-========================================================= */
+},
+
+onRegisterError(error) {
+console.error(
+"❌ Service worker registration failed:",
+error
+);
+},
+});
+
+/* =====================================================
+REACT ROOT
+===================================================== */
 
 createRoot(
-  document.getElementById("root")
-).render(
-
-  <StrictMode>
-
-    <BrowserRouter
-      basename={basename}
-    >
-
-      <ThemeProvider>
-
-        <App />
-
-      </ThemeProvider>
-
-    </BrowserRouter>
-
-  </StrictMode>
-
+document.getElementById("root")
+).render( <StrictMode> <BrowserRouter basename={basename}> <ThemeProvider> <Detection> <App /> </Detection> </ThemeProvider> </BrowserRouter> </StrictMode>
 );

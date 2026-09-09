@@ -1,0 +1,132 @@
+/* =========================================================
+   BACKGROUND PARTICLES
+   VISIBLE / DEBUG VERSION
+========================================================= */
+
+.background-particles {
+  position: fixed;
+
+  top: 0;
+  left: 0;
+
+  width: 100vw;
+  height: 100vh;
+
+  pointer-events: none;
+
+  /*
+    VERY HIGH Z-INDEX
+    This puts the canvas above the entire website.
+  */
+  z-index: 999999;
+
+  display: block;
+
+  opacity: 1;
+
+  visibility: visible;
+
+  overflow: visible;
+
+  /*
+    Prevent transforms/stacking from hiding it.
+  */
+  transform: none;
+
+  will-change: transform;
+}
+
+
+/* =========================================================
+   CANVAS ITSELF
+========================================================= */
+
+.background-particles canvas {
+  position: fixed;
+
+  top: 0;
+  left: 0;
+
+  width: 100vw;
+  height: 100vh;
+
+  display: block;
+
+  pointer-events: none;
+
+  z-index: 999999;
+
+  opacity: 1;
+
+  visibility: visible;
+}
+
+
+/* =========================================================
+   DARK THEME
+========================================================= */
+
+.dark-theme .background-particles {
+  opacity: 1;
+}
+
+
+/* =========================================================
+   LIGHT THEME
+========================================================= */
+
+.light-theme .background-particles {
+  opacity: 1;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 768px) {
+  .background-particles {
+    opacity: 1;
+  }
+
+  .background-particles canvas {
+    width: 100vw;
+    height: 100vh;
+  }
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+========================================================= */
+
+/*
+  TEMPORARILY COMMENTED OUT WHILE TESTING.
+
+  We don't want the particles disappearing because the
+  browser has reduced-motion enabled.
+
+@media (prefers-reduced-motion: reduce) {
+  .background-particles {
+    display: none;
+  }
+}
+*/
+
+
+/* =========================================================
+   TOUCH DEVICES
+========================================================= */
+
+/*
+  TEMPORARILY COMMENTED OUT WHILE TESTING.
+
+  This prevents the effect from disappearing on devices
+  detected as touch devices.
+
+@media (hover: none), (pointer: coarse) {
+  .background-particles {
+    display: none;
+  }
+}
+*/
