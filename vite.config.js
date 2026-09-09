@@ -3,7 +3,7 @@ import react from "@vitejs/plugin-react";
 import { VitePWA } from "vite-plugin-pwa";
 
 export default defineConfig({
-base: "/Portfoio/",
+base: process.env.VERCEL ? "/" : "/Portfoio/",
 
 plugins: [
 react(),
@@ -12,47 +12,31 @@ react(),
 VitePWA({
   registerType: "autoUpdate",
 
-  includeAssets: [
-    "favicon.ico",
-    "robots.txt",
-  ],
-
   manifest: {
-    name: "Portfolio",
-    short_name: "Portfolio",
-    description: "Portfolio website with an offline game",
-    theme_color: "#FFB703",
-    background_color: "#14213D",
+    name: "Nathan — Frontend Developer",
+    short_name: "Nathan",
+    description:
+      "Nathan — Frontend Developer creating responsive, interactive and modern digital experiences.",
+    theme_color: "#090909",
+    background_color: "#090909",
     display: "standalone",
-    start_url: "/Portfoio/",
-    scope: "/Portfoio/",
-  },
-
-  workbox: {
-    globPatterns: [
-      "**/*.{js,css,html,ico,png,svg,jpg,jpeg,webp,mp3,woff,woff2,ttf}",
+    start_url: "/",
+    scope: "/",
+    icons: [
+      {
+        src: "/Portfoio/logo.png",
+        sizes: "192x192",
+        type: "image/png",
+      },
+      {
+        src: "/Portfoio/logo.png",
+        sizes: "512x512",
+        type: "image/png",
+      },
     ],
-
-    navigateFallback: "/Portfoio/index.html",
-
-    navigateFallbackDenylist: [
-      /^\/Portfoio\/api\//,
-    ],
-
-    cleanupOutdatedCaches: true,
-
-    clientsClaim: true,
-
-    skipWaiting: true,
   },
 }),
 
 
 ],
-
-build: {
-outDir: "dist",
-assetsDir: "assets",
-sourcemap: false,
-},
 });
