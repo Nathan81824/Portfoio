@@ -14,10 +14,15 @@ import Detection from "./components/Detection/Detection.jsx";
 import "./index.css";
 
 /* =====================================================
-GITHUB PAGES BASE PATH
+ROUTER BASE PATH
 ===================================================== */
 
-const basename = "/Portfoio";
+const isGitHubPages =
+window.location.hostname.includes("github.io");
+
+const basename = isGitHubPages
+? "/Portfoio"
+: "";
 
 /* =====================================================
 SERVICE WORKER
@@ -35,13 +40,17 @@ console.log("🔄 New version of the app is available.");
 },
 
 onRegisteredSW(swUrl, registration) {
-console.log("✅ Service Worker registered:", swUrl);
+console.log(
+"✅ Service Worker registered:",
+swUrl
+);
 
 
 if (registration) {
-  console.log("✅ Offline caching is active.");
+  console.log(
+    "✅ Offline caching is active."
+  );
 }
-
 
 },
 

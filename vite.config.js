@@ -22,14 +22,15 @@ VitePWA({
     display: "standalone",
     start_url: "/",
     scope: "/",
+
     icons: [
       {
-        src: "/Portfoio/logo.png",
+        src: "logo.png",
         sizes: "192x192",
         type: "image/png",
       },
       {
-        src: "/Portfoio/logo.png",
+        src: "logo.png",
         sizes: "512x512",
         type: "image/png",
       },
