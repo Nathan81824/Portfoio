@@ -1,398 +1,398 @@
-import {
-  BarChart3,
-  MessageCircle,
-  Users,
-  TrendingUp,
-} from "lucide-react";
+// import {
+//   BarChart3,
+//   MessageCircle,
+//   Users,
+//   TrendingUp,
+// } from "lucide-react";
 
-import {
-  ResponsiveContainer,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-} from "recharts";
+// import {
+//   ResponsiveContainer,
+//   BarChart,
+//   Bar,
+//   XAxis,
+//   YAxis,
+//   CartesianGrid,
+//   Tooltip,
+// } from "recharts";
 
 
 
-/* =========================================================
-   ADMIN CHARTS
+// /* =========================================================
+//    ADMIN CHARTS
 
-   Props:
+//    Props:
 
-   conversations
-   → Conversations loaded from Supabase
+//    conversations
+//    → Conversations loaded from Supabase
 
-   messages
-   → Messages loaded from Supabase
+//    messages
+//    → Messages loaded from Supabase
 
-   Shows:
-   → Total conversations
-   → Total messages
-   → Visitor messages
-   → Admin messages
-   → Message activity chart
-========================================================= */
+//    Shows:
+//    → Total conversations
+//    → Total messages
+//    → Visitor messages
+//    → Admin messages
+//    → Message activity chart
+// ========================================================= */
 
-export default function AdminCharts({
-  conversations = [],
-  messages = [],
-}) {
+// export default function AdminCharts({
+//   conversations = [],
+//   messages = [],
+// }) {
 
-  /* =======================================================
-     TOTALS
-  ======================================================= */
+//   /* =======================================================
+//      TOTALS
+//   ======================================================= */
 
-  const totalConversations =
-    conversations.length;
+//   const totalConversations =
+//     conversations.length;
 
 
-  const totalMessages =
-    messages.length;
+//   const totalMessages =
+//     messages.length;
 
 
-  const visitorMessages =
-    messages.filter(
-      (message) =>
-        message?.sender === "visitor"
-    ).length;
+//   const visitorMessages =
+//     messages.filter(
+//       (message) =>
+//         message?.sender === "visitor"
+//     ).length;
 
 
-  const adminMessages =
-    messages.filter(
-      (message) =>
-        message?.sender === "admin"
-    ).length;
+//   const adminMessages =
+//     messages.filter(
+//       (message) =>
+//         message?.sender === "admin"
+//     ).length;
 
 
-  /* =======================================================
-     LAST 7 DAYS
-  ======================================================= */
+//   /* =======================================================
+//      LAST 7 DAYS
+//   ======================================================= */
 
-  const now =
-    new Date();
+//   const now =
+//     new Date();
 
 
-  const activityData =
-    Array.from(
-      { length: 7 },
-      (_, index) => {
+//   const activityData =
+//     Array.from(
+//       { length: 7 },
+//       (_, index) => {
 
-        const date =
-          new Date(now);
+//         const date =
+//           new Date(now);
 
-        date.setDate(
-          now.getDate() -
-          (6 - index)
-        );
+//         date.setDate(
+//           now.getDate() -
+//           (6 - index)
+//         );
 
-        date.setHours(
-          0,
-          0,
-          0,
-          0
-        );
+//         date.setHours(
+//           0,
+//           0,
+//           0,
+//           0
+//         );
 
 
-        const nextDate =
-          new Date(date);
+//         const nextDate =
+//           new Date(date);
 
-        nextDate.setDate(
-          date.getDate() + 1
-        );
+//         nextDate.setDate(
+//           date.getDate() + 1
+//         );
 
 
-        const count =
-          messages.filter(
-            (message) => {
+//         const count =
+//           messages.filter(
+//             (message) => {
 
-              if (
-                !message?.created_at
-              ) {
-                return false;
-              }
+//               if (
+//                 !message?.created_at
+//               ) {
+//                 return false;
+//               }
 
 
-              const messageDate =
-                new Date(
-                  message.created_at
-                );
+//               const messageDate =
+//                 new Date(
+//                   message.created_at
+//                 );
 
 
-              return (
-                messageDate >= date &&
-                messageDate < nextDate
-              );
+//               return (
+//                 messageDate >= date &&
+//                 messageDate < nextDate
+//               );
 
-            }
-          ).length;
+//             }
+//           ).length;
 
 
-        return {
+//         return {
 
-          day:
-            date.toLocaleDateString(
-              "en-US",
-              {
-                weekday: "short",
-              }
-            ),
+//           day:
+//             date.toLocaleDateString(
+//               "en-US",
+//               {
+//                 weekday: "short",
+//               }
+//             ),
 
-          messages:
-            count,
+//           messages:
+//             count,
 
-        };
+//         };
 
-      }
-    );
+//       }
+//     );
 
 
-  /* =======================================================
-     STAT CARDS
-  ======================================================= */
+//   /* =======================================================
+//      STAT CARDS
+//   ======================================================= */
 
-  const stats = [
+//   const stats = [
 
-    {
-      label:
-        "Conversations",
+//     {
+//       label:
+//         "Conversations",
 
-      value:
-        totalConversations,
+//       value:
+//         totalConversations,
 
-      icon:
-        Users,
-    },
+//       icon:
+//         Users,
+//     },
 
-    {
-      label:
-        "Messages",
+//     {
+//       label:
+//         "Messages",
 
-      value:
-        totalMessages,
+//       value:
+//         totalMessages,
 
-      icon:
-        MessageCircle,
-    },
+//       icon:
+//         MessageCircle,
+//     },
 
-    {
-      label:
-        "Visitor messages",
+//     {
+//       label:
+//         "Visitor messages",
 
-      value:
-        visitorMessages,
+//       value:
+//         visitorMessages,
 
-      icon:
-        TrendingUp,
-    },
+//       icon:
+//         TrendingUp,
+//     },
 
-    {
-      label:
-        "Admin replies",
+//     {
+//       label:
+//         "Admin replies",
 
-      value:
-        adminMessages,
+//       value:
+//         adminMessages,
 
-      icon:
-        BarChart3,
-    },
+//       icon:
+//         BarChart3,
+//     },
 
-  ];
+//   ];
 
 
-  /* =======================================================
-     RENDER
-  ======================================================= */
+//   /* =======================================================
+//      RENDER
+//   ======================================================= */
 
-  return (
+//   return (
 
-    <section className="admin-charts">
+//     <section className="admin-charts">
 
-      {/* ===================================================
-          HEADER
-      =================================================== */}
+//       {/* ===================================================
+//           HEADER
+//       =================================================== */}
 
-      <div className="admin-charts-header">
+//       <div className="admin-charts-header">
 
-        <div>
+//         <div>
 
-          <span className="admin-charts-label">
-            ANALYTICS
-          </span>
+//           <span className="admin-charts-label">
+//             ANALYTICS
+//           </span>
 
-          <h2>
-            Chat activity
-          </h2>
+//           <h2>
+//             Chat activity
+//           </h2>
 
-          <p>
-            Message activity over the
-            last seven days.
-          </p>
+//           <p>
+//             Message activity over the
+//             last seven days.
+//           </p>
 
-        </div>
+//         </div>
 
-      </div>
+//       </div>
 
 
-      {/* ===================================================
-          STAT CARDS
-      =================================================== */}
+//       {/* ===================================================
+//           STAT CARDS
+//       =================================================== */}
 
-      <div className="admin-chart-stats">
+//       <div className="admin-chart-stats">
 
-        {stats.map(
-          ({
-            label,
-            value,
-            icon: Icon,
-          }) => (
+//         {stats.map(
+//           ({
+//             label,
+//             value,
+//             icon: Icon,
+//           }) => (
 
-            <div
-              key={label}
-              className="admin-chart-stat"
-            >
+//             <div
+//               key={label}
+//               className="admin-chart-stat"
+//             >
 
-              <div className="admin-chart-stat-icon">
+//               <div className="admin-chart-stat-icon">
 
-                <Icon
-                  size={18}
-                  strokeWidth={1.8}
-                />
+//                 <Icon
+//                   size={18}
+//                   strokeWidth={1.8}
+//                 />
 
-              </div>
+//               </div>
 
 
-              <div>
+//               <div>
 
-                <strong>
-                  {value}
-                </strong>
+//                 <strong>
+//                   {value}
+//                 </strong>
 
-                <span>
-                  {label}
-                </span>
+//                 <span>
+//                   {label}
+//                 </span>
 
-              </div>
+//               </div>
 
-            </div>
+//             </div>
 
-          )
-        )}
+//           )
+//         )}
 
-      </div>
+//       </div>
 
 
-      {/* ===================================================
-          CHART
-      =================================================== */}
+//       {/* ===================================================
+//           CHART
+//       =================================================== */}
 
-      <div className="admin-chart-card">
+//       <div className="admin-chart-card">
 
-        <div className="admin-chart-card-header">
+//         <div className="admin-chart-card-header">
 
-          <div>
+//           <div>
 
-            <span>
-              ACTIVITY
-            </span>
+//             <span>
+//               ACTIVITY
+//             </span>
 
-            <h3>
-              Messages this week
-            </h3>
+//             <h3>
+//               Messages this week
+//             </h3>
 
-          </div>
+//           </div>
 
-          <BarChart3
-            size={20}
-            strokeWidth={1.7}
-          />
+//           <BarChart3
+//             size={20}
+//             strokeWidth={1.7}
+//           />
 
-        </div>
+//         </div>
 
 
-        <div className="admin-chart">
+//         <div className="admin-chart">
 
-          <ResponsiveContainer
-            width="100%"
-            height="100%"
-          >
+//           <ResponsiveContainer
+//             width="100%"
+//             height="100%"
+//           >
 
-            <BarChart
-              data={activityData}
-              margin={{
-                top: 10,
-                right: 10,
-                left: -20,
-                bottom: 0,
-              }}
-            >
+//             <BarChart
+//               data={activityData}
+//               margin={{
+//                 top: 10,
+//                 right: 10,
+//                 left: -20,
+//                 bottom: 0,
+//               }}
+//             >
 
-              <CartesianGrid
-                strokeDasharray="3 3"
-                vertical={false}
-                stroke="rgba(255,255,255,0.06)"
-              />
+//               <CartesianGrid
+//                 strokeDasharray="3 3"
+//                 vertical={false}
+//                 stroke="rgba(255,255,255,0.06)"
+//               />
 
-              <XAxis
-                dataKey="day"
-                axisLine={false}
-                tickLine={false}
-                tick={{
-                  fill: "#707070",
-                  fontSize: 11,
-                }}
-              />
+//               <XAxis
+//                 dataKey="day"
+//                 axisLine={false}
+//                 tickLine={false}
+//                 tick={{
+//                   fill: "#707070",
+//                   fontSize: 11,
+//                 }}
+//               />
 
-              <YAxis
-                allowDecimals={false}
-                axisLine={false}
-                tickLine={false}
-                tick={{
-                  fill: "#707070",
-                  fontSize: 11,
-                }}
-              />
+//               <YAxis
+//                 allowDecimals={false}
+//                 axisLine={false}
+//                 tickLine={false}
+//                 tick={{
+//                   fill: "#707070",
+//                   fontSize: 11,
+//                 }}
+//               />
 
-              <Tooltip
-                cursor={{
-                  fill:
-                    "rgba(255,138,0,0.05)",
-                }}
-                contentStyle={{
-                  background:
-                    "#111111",
-                  border:
-                    "1px solid rgba(255,255,255,0.1)",
-                  borderRadius:
-                    "10px",
-                  color:
-                    "#ffffff",
-                }}
-              />
+//               <Tooltip
+//                 cursor={{
+//                   fill:
+//                     "rgba(255,138,0,0.05)",
+//                 }}
+//                 contentStyle={{
+//                   background:
+//                     "#111111",
+//                   border:
+//                     "1px solid rgba(255,255,255,0.1)",
+//                   borderRadius:
+//                     "10px",
+//                   color:
+//                     "#ffffff",
+//                 }}
+//               />
 
-              <Bar
-                dataKey="messages"
-                radius={[
-                  6,
-                  6,
-                  0,
-                  0,
-                ]}
-                fill="#ff8a00"
-              />
+//               <Bar
+//                 dataKey="messages"
+//                 radius={[
+//                   6,
+//                   6,
+//                   0,
+//                   0,
+//                 ]}
+//                 fill="#ff8a00"
+//               />
 
-            </BarChart>
+//             </BarChart>
 
-          </ResponsiveContainer>
+//           </ResponsiveContainer>
 
-        </div>
+//         </div>
 
-      </div>
+//       </div>
 
-    </section>
+//     </section>
 
-  );
+//   );
 
-}
+// }

@@ -1,8 +1,9 @@
 import { useState } from "react";
 
-import AdminTopbar from "../../components/Admin/AdminTopbar";
-import AdminSidebar from "../../components/Admin/AdminSidebar";
-import AdminChart from "../../components/Admin/AdminChart";
+import AdminTopbar from "../../components/Admin/AdminTopBar.jsx";
+import AdminSidebar from "../../components/Admin/AdminSidebar.jsx";
+import AdminChart from "../../components/Admin/AdminChart.jsx";
+
 
 
 
