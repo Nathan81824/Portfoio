@@ -1,4 +1,3 @@
-OflinePage.jsx
 
 import OfflineGame from "../../components/Detection/Offline/OfflineGame/OflineGame";
 

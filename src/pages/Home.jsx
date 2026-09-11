@@ -1,17 +1,23 @@
-import AboutPreview from "../components/Home/AboutPreview"
-import Hero from "../components/Home/Hero"
-
-
+import Hero from "../components/Home/Hero";
+import AboutPreview from "../components/Home/AboutPreview";
+import WhatIDo from "../components/Home/WhatIDo";
+import AvatarSection from "../components/Home/AvaterSection";
+import ThreeDSection from "../components/Home/ThhreeDSection";
 
 function Home() {
   return (
-    <div>
-      <Hero/>
+    <main>
+      <Hero />
 
-      <AboutPreview/>
+      <AboutPreview />
 
-    </div>
-  )
+      <WhatIDo />
+
+      <AvatarSection />
+
+      <ThreeDSection />
+    </main>
+  );
 }
 
-export default Home
+export default Home;

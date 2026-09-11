@@ -1,4 +1,8 @@
-import { useEffect, useRef, useState } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 
 import {
   MessageCircle,
@@ -7,8 +11,6 @@ import {
   Maximize2,
   Minimize2,
   RefreshCw,
-  User,
-  Mail,
   Smile,
   Mic,
   Square,
@@ -16,8 +18,10 @@ import {
   Play,
   Pause,
   LogOut,
-  Volume2,
-  VolumeX,
+  User,
+  Mail,
+  Paperclip,
+  FileText,
 } from "lucide-react";
 
 import chatController from "../../javascript/contact/chatController";
@@ -29,15 +33,14 @@ import {
 } from "../../javascript/utils/emojis/emojis";
 
 
-
 /* =========================================================
-   VISITOR CHAT CONTROLLER
+   CHAT CONTROLLER
 ========================================================= */
 
 export default function ChatController() {
 
   /* =======================================================
-     CHAT STATE
+     CONTROLLER STATE
   ======================================================= */
 
   const [chatState, setChatState] = useState(
@@ -46,7 +49,7 @@ export default function ChatController() {
 
 
   /* =======================================================
-     START FORM
+     START CHAT FORM
   ======================================================= */
 
   const [visitorName, setVisitorName] =
@@ -61,9 +64,12 @@ export default function ChatController() {
   const [startingChat, setStartingChat] =
     useState(false);
 
+  const [startError, setStartError] =
+    useState("");
+
 
   /* =======================================================
-     TEXT MESSAGE
+     MESSAGE INPUT
   ======================================================= */
 
   const [messageText, setMessageText] =
@@ -71,7 +77,7 @@ export default function ChatController() {
 
 
   /* =======================================================
-     UI
+     UI STATE
   ======================================================= */
 
   const [fullscreen, setFullscreen] =
@@ -88,25 +94,57 @@ export default function ChatController() {
 
 
   /* =======================================================
-     AUDIO PREVIEW
+     CHAT LAUNCHER INTRO
   ======================================================= */
+
+  const [launcherIntro, setLauncherIntro] =
+    useState(true);
+
+
+  /* =======================================================
+     VOICE STATE
+  ======================================================= */
+
+  const [recording, setRecording] =
+    useState(false);
+
+  const [recordingSeconds, setRecordingSeconds] =
+    useState(0);
+
+  const [audioBlob, setAudioBlob] =
+    useState(null);
+
+  const [audioPreviewUrl, setAudioPreviewUrl] =
+    useState("");
 
   const [audioPlaying, setAudioPlaying] =
     useState(false);
 
-  const [audioError, setAudioError] =
+  const [voiceSending, setVoiceSending] =
+    useState(false);
+
+  const [voiceError, setVoiceError] =
     useState("");
 
 
   /* =======================================================
-     MESSAGE AUDIO
+     FILE UPLOAD STATE
   ======================================================= */
 
-  const [playingAudioId, setPlayingAudioId] =
+  const [selectedFile, setSelectedFile] =
     useState(null);
 
-  const [mutedAudioId, setMutedAudioId] =
-    useState(null);
+  const [filePreviewUrl, setFilePreviewUrl] =
+    useState("");
+
+  const [fileSending, setFileSending] =
+    useState(false);
+
+  const [fileError, setFileError] =
+    useState("");
+
+  const [isDraggingFile, setIsDraggingFile] =
+    useState(false);
 
 
   /* =======================================================
@@ -130,54 +168,43 @@ export default function ChatController() {
   const inputRef =
     useRef(null);
 
-  const previewAudioRef =
+  const mediaRecorderRef =
     useRef(null);
 
-  const audioRefs =
-    useRef({});
+  const mediaStreamRef =
+    useRef(null);
+
+  const recordingTimerRef =
+    useRef(null);
+
+  const audioPreviewRef =
+    useRef(null);
+
+  const discardRecordingRef =
+    useRef(false);
+
+  const fileInputRef =
+    useRef(null);
 
 
-  /* =========================================================
-     INITIALIZE
-  ========================================================= */
+  const MAX_FILE_SIZE =
+    10 * 1024 * 1024;
+
+  const ACCEPTED_FILES =
+    "image/*,.pdf,.doc,.docx,.txt,.csv,.xls,.xlsx,.ppt,.pptx,.zip";
+
+
+  /* =======================================================
+     CONTROLLER SUBSCRIPTION
+  ======================================================= */
 
   useEffect(() => {
 
-    let mounted = true;
-
-
-    const initialize = async () => {
-
-      try {
-
-        await chatController.initialize();
-
-      } catch (error) {
-
-        console.error(
-          "Chat initialization failed:",
-          error
-        );
-
-      }
-
-    };
-
-
-    initialize();
-
-
     const unsubscribe =
       chatController.subscribe(
-        (nextState) => {
+        (state) => {
 
-          if (mounted) {
-
-            setChatState(
-              nextState
-            );
-
-          }
+          setChatState(state);
 
         }
       );
@@ -185,41 +212,12 @@ export default function ChatController() {
 
     return () => {
 
-      mounted = false;
-
-      unsubscribe();
-
-    };
-
-  }, []);
-
-
-  /* =========================================================
-     CLEANUP AUDIO
-  ========================================================= */
-
-  useEffect(() => {
-
-    return () => {
-
-      Object.values(
-        audioRefs.current
-      ).forEach((audio) => {
-
-        if (audio) {
-
-          audio.pause();
-
-        }
-
-      });
-
-
       if (
-        previewAudioRef.current
+        typeof unsubscribe ===
+        "function"
       ) {
 
-        previewAudioRef.current.pause();
+        unsubscribe();
 
       }
 
@@ -228,99 +226,517 @@ export default function ChatController() {
   }, []);
 
 
-  /* =========================================================
-     AUTO SCROLL
-  ========================================================= */
+  /* =======================================================
+     INITIALIZE CONTROLLER
+  ======================================================= */
 
   useEffect(() => {
 
-    if (!chatState.isOpen) {
+    if (
+      typeof chatController.initialize ===
+      "function"
+    ) {
+
+      chatController.initialize();
+
+    }
+
+  }, []);
+
+
+  /* =======================================================
+     CHAT LAUNCHER INTRO TIMER
+  ======================================================= */
+
+  useEffect(() => {
+
+    const timer =
+      window.setTimeout(() => {
+
+        setLauncherIntro(false);
+
+      }, 1100);
+
+
+    return () => {
+
+      window.clearTimeout(timer);
+
+    };
+
+  }, []);
+
+
+  /* =======================================================
+     RESTORE VISITOR INFORMATION
+  ======================================================= */
+
+  useEffect(() => {
+
+    const stored =
+      chatState?.conversation;
+
+
+    if (!stored) {
+
       return;
+
     }
 
 
-    requestAnimationFrame(() => {
+    if (
+      stored.visitor_name &&
+      !visitorName
+    ) {
 
-      messagesEndRef.current?.scrollIntoView({
-        behavior: "smooth",
-        block: "end",
-      });
+      setVisitorName(
+        stored.visitor_name
+      );
 
-    });
+    }
+
+
+    if (
+      stored.visitor_email &&
+      !visitorEmail
+    ) {
+
+      setVisitorEmail(
+        stored.visitor_email
+      );
+
+    }
 
   }, [
-    chatState.messages,
-    chatState.isOpen,
+    chatState?.conversation,
   ]);
 
 
-  /* =========================================================
-     CLOSE EMOJIS WHEN CONVERSATION CHANGES
-  ========================================================= */
+  /* =======================================================
+     KEEP LOCAL MESSAGE INPUT
+  ======================================================= */
 
   useEffect(() => {
 
-    setEmojiOpen(false);
+    if (
+      chatState?.status ===
+      "closed"
+    ) {
 
-    setEmojiSearch("");
+      setMessageText("");
+
+    }
 
   }, [
-    chatState.conversation?.id,
+    chatState?.status,
   ]);
 
 
-  /* =========================================================
-     OPEN CHAT
-  ========================================================= */
+  /* =======================================================
+     ESCAPE KEY
+  ======================================================= */
 
-  const handleOpen = () => {
+  useEffect(() => {
 
-    chatController.open();
+    const handleEscape =
+      (event) => {
 
-  };
+        if (
+          event.key !==
+          "Escape"
+        ) {
 
+          return;
 
-  /* =========================================================
-     CLOSE CHAT
-  ========================================================= */
-
-  const handleClose = () => {
-
-    setEmojiOpen(false);
-
-    setEndConversationOpen(false);
-
-    chatController.close();
-
-  };
+        }
 
 
-  /* =========================================================
-     FULLSCREEN
-  ========================================================= */
+        if (
+          endConversationOpen &&
+          !endingConversation
+        ) {
 
-  const handleFullscreen = () => {
+          setEndConversationOpen(
+            false
+          );
 
-    setFullscreen(
-      (current) => !current
+          return;
+
+        }
+
+
+        if (emojiOpen) {
+
+          setEmojiOpen(false);
+
+          return;
+
+        }
+
+
+        if (fullscreen) {
+
+          setFullscreen(false);
+
+        }
+
+      };
+
+
+    document.addEventListener(
+      "keydown",
+      handleEscape
     );
 
-  };
+
+    return () => {
+
+      document.removeEventListener(
+        "keydown",
+        handleEscape
+      );
+
+    };
+
+  }, [
+    endConversationOpen,
+    endingConversation,
+    emojiOpen,
+    fullscreen,
+  ]);
 
 
-  /* =========================================================
+  /* =======================================================
+     AUTO SCROLL
+  ======================================================= */
+
+  useEffect(() => {
+
+    messagesEndRef.current?.scrollIntoView({
+      behavior: "smooth",
+    });
+
+  }, [
+    chatState?.messages,
+  ]);
+
+
+  /* =======================================================
+     RECORDING TIMER
+  ======================================================= */
+
+  useEffect(() => {
+
+    if (!recording) {
+
+      if (
+        recordingTimerRef.current
+      ) {
+
+        clearInterval(
+          recordingTimerRef.current
+        );
+
+        recordingTimerRef.current =
+          null;
+
+      }
+
+      return;
+
+    }
+
+
+    recordingTimerRef.current =
+      setInterval(() => {
+
+        setRecordingSeconds(
+          (value) =>
+            value + 1
+        );
+
+      }, 1000);
+
+
+    return () => {
+
+      if (
+        recordingTimerRef.current
+      ) {
+
+        clearInterval(
+          recordingTimerRef.current
+        );
+
+        recordingTimerRef.current =
+          null;
+
+      }
+
+    };
+
+  }, [
+    recording,
+  ]);
+
+
+  /* =======================================================
+     FORMAT RECORDING TIME
+  ======================================================= */
+
+  const formatRecordingTime =
+    (seconds) => {
+
+      const minutes =
+        Math.floor(
+          seconds / 60
+        );
+
+      const remaining =
+        seconds % 60;
+
+
+      return (
+        `${String(minutes).padStart(2, "0")}:` +
+        `${String(remaining).padStart(2, "0")}`
+      );
+
+    };
+
+
+  /* =======================================================
+     FORMAT FILE SIZE
+  ======================================================= */
+
+  const formatFileSize =
+    (bytes) => {
+
+      if (
+        !bytes &&
+        bytes !== 0
+      ) {
+
+        return "";
+
+      }
+
+
+      if (
+        bytes < 1024
+      ) {
+
+        return `${bytes} B`;
+
+      }
+
+
+      if (
+        bytes < 1024 * 1024
+      ) {
+
+        return `${(
+          bytes / 1024
+        ).toFixed(1)} KB`;
+
+      }
+
+
+      return `${(
+        bytes /
+        (1024 * 1024)
+      ).toFixed(1)} MB`;
+
+    };
+
+
+  /* =======================================================
+     CLEAR AUDIO PREVIEW
+  ======================================================= */
+
+  const clearAudioPreview =
+    () => {
+
+      if (
+        audioPreviewRef.current
+      ) {
+
+        audioPreviewRef.current.pause();
+
+        audioPreviewRef.current =
+          null;
+
+      }
+
+
+      if (
+        audioPreviewUrl
+      ) {
+
+        URL.revokeObjectURL(
+          audioPreviewUrl
+        );
+
+      }
+
+
+      setAudioPreviewUrl("");
+
+      setAudioBlob(null);
+
+      setAudioPlaying(false);
+
+    };
+
+
+  /* =======================================================
+     CLEAR FILE PREVIEW
+  ======================================================= */
+
+  const clearFilePreview =
+    () => {
+
+      if (
+        filePreviewUrl
+      ) {
+
+        URL.revokeObjectURL(
+          filePreviewUrl
+        );
+
+      }
+
+
+      setSelectedFile(null);
+
+      setFilePreviewUrl("");
+
+      setFileSending(false);
+
+
+      if (
+        fileInputRef.current
+      ) {
+
+        fileInputRef.current.value =
+          "";
+
+      }
+
+    };
+
+
+  /* =======================================================
+     STOP MEDIA STREAM
+  ======================================================= */
+
+  const stopMediaStream =
+    () => {
+
+      if (
+        mediaStreamRef.current
+      ) {
+
+        mediaStreamRef.current
+          .getTracks()
+          .forEach(
+            (track) => {
+
+              track.stop();
+
+            }
+          );
+
+
+        mediaStreamRef.current =
+          null;
+
+      }
+
+    };
+
+
+  /* =======================================================
+     OPEN CHAT
+  ======================================================= */
+
+  const handleOpenChat =
+    () => {
+
+      setStartError("");
+
+      setEmojiOpen(false);
+
+
+      if (
+        typeof chatController.open ===
+        "function"
+      ) {
+
+        chatController.open();
+
+        return;
+
+      }
+
+
+      if (
+        typeof chatController.openChat ===
+        "function"
+      ) {
+
+        chatController.openChat();
+
+      }
+
+    };
+
+
+  /* =======================================================
+     CLOSE CHAT
+  ======================================================= */
+
+  const handleCloseChat =
+    () => {
+
+      setEmojiOpen(false);
+
+      setFullscreen(false);
+
+      setEndConversationOpen(false);
+
+
+      if (
+        typeof chatController.close ===
+        "function"
+      ) {
+
+        chatController.close();
+
+        return;
+
+      }
+
+
+      if (
+        typeof chatController.closeChat ===
+        "function"
+      ) {
+
+        chatController.closeChat();
+
+      }
+
+    };
+
+
+  /* =======================================================
      START CONVERSATION
-  ========================================================= */
+  ======================================================= */
 
   const handleStartConversation =
     async (event) => {
 
       event.preventDefault();
-
-
-      if (startingChat) {
-        return;
-      }
 
 
       const cleanName =
@@ -335,7 +751,7 @@ export default function ChatController() {
 
       if (!cleanName) {
 
-        chatController.setError(
+        setStartError(
           "Please enter your name."
         );
 
@@ -344,50 +760,106 @@ export default function ChatController() {
       }
 
 
+      if (!cleanEmail) {
+
+        setStartError(
+          "Please enter your email."
+        );
+
+        return;
+
+      }
+
+
+      if (!cleanMessage) {
+
+        setStartError(
+          "Please enter your message."
+        );
+
+        return;
+
+      }
+
+
+      setStartingChat(true);
+
+      setStartError("");
+
+
       try {
 
-        setStartingChat(true);
+        if (
+          typeof chatController.startConversation ===
+          "function"
+        ) {
 
-        chatController.clearError();
+          await chatController.startConversation({
+            visitorName:
+              cleanName,
+
+            visitorEmail:
+              cleanEmail,
+
+            message:
+              cleanMessage,
+          });
+
+        } else if (
+          typeof chatController.startChat ===
+          "function"
+        ) {
+
+          await chatController.startChat({
+            visitorName:
+              cleanName,
+
+            visitorEmail:
+              cleanEmail,
+
+            message:
+              cleanMessage,
+          });
+
+        } else if (
+          typeof chatController.createConversation ===
+          "function"
+        ) {
+
+          await chatController.createConversation({
+            visitorName:
+              cleanName,
+
+            visitorEmail:
+              cleanEmail,
+          });
 
 
-        chatController.setVisitor({
-          visitorName:
-            cleanName,
+          if (
+            typeof chatController.sendMessage ===
+            "function"
+          ) {
 
-          visitorEmail:
-            cleanEmail,
-        });
+            await chatController.sendMessage(
+              cleanMessage
+            );
 
+          }
 
-        await chatController.startConversation({
-          visitorName:
-            cleanName,
+        } else {
 
-          visitorEmail:
-            cleanEmail,
-        });
-
-
-        /*
-          Send the first message after
-          the conversation has been created.
-        */
-
-        if (cleanMessage) {
-
-          await chatController.sendMessage(
-            cleanMessage
+          throw new Error(
+            "The chat controller does not have a conversation-start method."
           );
 
         }
 
 
-        setVisitorName("");
-
-        setVisitorEmail("");
-
         setStartMessage("");
+
+        setMessageText("");
+
+        inputRef.current?.focus();
 
       } catch (error) {
 
@@ -396,7 +868,7 @@ export default function ChatController() {
           error
         );
 
-        chatController.setError(
+        setStartError(
           error?.message ||
           "Unable to start the conversation."
         );
@@ -410,21 +882,35 @@ export default function ChatController() {
     };
 
 
-  /* =========================================================
-     SEND TEXT MESSAGE
-  ========================================================= */
+  /* =======================================================
+     MESSAGE INPUT CHANGE
+  ======================================================= */
+
+  const handleMessageChange =
+    (event) => {
+
+      setMessageText(
+        event.target.value
+      );
+
+    };
+
+
+  /* =======================================================
+     SEND MESSAGE
+  ======================================================= */
 
   const handleSendMessage =
     async () => {
 
-      const cleanMessage =
+      const text =
         messageText.trim();
 
 
       if (
-        !cleanMessage ||
-        chatState.sending ||
-        !chatState.conversation?.id
+        !text ||
+        chatState?.sending ||
+        fileSending
       ) {
 
         return;
@@ -434,16 +920,20 @@ export default function ChatController() {
 
       try {
 
-        chatController.clearError();
+        if (
+          typeof chatController.sendMessage !==
+          "function"
+        ) {
 
+          throw new Error(
+            "Message sending is unavailable."
+          );
 
-        /*
-          IMPORTANT:
-          Keep the input until the send succeeds.
-        */
+        }
+
 
         await chatController.sendMessage(
-          cleanMessage
+          text
         );
 
 
@@ -451,12 +941,7 @@ export default function ChatController() {
 
         setEmojiOpen(false);
 
-
-        requestAnimationFrame(() => {
-
-          inputRef.current?.focus();
-
-        });
+        inputRef.current?.focus();
 
       } catch (error) {
 
@@ -465,25 +950,21 @@ export default function ChatController() {
           error
         );
 
-        chatController.setError(
-          error?.message ||
-          "Failed to send message."
-        );
-
       }
 
     };
 
 
-  /* =========================================================
+  /* =======================================================
      ENTER KEY
-  ========================================================= */
+  ======================================================= */
 
-  const handleKeyDown =
+  const handleMessageKeyDown =
     (event) => {
 
       if (
-        event.key === "Enter" &&
+        event.key ===
+        "Enter" &&
         !event.shiftKey
       ) {
 
@@ -496,95 +977,82 @@ export default function ChatController() {
     };
 
 
-  /* =========================================================
-     EMOJI DATA
-  ========================================================= */
+  /* =======================================================
+     RETRY
+  ======================================================= */
+
+  const handleRetry =
+    async () => {
+
+      try {
+
+        if (
+          typeof chatController.initialize ===
+          "function"
+        ) {
+
+          await chatController.initialize();
+
+        }
+
+      } catch (error) {
+
+        console.error(
+          "Chat retry failed:",
+          error
+        );
+
+      }
+
+    };
+
+
+  /* =======================================================
+     EMOJI
+  ======================================================= */
 
   const emojiCategories =
     getEmojiCategories();
 
 
-  const visibleEmojis =
+  const emojis =
     emojiSearch.trim()
-
       ? searchEmojis(
-          emojiSearch.trim()
+          emojiSearch
         )
-
       : getEmojisByCategory(
           emojiCategory
         );
 
-
-  /* =========================================================
-     SELECT EMOJI
-  ========================================================= */
 
   const handleEmojiSelect =
     (emoji) => {
 
       setMessageText(
         (current) =>
-          `${current}${emoji}`
+          current + emoji
       );
 
-
-      requestAnimationFrame(() => {
-
-        inputRef.current?.focus();
-
-      });
-
-    };
-
-
-  /* =========================================================
-     TOGGLE EMOJI PICKER
-  ========================================================= */
-
-  const handleToggleEmoji =
-    () => {
-
-      setEmojiOpen(
-        (current) => !current
-      );
-
-      setEmojiSearch("");
-
-    };
-
-
-  /* =========================================================
-     CLOSE EMOJI PICKER
-  ========================================================= */
-
-  const handleCloseEmoji =
-    () => {
 
       setEmojiOpen(false);
 
-      setEmojiSearch("");
-
-
-      requestAnimationFrame(() => {
-
-        inputRef.current?.focus();
-
-      });
+      inputRef.current?.focus();
 
     };
 
 
-  /* =========================================================
+  /* =======================================================
      START RECORDING
-  ========================================================= */
+  ======================================================= */
 
   const handleStartRecording =
     async () => {
 
       if (
-        chatState.recording ||
-        chatState.sending
+        recording ||
+        voiceSending ||
+        fileSending ||
+        selectedFile
       ) {
 
         return;
@@ -594,22 +1062,167 @@ export default function ChatController() {
 
       try {
 
-        setAudioError("");
+        setVoiceError("");
 
-        setEmojiOpen(false);
+        discardRecordingRef.current =
+          false;
 
-        await chatController.startRecording();
+
+        if (
+          !navigator.mediaDevices?.getUserMedia
+        ) {
+
+          throw new Error(
+            "Voice recording is not supported by this browser."
+          );
+
+        }
+
+
+        const stream =
+          await navigator.mediaDevices.getUserMedia({
+            audio: true,
+          });
+
+
+        mediaStreamRef.current =
+          stream;
+
+
+        const mimeTypes = [
+          "audio/webm;codecs=opus",
+          "audio/webm",
+          "audio/mp4",
+          "audio/ogg",
+        ];
+
+
+        const supportedMime =
+          mimeTypes.find(
+            (type) =>
+              typeof MediaRecorder !==
+                "undefined" &&
+              MediaRecorder.isTypeSupported(
+                type
+              )
+          );
+
+
+        const recorder =
+          supportedMime
+            ? new MediaRecorder(
+                stream,
+                {
+                  mimeType:
+                    supportedMime,
+                }
+              )
+            : new MediaRecorder(
+                stream
+              );
+
+
+        const chunks = [];
+
+
+        recorder.ondataavailable =
+          (event) => {
+
+            if (
+              event.data &&
+              event.data.size > 0
+            ) {
+
+              chunks.push(
+                event.data
+              );
+
+            }
+
+          };
+
+
+        recorder.onstop =
+          () => {
+
+            stopMediaStream();
+
+
+            if (
+              discardRecordingRef.current
+            ) {
+
+              discardRecordingRef.current =
+                false;
+
+              return;
+
+            }
+
+
+            const blob =
+              new Blob(
+                chunks,
+                {
+                  type:
+                    recorder.mimeType ||
+                    "audio/webm",
+                }
+              );
+
+
+            if (
+              blob.size === 0
+            ) {
+
+              setVoiceError(
+                "No audio was recorded."
+              );
+
+              return;
+
+            }
+
+
+            const url =
+              URL.createObjectURL(
+                blob
+              );
+
+
+            setAudioBlob(
+              blob
+            );
+
+            setAudioPreviewUrl(
+              url
+            );
+
+          };
+
+
+        recorder.start();
+
+
+        mediaRecorderRef.current =
+          recorder;
+
+        setRecording(true);
+
+        setRecordingSeconds(0);
 
       } catch (error) {
 
         console.error(
-          "Failed to start recording:",
+          "Microphone error:",
           error
         );
 
-        setAudioError(
+        stopMediaStream();
+
+        setVoiceError(
           error?.message ||
-          "Microphone access was denied."
+          "Microphone access was denied or unavailable."
         );
 
       }
@@ -617,69 +1230,167 @@ export default function ChatController() {
     };
 
 
-  /* =========================================================
-     STOP RECORDING
-  ========================================================= */
+  /* =======================================================
+     FINISH RECORDING
+  ======================================================= */
 
-  const handleStopRecording =
+  const handleFinishRecording =
     () => {
 
-      try {
+      if (
+        !mediaRecorderRef.current
+      ) {
 
-        chatController.stopRecording();
-
-      } catch (error) {
-
-        console.error(
-          "Failed to stop recording:",
-          error
-        );
-
-        setAudioError(
-          error?.message ||
-          "Unable to stop recording."
-        );
+        return;
 
       }
+
+
+      if (
+        mediaRecorderRef.current.state !==
+        "inactive"
+      ) {
+
+        mediaRecorderRef.current.stop();
+
+      }
+
+
+      mediaRecorderRef.current =
+        null;
+
+      setRecording(false);
 
     };
 
 
-  /* =========================================================
+  /* =======================================================
      CANCEL RECORDING
-  ========================================================= */
+  ======================================================= */
 
   const handleCancelRecording =
     () => {
 
-      try {
+      discardRecordingRef.current =
+        true;
 
-        chatController.cancelRecording();
 
-        setAudioError("");
+      if (
+        mediaRecorderRef.current &&
+        mediaRecorderRef.current.state !==
+          "inactive"
+      ) {
 
-      } catch (error) {
+        mediaRecorderRef.current.stop();
 
-        console.error(
-          "Failed to cancel recording:",
-          error
-        );
+      }
+
+
+      mediaRecorderRef.current =
+        null;
+
+
+      stopMediaStream();
+
+      setRecording(false);
+
+      setRecordingSeconds(0);
+
+      clearAudioPreview();
+
+    };
+
+
+  /* =======================================================
+     PLAY / PAUSE VOICE PREVIEW
+  ======================================================= */
+
+  const handlePreviewToggle =
+    () => {
+
+      if (
+        !audioPreviewUrl
+      ) {
+
+        return;
+
+      }
+
+
+      if (
+        !audioPreviewRef.current
+      ) {
+
+        const audio =
+          new Audio(
+            audioPreviewUrl
+          );
+
+
+        audio.onended =
+          () => {
+
+            setAudioPlaying(
+              false
+            );
+
+          };
+
+
+        audioPreviewRef.current =
+          audio;
+
+      }
+
+
+      const audio =
+        audioPreviewRef.current;
+
+
+      if (
+        audio.paused
+      ) {
+
+        audio.play()
+          .then(() => {
+
+            setAudioPlaying(
+              true
+            );
+
+          })
+          .catch(
+            (error) => {
+
+              console.error(
+                "Voice preview error:",
+                error
+              );
+
+            }
+          );
+
+      } else {
+
+        audio.pause();
+
+        setAudioPlaying(false);
 
       }
 
     };
 
 
-  /* =========================================================
-     SEND RECORDED VOICE
-  ========================================================= */
+  /* =======================================================
+     SEND VOICE
+  ======================================================= */
 
   const handleSendVoice =
     async () => {
 
       if (
-        !chatState.voiceBlob ||
-        chatState.sending
+        !audioBlob ||
+        voiceSending
       ) {
 
         return;
@@ -689,37 +1400,100 @@ export default function ChatController() {
 
       try {
 
-        setAudioError("");
+        setVoiceSending(true);
 
-        await chatController.sendRecordedVoice();
+        setVoiceError("");
+
+
+        if (
+          typeof chatController.sendVoiceMessage ===
+          "function"
+        ) {
+
+          await chatController.sendVoiceMessage(
+            audioBlob
+          );
+
+        } else if (
+          typeof chatController.sendVoice ===
+          "function"
+        ) {
+
+          await chatController.sendVoice(
+            audioBlob
+          );
+
+        } else {
+
+          throw new Error(
+            "Voice messaging is unavailable."
+          );
+
+        }
+
+
+        clearAudioPreview();
+
+        setRecordingSeconds(0);
 
       } catch (error) {
 
         console.error(
-          "Failed to send voice message:",
+          "Voice send error:",
           error
         );
 
-        setAudioError(
+        setVoiceError(
           error?.message ||
           "Failed to send voice message."
         );
 
+      } finally {
+
+        setVoiceSending(false);
+
       }
 
     };
 
 
-  /* =========================================================
-     PLAY PREVIEW
-  ========================================================= */
+  /* =======================================================
+     FILE HELPERS
+  ======================================================= */
 
-  const handlePreviewAudio =
-    async () => {
+  const isImageFile =
+    (file) => {
+
+      if (!file) {
+
+        return false;
+
+      }
+
 
       if (
-        !chatState.voicePreviewUrl
+        file.type &&
+        file.type.startsWith(
+          "image/"
+        )
       ) {
+
+        return true;
+
+      }
+
+
+      return /\.(png|jpe?g|gif|webp|bmp|svg)$/i.test(
+        file.name || ""
+      );
+
+    };
+
+
+  const applySelectedFile =
+    (file) => {
+
+      if (!file) {
 
         return;
 
@@ -727,50 +1501,36 @@ export default function ChatController() {
 
 
       if (
-        !previewAudioRef.current
+        file.size >
+        MAX_FILE_SIZE
       ) {
 
-        previewAudioRef.current =
-          new Audio(
-            chatState.voicePreviewUrl
-          );
+        setFileError(
+          "That file is too large. Maximum size is 10 MB."
+        );
 
-
-        previewAudioRef.current.onended =
-          () => {
-
-            setAudioPlaying(false);
-
-          };
+        return;
 
       }
 
 
-      try {
+      clearFilePreview();
 
-        if (audioPlaying) {
+      setFileError("");
 
-          previewAudioRef.current.pause();
+      setEmojiOpen(false);
 
-          setAudioPlaying(false);
+      setSelectedFile(file);
 
-        } else {
 
-          await previewAudioRef.current.play();
+      if (
+        isImageFile(file)
+      ) {
 
-          setAudioPlaying(true);
-
-        }
-
-      } catch (error) {
-
-        console.error(
-          "Preview playback failed:",
-          error
-        );
-
-        setAudioError(
-          "Unable to play the recording."
+        setFilePreviewUrl(
+          URL.createObjectURL(
+            file
+          )
         );
 
       }
@@ -778,598 +1538,491 @@ export default function ChatController() {
     };
 
 
-  /* =========================================================
-     DELETE VOICE PREVIEW
-  ========================================================= */
+  /* =======================================================
+     OPEN FILE PICKER
+  ======================================================= */
 
-  const handleDeleteVoice =
+  const handleOpenFilePicker =
     () => {
 
       if (
-        previewAudioRef.current
+        recording ||
+        voiceSending ||
+        fileSending ||
+        audioPreviewUrl
       ) {
 
-        previewAudioRef.current.pause();
-
-        previewAudioRef.current = null;
+        return;
 
       }
 
 
-      setAudioPlaying(false);
-
-      setAudioError("");
-
-      chatController.clearVoicePreview();
+      fileInputRef.current?.click();
 
     };
 
 
-  /* =========================================================
-     PLAY / PAUSE MESSAGE AUDIO
-  ========================================================= */
+  /* =======================================================
+     FILE INPUT CHANGE
+  ======================================================= */
 
-  const toggleAudioPlay =
-    async (message) => {
+  const handleFileInputChange =
+    (event) => {
 
-      const audio =
-        audioRefs.current[
-          message.id
-        ];
+      const file =
+        event.target.files?.[0];
 
 
-      if (!audio) {
+      event.target.value =
+        "";
+
+
+      if (!file) {
+
         return;
+
       }
 
 
-      /*
-        Pause every other voice message.
-      */
+      applySelectedFile(file);
 
-      Object.entries(
-        audioRefs.current
-      ).forEach(
-        ([id, item]) => {
+    };
 
-          if (
-            item &&
-            id !== String(message.id)
-          ) {
 
-            item.pause();
+  /* =======================================================
+     DRAG AND DROP
+  ======================================================= */
 
-            item.currentTime = 0;
+  const handleDragOver =
+    (event) => {
 
-          }
+      event.preventDefault();
 
-        }
-      );
+      event.stopPropagation();
 
 
       if (
-        playingAudioId ===
-        message.id
+        recording ||
+        audioPreviewUrl ||
+        fileSending
       ) {
 
-        audio.pause();
+        return;
 
-        setPlayingAudioId(null);
+      }
+
+
+      setIsDraggingFile(true);
+
+    };
+
+
+  const handleDragLeave =
+    (event) => {
+
+      event.preventDefault();
+
+      event.stopPropagation();
+
+      setIsDraggingFile(false);
+
+    };
+
+
+  const handleDropFile =
+    (event) => {
+
+      event.preventDefault();
+
+      event.stopPropagation();
+
+      setIsDraggingFile(false);
+
+
+      if (
+        recording ||
+        audioPreviewUrl ||
+        fileSending
+      ) {
 
         return;
 
       }
 
 
-      try {
-
-        await audio.play();
-
-        setPlayingAudioId(
-          message.id
-        );
-
-      } catch (error) {
-
-        console.error(
-          "Voice playback failed:",
-          error
-        );
-
-        setAudioError(
-          "Unable to play this voice message."
-        );
-
-      }
-
-    };
+      const file =
+        event.dataTransfer?.files?.[0];
 
 
-  /* =========================================================
-     MUTE / UNMUTE MESSAGE AUDIO
-  ========================================================= */
+      if (!file) {
 
-  const toggleAudioMute =
-    (message) => {
-
-      const audio =
-        audioRefs.current[
-          message.id
-        ];
-
-
-      if (!audio) {
         return;
+
       }
 
 
-      audio.muted =
-        !audio.muted;
-
-
-      setMutedAudioId(
-        audio.muted
-          ? message.id
-          : null
-      );
+      applySelectedFile(file);
 
     };
 
 
-  /* =========================================================
-     END CONVERSATION
-  ========================================================= */
+  /* =======================================================
+     SEND FILE
+  ======================================================= */
 
-  const handleEndConversation =
+  const handleSendFile =
     async () => {
 
-      if (endingConversation) {
+      if (
+        !selectedFile ||
+        fileSending
+      ) {
+
         return;
+
       }
 
 
       try {
 
-        setEndingConversation(true);
+        setFileSending(true);
 
-        chatController.clearError();
-
-
-        await chatController.endConversation();
+        setFileError("");
 
 
-        setEndConversationOpen(false);
+        if (
+          typeof chatController.sendFileMessage ===
+          "function"
+        ) {
 
-        setMessageText("");
+          await chatController.sendFileMessage(
+            selectedFile
+          );
 
-        setEmojiOpen(false);
+        } else if (
+          typeof chatController.sendFile ===
+          "function"
+        ) {
 
-        setFullscreen(false);
+          await chatController.sendFile(
+            selectedFile
+          );
+
+        } else if (
+          typeof chatController.sendAttachment ===
+          "function"
+        ) {
+
+          await chatController.sendAttachment(
+            selectedFile
+          );
+
+        } else if (
+          typeof chatController.uploadFile ===
+          "function"
+        ) {
+
+          await chatController.uploadFile(
+            selectedFile
+          );
+
+        } else {
+
+          throw new Error(
+            "File upload is unavailable."
+          );
+
+        }
+
+
+        clearFilePreview();
 
       } catch (error) {
 
         console.error(
-          "Failed to end conversation:",
+          "File send error:",
           error
         );
 
-        chatController.setError(
+        setFileError(
           error?.message ||
-          "Unable to end the conversation."
+          "Failed to send file."
         );
 
       } finally {
 
-        setEndingConversation(false);
+        setFileSending(false);
 
       }
 
     };
 
 
-  /* =========================================================
-     FORMAT TIME
-  ========================================================= */
+  /* =======================================================
+     OPEN END CONVERSATION
+  ======================================================= */
 
-  const formatTime =
-    (date) => {
+  const handleOpenEndConversation =
+    () => {
 
-      if (!date) {
-        return "";
+      if (
+        endingConversation
+      ) {
+
+        return;
+
       }
 
 
-      return new Date(
-        date
-      ).toLocaleTimeString(
-        [],
-        {
-          hour: "numeric",
-          minute: "2-digit",
+      setEmojiOpen(false);
+
+      setEndConversationOpen(true);
+
+    };
+
+
+  /* =======================================================
+     CANCEL END CONVERSATION
+  ======================================================= */
+
+  const handleCancelEndConversation =
+    () => {
+
+      if (
+        endingConversation
+      ) {
+
+        return;
+
+      }
+
+
+      setEndConversationOpen(false);
+
+    };
+
+
+  /* =======================================================
+     END CONVERSATION
+  ======================================================= */
+
+  const handleEndConversation =
+    async () => {
+
+      if (
+        endingConversation
+      ) {
+
+        return;
+
+      }
+
+
+      try {
+
+        setEndingConversation(
+          true
+        );
+
+
+        handleCancelRecording();
+
+        clearFilePreview();
+
+
+        if (
+          typeof chatController.endChat ===
+          "function"
+        ) {
+
+          await chatController.endChat();
+
+        } else if (
+          typeof chatController.endConversation ===
+          "function"
+        ) {
+
+          await chatController.endConversation();
+
+        } else {
+
+          throw new Error(
+            "End conversation is unavailable."
+          );
+
         }
-      );
+
+
+        setEndConversationOpen(
+          false
+        );
+
+        setFullscreen(false);
+
+        setMessageText("");
+
+      } catch (error) {
+
+        console.error(
+          "End conversation error:",
+          error
+        );
+
+        setVoiceError(
+          error?.message ||
+          "Failed to end conversation."
+        );
+
+      } finally {
+
+        setEndingConversation(
+          false
+        );
+
+      }
 
     };
 
 
-  /* =========================================================
-     MESSAGE RENDERER
-  ========================================================= */
+  /* =======================================================
+     CLOSED
+  ======================================================= */
 
-  const renderMessage =
-    (item) => {
+  if (
+    !chatState ||
+    chatState.status ===
+      "closed"
+  ) {
 
-      const isAdmin =
-        item.sender === "admin";
+    return null;
 
-      const isAudio =
-        item.message_type === "audio";
+  }
 
 
-      return (
+  /* =======================================================
+     CHAT LAUNCHER
+  ======================================================= */
 
-        <div
-          key={item.id}
-          className={`chat-controller-message ${
-            isAdmin
-              ? "chat-controller-message-admin"
-              : "chat-controller-message-visitor"
-          }`}
-        >
+  if (
+    !chatState.isOpen
+  ) {
 
-          {/* =================================================
-              MESSAGE LABEL
-          ================================================= */}
+    return (
 
-          <div
-            className="chat-controller-message-label"
-          >
-            {isAdmin
-              ? "Nathan"
-              : (
-                chatState.conversation
-                  ?.visitor_name ||
-                "You"
-              )}
-          </div>
-
-
-          {/* =================================================
-              MESSAGE BUBBLE
-          ================================================= */}
-
-          <div
-            className="chat-controller-message-bubble"
-          >
-
-            {isAudio ? (
-
-              item.audio_url ? (
-
-                <div
-                  className="chat-message-audio-player"
-                >
-
-                  {/* Hidden native audio element */}
-
-                  <audio
-                    ref={(element) => {
-
-                      if (element) {
-
-                        audioRefs.current[
-                          item.id
-                        ] = element;
-
-                      } else {
-
-                        delete audioRefs.current[
-                          item.id
-                        ];
-
-                      }
-
-                    }}
-                    preload="metadata"
-                    src={item.audio_url}
-                    onEnded={() => {
-
-                      setPlayingAudioId(
-                        null
-                      );
-
-                    }}
-                    onError={() => {
-
-                      setAudioError(
-                        "This voice message is unavailable."
-                      );
-
-                    }}
-                  />
-
-
-                  {/* Play / Pause */}
-
-                  <button
-                    type="button"
-                    className="chat-audio-play-button"
-                    onClick={() =>
-                      toggleAudioPlay(
-                        item
-                      )
-                    }
-                    aria-label={
-                      playingAudioId ===
-                      item.id
-                        ? "Pause voice message"
-                        : "Play voice message"
-                    }
-                  >
-
-                    {playingAudioId ===
-                    item.id ? (
-
-                      <Pause
-                        size={17}
-                        strokeWidth={2}
-                      />
-
-                    ) : (
-
-                      <Play
-                        size={17}
-                        strokeWidth={2}
-                      />
-
-                    )}
-
-                  </button>
-
-
-                  {/* Audio information */}
-
-                  <div
-                    className="chat-audio-info"
-                  >
-
-                    <span
-                      className="chat-audio-title"
-                    >
-                      Voice message
-                    </span>
-
-                    <span
-                      className="chat-audio-status"
-                    >
-                      {playingAudioId ===
-                      item.id
-                        ? "Playing..."
-                        : "Tap to play"}
-                    </span>
-
-                  </div>
-
-
-                  {/* Mute / Unmute */}
-
-                  <button
-                    type="button"
-                    className="chat-audio-mute-button"
-                    onClick={() =>
-                      toggleAudioMute(
-                        item
-                      )
-                    }
-                    aria-label={
-                      mutedAudioId ===
-                      item.id
-                        ? "Unmute voice message"
-                        : "Mute voice message"
-                    }
-                  >
-
-                    {mutedAudioId ===
-                    item.id ? (
-
-                      <VolumeX
-                        size={17}
-                        strokeWidth={1.8}
-                      />
-
-                    ) : (
-
-                      <Volume2
-                        size={17}
-                        strokeWidth={1.8}
-                      />
-
-                    )}
-
-                  </button>
-
-                </div>
-
-              ) : (
-
-                <span
-                  className="chat-audio-unavailable"
-                >
-                  Voice message unavailable
-                </span>
-
-              )
-
-            ) : (
-
-              /*
-                IMPORTANT:
-                Text messages always render
-                item.message.
-              */
-
-              <span
-                className="chat-message-text"
-              >
-                {item.message || ""}
-              </span>
-
-            )}
-
-          </div>
-
-
-          {/* =================================================
-              TIME
-          ================================================= */}
-
-          <time>
-            {formatTime(
-              item.created_at
-            )}
-          </time>
-
-        </div>
-
-      );
-
-    };
-
-
-  /* =========================================================
-     RENDER
-  ========================================================= */
-
-  return (
-    <>
-
-      {/* ===================================================
-          CHAT LAUNCHER
-      =================================================== */}
-
-      {!chatState.isOpen && (
+      <div className="chat-controller">
 
         <button
           type="button"
-          className="chat-launcher"
-          onClick={handleOpen}
+          className={`chat-launcher ${
+            launcherIntro
+              ? "chat-launcher-intro"
+              : "chat-launcher-ready"
+          }`}
+          onClick={
+            handleOpenChat
+          }
           aria-label="Open chat"
         >
 
-          <MessageCircle
-            size={23}
-            strokeWidth={1.8}
-          />
+          {launcherIntro ? (
 
-          {chatState.messages.length > 0 && (
             <span
               className="chat-launcher-dot"
+              aria-hidden="true"
             />
+
+          ) : (
+
+            <MessageCircle
+              size={25}
+              strokeWidth={1.8}
+            />
+
           )}
 
         </button>
 
-      )}
+      </div>
+
+    );
+
+  }
 
 
-      {/* ===================================================
-          CHAT WINDOW
-      =================================================== */}
+  /* =======================================================
+     FIRST CONTACT FORM
+  ======================================================= */
 
-      {chatState.isOpen && (
+  const hasConversation =
+    Boolean(
+      chatState.conversation?.id
+    );
+
+
+  if (
+    !hasConversation
+  ) {
+
+    return (
+
+      <div className="chat-controller">
 
         <section
-          className={`chat-controller ${
-            fullscreen
-              ? "chat-controller-fullscreen"
-              : ""
-          }`}
+          className="chat-window"
+          aria-label="Start conversation"
         >
 
-          {/* =================================================
+          {/* ===============================================
               HEADER
-          ================================================= */}
+          =============================================== */}
 
-          <header
-            className="chat-controller-header"
-          >
+          <header className="chat-header">
 
-            <div
-              className="chat-controller-user"
-            >
+            <div className="chat-header-user">
 
-              <div
-                className="chat-controller-avatar"
-              >
+              <div className="chat-header-avatar">
 
                 <MessageCircle
-                  size={18}
-                  strokeWidth={1.8}
+                  size={20}
+                  strokeWidth={1.7}
                 />
 
               </div>
 
 
-              <div>
+              <div className="chat-header-info">
 
-                <strong>
+                <h2>
                   Nathan
-                </strong>
+                </h2>
 
-                <span>
-                  Frontend Developer
-                </span>
+                <div className="chat-header-email">
+
+                  <span>
+                    Start a conversation
+                  </span>
+
+                </div>
 
               </div>
 
             </div>
 
 
-            <div
-              className="chat-controller-header-actions"
-            >
+            <div className="chat-header-actions">
 
               <button
                 type="button"
-                className="chat-controller-icon-button"
+                className="chat-header-button"
                 onClick={
-                  handleFullscreen
-                }
-                aria-label={
-                  fullscreen
-                    ? "Exit fullscreen"
-                    : "Enter fullscreen"
-                }
-              >
-
-                {fullscreen ? (
-
-                  <Minimize2
-                    size={17}
-                  />
-
-                ) : (
-
-                  <Maximize2
-                    size={17}
-                  />
-
-                )}
-
-              </button>
-
-
-              <button
-                type="button"
-                className="chat-controller-icon-button"
-                onClick={
-                  handleClose
+                  handleCloseChat
                 }
                 aria-label="Close chat"
               >
 
                 <X
-                  size={18}
+                  size={17}
+                  strokeWidth={1.8}
                 />
 
               </button>
@@ -1379,51 +2032,59 @@ export default function ChatController() {
           </header>
 
 
-          {/* =================================================
-              START FORM
-          ================================================= */}
+          {/* ===============================================
+              INTRO
+          =============================================== */}
 
-          {!chatState.conversation?.id ? (
+          <div className="chat-start-content">
 
-            <div
-              className="chat-controller-start"
+            <div className="chat-start-icon">
+
+              <User
+                size={25}
+                strokeWidth={1.6}
+              />
+
+            </div>
+
+
+            <h2>
+              Let's get started
+            </h2>
+
+
+            <p>
+              Enter your details and your
+              first message to start the
+              conversation.
+            </p>
+
+
+            <form
+              className="chat-start-form"
+              onSubmit={
+                handleStartConversation
+              }
             >
 
-              <div
-                className="chat-controller-start-icon"
+              {/* NAME */}
+
+              <label
+                className="chat-start-field"
               >
 
-                <MessageCircle
-                  size={28}
-                  strokeWidth={1.5}
-                />
-
-              </div>
+                <span>
+                  Your name
+                </span>
 
 
-              <h2>
-                Let's talk
-              </h2>
-
-
-              <p>
-                Leave your details and
-                send a message to start
-                a conversation.
-              </p>
-
-
-              <form
-                onSubmit={
-                  handleStartConversation
-                }
-              >
-
-                <label>
+                <div className="chat-start-input">
 
                   <User
-                    size={15}
+                    size={16}
+                    strokeWidth={1.7}
                   />
+
 
                   <input
                     type="text"
@@ -1435,19 +2096,36 @@ export default function ChatController() {
                         event.target.value
                       )
                     }
-                    placeholder="Your name"
+                    placeholder="Enter your name"
                     autoComplete="name"
-                    required
+                    disabled={
+                      startingChat
+                    }
                   />
 
-                </label>
+                </div>
+
+              </label>
 
 
-                <label>
+              {/* EMAIL */}
+
+              <label
+                className="chat-start-field"
+              >
+
+                <span>
+                  Email
+                </span>
+
+
+                <div className="chat-start-input">
 
                   <Mail
-                    size={15}
+                    size={16}
+                    strokeWidth={1.7}
                   />
+
 
                   <input
                     type="email"
@@ -1459,11 +2137,27 @@ export default function ChatController() {
                         event.target.value
                       )
                     }
-                    placeholder="Your email"
+                    placeholder="Enter your email"
                     autoComplete="email"
+                    disabled={
+                      startingChat
+                    }
                   />
 
-                </label>
+                </div>
+
+              </label>
+
+
+              {/* FIRST MESSAGE */}
+
+              <label
+                className="chat-start-field"
+              >
+
+                <span>
+                  Message
+                </span>
 
 
                 <textarea
@@ -1475,835 +2169,1265 @@ export default function ChatController() {
                       event.target.value
                     )
                   }
-                  placeholder="Write your first message..."
+                  placeholder="Write your message..."
                   rows={4}
-                  required
-                />
-
-
-                {chatState.error && (
-
-                  <div
-                    className="chat-controller-error"
-                  >
-                    {chatState.error}
-                  </div>
-
-                )}
-
-
-                <button
-                  type="submit"
-                  className="chat-controller-start-button"
                   disabled={
                     startingChat
                   }
-                >
+                />
 
-                  {startingChat ? (
+              </label>
 
+
+              {/* ERROR */}
+
+              {startError && (
+
+                <div className="chat-start-error">
+
+                  {startError}
+
+                </div>
+
+              )}
+
+
+              {/* START BUTTON */}
+
+              <button
+                type="submit"
+                className="chat-start-submit"
+                disabled={
+                  startingChat ||
+                  !visitorName.trim() ||
+                  !visitorEmail.trim() ||
+                  !startMessage.trim()
+                }
+              >
+
+                {startingChat ? (
+
+                  <>
                     <RefreshCw
-                      size={17}
-                      className="chat-controller-spin"
+                      size={16}
+                      className="chat-spin"
                     />
 
-                  ) : (
+                    <span>
+                      Starting...
+                    </span>
+                  </>
 
+                ) : (
+
+                  <>
                     <Send
-                      size={17}
+                      size={16}
+                      strokeWidth={1.8}
                     />
 
-                  )}
+                    <span>
+                      Start Conversation
+                    </span>
+                  </>
 
-                  <span>
-                    Start Conversation
-                  </span>
+                )}
 
-                </button>
+              </button>
 
-              </form>
+            </form>
+
+          </div>
+
+        </section>
+
+      </div>
+
+    );
+
+  }
+
+
+  /* =======================================================
+     MAIN CHAT
+  ======================================================= */
+
+  return (
+
+    <div className="chat-controller">
+
+      <section
+        className={`chat-window ${
+          fullscreen
+            ? "chat-fullscreen"
+            : ""
+        } ${
+          isDraggingFile
+            ? "chat-window-dragging"
+            : ""
+        }`}
+        aria-label="Visitor chat"
+        onDragOver={
+          handleDragOver
+        }
+        onDragLeave={
+          handleDragLeave
+        }
+        onDrop={
+          handleDropFile
+        }
+      >
+
+        {isDraggingFile && (
+
+          <div className="chat-drop-overlay">
+
+            <Paperclip
+              size={22}
+              strokeWidth={1.8}
+            />
+
+            <span>
+              Drop a file to attach
+            </span>
+
+          </div>
+
+        )}
+
+
+        {/* =================================================
+            HEADER
+        ================================================= */}
+
+        <header className="chat-header">
+
+          <div className="chat-header-user">
+
+            <div className="chat-header-avatar">
+
+              <MessageCircle
+                size={20}
+                strokeWidth={1.7}
+              />
+
+            </div>
+
+
+            <div className="chat-header-info">
+
+              <h2>
+                Nathan
+              </h2>
+
+
+              <div className="chat-header-email">
+
+                <span>
+                  {visitorEmail ||
+                    chatState
+                      .conversation
+                      ?.visitor_email ||
+                    "Live conversation"}
+                </span>
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <div className="chat-header-actions">
+
+            <button
+              type="button"
+              className="chat-header-button"
+              onClick={() =>
+                setFullscreen(
+                  (value) =>
+                    !value
+                )
+              }
+              aria-label={
+                fullscreen
+                  ? "Exit fullscreen"
+                  : "Enter fullscreen"
+              }
+            >
+
+              {fullscreen ? (
+
+                <Minimize2
+                  size={16}
+                  strokeWidth={1.8}
+                />
+
+              ) : (
+
+                <Maximize2
+                  size={16}
+                  strokeWidth={1.8}
+                />
+
+              )}
+
+            </button>
+
+
+            <button
+              type="button"
+              className="chat-header-button"
+              onClick={
+                handleCloseChat
+              }
+              aria-label="Close chat"
+            >
+
+              <X
+                size={17}
+                strokeWidth={1.8}
+              />
+
+            </button>
+
+          </div>
+
+        </header>
+
+
+        {/* =================================================
+            ERROR
+        ================================================= */}
+
+        {(chatState.error ||
+          voiceError ||
+          fileError) && (
+
+          <div className="chat-error">
+
+            <span>
+              {
+                fileError ||
+                voiceError ||
+                chatState.error
+              }
+            </span>
+
+
+            <button
+              type="button"
+              onClick={() => {
+
+                setVoiceError("");
+
+                setFileError("");
+
+                handleRetry();
+
+              }}
+            >
+              Retry
+            </button>
+
+          </div>
+
+        )}
+
+
+        {/* =================================================
+            MESSAGES
+        ================================================= */}
+
+        <div className="chat-messages">
+
+          {chatState.loading ? (
+
+            <div className="chat-loading">
+
+              <RefreshCw
+                size={20}
+                className="chat-spin"
+              />
+
+              <span>
+                Loading conversation...
+              </span>
+
+            </div>
+
+          ) : chatState.messages?.length ? (
+
+            <div className="chat-message-list">
+
+              {chatState.messages.map(
+                (message) => {
+
+                  const isVisitor =
+                    message.sender ===
+                    "visitor";
+
+                  const isAudio =
+                    message.message_type ===
+                    "audio";
+
+                  const fileUrl =
+                    message.file_url ||
+                    message.attachment_url ||
+                    message.image_url ||
+                    "";
+
+                  const isImage =
+                    message.message_type ===
+                      "image" ||
+                    (
+                      Boolean(
+                        message.image_url
+                      ) &&
+                      message.message_type !==
+                        "file"
+                    ) ||
+                    (
+                      typeof fileUrl ===
+                        "string" &&
+                      /\.(png|jpe?g|gif|webp|bmp|svg)(\?|$)/i.test(
+                        fileUrl
+                      )
+                    );
+
+                  const isFile =
+                    !isAudio &&
+                    (
+                      message.message_type ===
+                        "file" ||
+                      message.message_type ===
+                        "attachment" ||
+                      Boolean(
+                        message.file_url ||
+                        message.attachment_url
+                      ) ||
+                      isImage
+                    );
+
+                  const fileName =
+                    message.file_name ||
+                    message.filename ||
+                    message.name ||
+                    "Attachment";
+
+                  const fileSize =
+                    formatFileSize(
+                      message.file_size ||
+                      message.size
+                    );
+
+
+                  return (
+
+                    <div
+                      key={
+                        message.id
+                      }
+                      className={
+                        `chat-message ${
+                          isVisitor
+                            ? "chat-message-visitor"
+                            : "chat-message-admin"
+                        }`
+                      }
+                    >
+
+                      <div className="chat-message-label">
+
+                        {
+                          isVisitor
+                            ? "You"
+                            : "Nathan"
+                        }
+
+                      </div>
+
+
+                      {isAudio ? (
+
+                        <div className="chat-message-audio">
+
+                          <audio
+                            controls
+                            preload="metadata"
+                            src={
+                              message.audio_url
+                            }
+                          />
+
+                        </div>
+
+                      ) : isImage &&
+                        fileUrl ? (
+
+                        <a
+                          className="chat-message-image"
+                          href={
+                            fileUrl
+                          }
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+
+                          <img
+                            src={
+                              fileUrl
+                            }
+                            alt={
+                              fileName
+                            }
+                          />
+
+                        </a>
+
+                      ) : isFile &&
+                        fileUrl ? (
+
+                        <a
+                          className="chat-message-file"
+                          href={
+                            fileUrl
+                          }
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+
+                          <span className="chat-message-file-icon">
+
+                            <FileText
+                              size={16}
+                              strokeWidth={1.8}
+                            />
+
+                          </span>
+
+
+                          <span className="chat-message-file-meta">
+
+                            <span className="chat-message-file-name">
+
+                              {fileName}
+
+                            </span>
+
+
+                            {fileSize && (
+
+                              <span className="chat-message-file-size">
+
+                                {fileSize}
+
+                              </span>
+
+                            )}
+
+                          </span>
+
+                        </a>
+
+                      ) : (
+
+                        <div className="chat-message-bubble">
+
+                          {
+                            message.message
+                          }
+
+                        </div>
+
+                      )}
+
+
+                      {message.message &&
+                        (
+                          isFile ||
+                          isAudio
+                        ) && (
+
+                        <div className="chat-message-caption">
+
+                          {message.message}
+
+                        </div>
+
+                      )}
+
+
+                      <time>
+
+                        {message.created_at
+                          ? new Date(
+                              message.created_at
+                            ).toLocaleTimeString(
+                              [],
+                              {
+                                hour:
+                                  "numeric",
+                                minute:
+                                  "2-digit",
+                              }
+                            )
+                          : ""}
+
+                      </time>
+
+                    </div>
+
+                  );
+
+                }
+              )}
+
+
+              <div
+                ref={
+                  messagesEndRef
+                }
+              />
 
             </div>
 
           ) : (
 
-            /* =================================================
-               ACTIVE CHAT
-            ================================================= */
+            <div className="chat-empty">
 
-            <>
+              <div className="chat-empty-icon">
 
-              {/* ===============================================
-                  MESSAGES
-              =============================================== */}
+                <MessageCircle
+                  size={28}
+                  strokeWidth={1.5}
+                />
 
-              <div
-                className="chat-controller-messages"
-              >
+              </div>
 
-                {chatState.loading ? (
 
-                  <div
-                    className="chat-controller-loading"
-                  >
+              <h2>
+                Conversation started
+              </h2>
 
-                    <RefreshCw
-                      size={20}
-                      className="chat-controller-spin"
-                    />
 
-                    <span>
-                      Loading conversation...
-                    </span>
+              <p>
+                Send a message or attach a file.
+              </p>
 
-                  </div>
+            </div>
 
-                ) : chatState.messages.length === 0 ? (
+          )}
 
-                  <div
-                    className="chat-controller-empty"
-                  >
+        </div>
 
-                    <MessageCircle
-                      size={25}
-                      strokeWidth={1.5}
-                    />
 
-                    <p>
-                      No messages yet.
-                    </p>
+        {/* =================================================
+            REPLY AREA
+        ================================================= */}
 
-                    <span>
-                      Send a message to
-                      start the conversation.
-                    </span>
+        <form
+          className="chat-reply"
+          onSubmit={(event) => {
 
-                  </div>
+            event.preventDefault();
+
+            handleSendMessage();
+
+          }}
+        >
+
+          <input
+            ref={
+              fileInputRef
+            }
+            type="file"
+            className="chat-file-input"
+            accept={
+              ACCEPTED_FILES
+            }
+            onChange={
+              handleFileInputChange
+            }
+          />
+
+
+          {emojiOpen && (
+
+            <div className="chat-emoji-picker">
+
+              <input
+                type="text"
+                className="chat-emoji-search"
+                value={
+                  emojiSearch
+                }
+                onChange={(event) =>
+                  setEmojiSearch(
+                    event.target.value
+                  )
+                }
+                placeholder="Search emoji..."
+                autoFocus
+              />
+
+
+              {!emojiSearch && (
+
+                <div className="chat-emoji-categories">
+
+                  {emojiCategories.map(
+                    (category) => (
+
+                      <button
+                        key={
+                          category
+                        }
+                        type="button"
+                        className={
+                          `chat-emoji-category ${
+                            emojiCategory ===
+                            category
+                              ? "active"
+                              : ""
+                          }`
+                        }
+                        onClick={() =>
+                          setEmojiCategory(
+                            category
+                          )
+                        }
+                      >
+
+                        {category}
+
+                      </button>
+
+                    )
+                  )}
+
+                </div>
+
+              )}
+
+
+              <div className="chat-emoji-grid">
+
+                {emojis.length ? (
+
+                  emojis.map(
+                    (emoji, index) => {
+
+                      const value =
+                        typeof emoji ===
+                        "string"
+                          ? emoji
+                          : emoji.emoji ||
+                            emoji.char ||
+                            emoji.symbol ||
+                            "";
+
+
+                      return (
+
+                        <button
+                          key={
+                            `${value}-${index}`
+                          }
+                          type="button"
+                          className="chat-emoji-item"
+                          onClick={() =>
+                            handleEmojiSelect(
+                              value
+                            )
+                          }
+                        >
+
+                          {value}
+
+                        </button>
+
+                      );
+
+                    }
+                  )
 
                 ) : (
 
-                  <div
-                    className="chat-controller-message-list"
-                  >
+                  <span>
+                    No emoji found.
+                  </span>
 
-                    {chatState.messages.map(
-                      renderMessage
-                    )}
+                )}
 
-                    <div
-                      ref={messagesEndRef}
-                      aria-hidden="true"
-                    />
+              </div>
 
-                  </div>
+            </div>
+
+          )}
+
+
+          {/* =================================================
+              FILE PREVIEW
+          ================================================= */}
+
+          {selectedFile ? (
+
+            <div className="chat-file-preview">
+
+              <div className="chat-file-preview-thumb">
+
+                {filePreviewUrl ? (
+
+                  <img
+                    src={
+                      filePreviewUrl
+                    }
+                    alt={
+                      selectedFile.name
+                    }
+                  />
+
+                ) : (
+
+                  <FileText
+                    size={18}
+                    strokeWidth={1.8}
+                  />
 
                 )}
 
               </div>
 
 
-              {/* ===============================================
-                  GENERAL ERROR
-              =============================================== */}
+              <div className="chat-recording-info">
 
-              {chatState.error && (
+                <span className="chat-recording-title">
 
-                <div
-                  className="chat-controller-error"
-                >
+                  {selectedFile.name}
 
-                  <span>
-                    {chatState.error}
-                  </span>
+                </span>
 
-                  <button
-                    type="button"
-                    onClick={() =>
-                      chatController.clearError()
-                    }
-                    aria-label="Close error"
-                  >
+                <span className="chat-recording-time">
 
-                    <X
-                      size={14}
-                    />
-
-                  </button>
-
-                </div>
-
-              )}
-
-
-              {/* ===============================================
-                  AUDIO ERROR
-              =============================================== */}
-
-              {audioError && (
-
-                <div
-                  className="chat-controller-voice-error"
-                >
-
-                  <span>
-                    {audioError}
-                  </span>
-
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setAudioError("")
-                    }
-                    aria-label="Close audio error"
-                  >
-
-                    <X
-                      size={13}
-                    />
-
-                  </button>
-
-                </div>
-
-              )}
-
-
-              {/* ===============================================
-                  EMOJI PICKER
-              =============================================== */}
-
-              {emojiOpen && (
-
-                <div
-                  className="chat-controller-emoji-picker"
-                >
-
-                  <div
-                    className="chat-controller-emoji-header"
-                  >
-
-                    <div>
-
-                      <strong>
-                        Emojis
-                      </strong>
-
-                      <span>
-                        Choose an emoji
-                      </span>
-
-                    </div>
-
-
-                    {/* =========================================
-                        CLOSE EMOJI BUTTON
-                    ========================================= */}
-
-                    <button
-                      type="button"
-                      className="chat-controller-emoji-close"
-                      onClick={
-                        handleCloseEmoji
-                      }
-                      aria-label="Close emoji picker"
-                      title="Close emoji picker"
-                    >
-
-                      <X
-                        size={17}
-                        strokeWidth={2}
-                      />
-
-                    </button>
-
-                  </div>
-
-
-                  <input
-                    type="search"
-                    className="chat-controller-emoji-search"
-                    value={
-                      emojiSearch
-                    }
-                    onChange={(event) =>
-                      setEmojiSearch(
-                        event.target.value
-                      )
-                    }
-                    placeholder="Search emojis..."
-                    aria-label="Search emojis"
-                  />
-
-
-                  {!emojiSearch && (
-
-                    <div
-                      className="chat-controller-emoji-categories"
-                    >
-
-                      {emojiCategories.map(
-                        (category) => (
-
-                          <button
-                            key={
-                              category
-                            }
-                            type="button"
-                            className={`chat-controller-emoji-category ${
-                              emojiCategory ===
-                              category
-                                ? "active"
-                                : ""
-                            }`}
-                            onClick={() =>
-                              setEmojiCategory(
-                                category
-                              )
-                            }
-                          >
-                            {category}
-                          </button>
-
-                        )
-                      )}
-
-                    </div>
-
+                  {formatFileSize(
+                    selectedFile.size
                   )}
 
+                  {isImageFile(
+                    selectedFile
+                  )
+                    ? " · Image"
+                    : " · File"}
 
-                  <div
-                    className="chat-controller-emoji-grid"
-                  >
+                </span>
 
-                    {visibleEmojis.length === 0 ? (
+              </div>
 
-                      <span
-                        className="chat-controller-emoji-empty"
-                      >
-                        No emojis found.
-                      </span>
-
-                    ) : (
-
-                      visibleEmojis.map(
-                        (emoji) => (
-
-                          <button
-                            key={emoji}
-                            type="button"
-                            className="chat-controller-emoji-item"
-                            onClick={() =>
-                              handleEmojiSelect(
-                                emoji
-                              )
-                            }
-                            aria-label={`Insert ${emoji}`}
-                          >
-                            {emoji}
-                          </button>
-
-                        )
-                      )
-
-                    )}
-
-                  </div>
-
-                </div>
-
-              )}
-
-
-              {/* ===============================================
-                  NORMAL REPLY
-              =============================================== */}
-
-              {!chatState.recording &&
-              !chatState.voiceBlob && (
-
-                <form
-                  className="chat-controller-reply"
-                  onSubmit={(event) => {
-
-                    event.preventDefault();
-
-                    handleSendMessage();
-
-                  }}
-                >
-
-                  <button
-                    type="button"
-                    className="chat-controller-reply-button"
-                    onClick={
-                      handleToggleEmoji
-                    }
-                    aria-label={
-                      emojiOpen
-                        ? "Close emoji picker"
-                        : "Open emoji picker"
-                    }
-                    title={
-                      emojiOpen
-                        ? "Close emoji picker"
-                        : "Emoji"
-                    }
-                  >
-
-                    {emojiOpen ? (
-
-                      <X
-                        size={19}
-                        strokeWidth={1.8}
-                      />
-
-                    ) : (
-
-                      <Smile
-                        size={19}
-                        strokeWidth={1.8}
-                      />
-
-                    )}
-
-                  </button>
-
-
-                  <textarea
-                    ref={inputRef}
-                    value={
-                      messageText
-                    }
-                    onChange={(event) =>
-                      setMessageText(
-                        event.target.value
-                      )
-                    }
-                    onKeyDown={
-                      handleKeyDown
-                    }
-                    placeholder="Write a message..."
-                    rows={1}
-                    disabled={
-                      chatState.sending
-                    }
-                    aria-label="Write a message"
-                  />
-
-
-                  <button
-                    type="button"
-                    className="chat-controller-mic-button"
-                    onClick={
-                      handleStartRecording
-                    }
-                    disabled={
-                      chatState.sending
-                    }
-                    aria-label="Record voice message"
-                    title="Voice message"
-                  >
-
-                    <Mic
-                      size={18}
-                      strokeWidth={1.8}
-                    />
-
-                  </button>
-
-
-                  <button
-                    type="submit"
-                    className="chat-controller-send-button"
-                    disabled={
-                      chatState.sending ||
-                      !messageText.trim()
-                    }
-                    aria-label="Send message"
-                    title="Send message"
-                  >
-
-                    {chatState.sending ? (
-
-                      <RefreshCw
-                        size={17}
-                        className="chat-controller-spin"
-                      />
-
-                    ) : (
-
-                      <Send
-                        size={17}
-                        strokeWidth={1.8}
-                      />
-
-                    )}
-
-                  </button>
-
-                </form>
-
-              )}
-
-
-              {/* ===============================================
-                  RECORDING
-              =============================================== */}
-
-              {chatState.recording && (
-
-                <div
-                  className="chat-controller-voice-area"
-                >
-
-                  <div
-                    className="chat-controller-recording"
-                  >
-
-                    <div
-                      className="chat-controller-recording-indicator"
-                    >
-
-                      <span />
-
-                      <strong>
-                        Recording
-                      </strong>
-
-                      <time>
-                        {Math.floor(
-                          chatState.recordingDuration /
-                          60
-                        )
-                          .toString()
-                          .padStart(2, "0")}
-
-                        :
-
-                        {(chatState.recordingDuration %
-                          60)
-                          .toString()
-                          .padStart(2, "0")}
-                      </time>
-
-                    </div>
-
-
-                    <div
-                      className="chat-controller-recording-actions"
-                    >
-
-                      <button
-                        type="button"
-                        className="chat-controller-record-stop"
-                        onClick={
-                          handleStopRecording
-                        }
-                      >
-
-                        <Square
-                          size={15}
-                          fill="currentColor"
-                        />
-
-                        <span>
-                          Stop
-                        </span>
-
-                      </button>
-
-
-                      <button
-                        type="button"
-                        className="chat-controller-record-cancel"
-                        onClick={
-                          handleCancelRecording
-                        }
-                      >
-
-                        <X
-                          size={15}
-                        />
-
-                        <span>
-                          Cancel
-                        </span>
-
-                      </button>
-
-                    </div>
-
-                  </div>
-
-                </div>
-
-              )}
-
-
-              {/* ===============================================
-                  VOICE PREVIEW
-              =============================================== */}
-
-              {!chatState.recording &&
-              chatState.voiceBlob && (
-
-                <div
-                  className="chat-controller-voice-area"
-                >
-
-                  <div
-                    className="chat-controller-voice-preview"
-                  >
-
-                    <div
-                      className="chat-controller-voice-preview-info"
-                    >
-
-                      <Mic
-                        size={18}
-                      />
-
-                      <div>
-
-                        <strong>
-                          Voice message
-                        </strong>
-
-                        <span>
-                          Ready to send
-                        </span>
-
-                      </div>
-
-                    </div>
-
-
-                    <div
-                      className="chat-controller-voice-preview-controls"
-                    >
-
-                      <button
-                        type="button"
-                        className="chat-controller-audio-play"
-                        onClick={
-                          handlePreviewAudio
-                        }
-                        aria-label={
-                          audioPlaying
-                            ? "Pause recording"
-                            : "Play recording"
-                        }
-                      >
-
-                        {audioPlaying ? (
-
-                          <Pause
-                            size={16}
-                          />
-
-                        ) : (
-
-                          <Play
-                            size={16}
-                          />
-
-                        )}
-
-                      </button>
-
-
-                      <button
-                        type="button"
-                        className="chat-controller-audio-delete"
-                        onClick={
-                          handleDeleteVoice
-                        }
-                        aria-label="Delete recording"
-                      >
-
-                        <Trash2
-                          size={16}
-                        />
-
-                      </button>
-
-
-                      <button
-                        type="button"
-                        className="chat-controller-audio-send"
-                        onClick={
-                          handleSendVoice
-                        }
-                        disabled={
-                          chatState.sending
-                        }
-                        aria-label="Send voice message"
-                      >
-
-                        {chatState.sending ? (
-
-                          <RefreshCw
-                            size={16}
-                            className="chat-controller-spin"
-                          />
-
-                        ) : (
-
-                          <Send
-                            size={16}
-                          />
-
-                        )}
-
-                      </button>
-
-                    </div>
-
-                  </div>
-
-                </div>
-
-              )}
-
-
-              {/* ===============================================
-                  END CONVERSATION BUTTON
-              =============================================== */}
 
               <button
                 type="button"
-                className="chat-controller-end-button"
-                onClick={() =>
-                  setEndConversationOpen(
-                    true
-                  )
+                className="chat-voice-preview-delete"
+                onClick={
+                  clearFilePreview
                 }
+                disabled={
+                  fileSending
+                }
+                aria-label="Remove file"
               >
 
-                <LogOut
-                  size={15}
+                <Trash2
+                  size={16}
+                  strokeWidth={1.8}
                 />
-
-                <span>
-                  End Conversation
-                </span>
 
               </button>
 
 
-              {/* ===============================================
-                  END CONVERSATION MODAL
-              =============================================== */}
+              <button
+                type="button"
+                className="chat-voice-preview-send"
+                onClick={
+                  handleSendFile
+                }
+                disabled={
+                  fileSending
+                }
+                aria-label="Send file"
+              >
 
-              {endConversationOpen && (
+                {fileSending ? (
 
-                <div
-                  className="chat-controller-modal-backdrop"
-                  role="presentation"
-                  onClick={() =>
-                    setEndConversationOpen(
-                      false
+                  <RefreshCw
+                    size={16}
+                    className="chat-spin"
+                  />
+
+                ) : (
+
+                  <Send
+                    size={16}
+                    strokeWidth={1.8}
+                  />
+
+                )}
+
+              </button>
+
+            </div>
+
+          ) : audioPreviewUrl ? (
+
+            <div className="chat-voice-preview">
+
+              <button
+                type="button"
+                className="chat-voice-preview-play"
+                onClick={
+                  handlePreviewToggle
+                }
+                aria-label={
+                  audioPlaying
+                    ? "Pause voice preview"
+                    : "Play voice preview"
+                }
+              >
+
+                {audioPlaying ? (
+
+                  <Pause
+                    size={16}
+                    strokeWidth={1.8}
+                  />
+
+                ) : (
+
+                  <Play
+                    size={16}
+                    strokeWidth={1.8}
+                  />
+
+                )}
+
+              </button>
+
+
+              <div className="chat-recording-info">
+
+                <span className="chat-recording-title">
+                  Voice message
+                </span>
+
+                <span className="chat-recording-time">
+                  Ready to send
+                </span>
+
+              </div>
+
+
+              <button
+                type="button"
+                className="chat-voice-preview-delete"
+                onClick={
+                  handleCancelRecording
+                }
+                disabled={
+                  voiceSending
+                }
+                aria-label="Delete voice preview"
+              >
+
+                <Trash2
+                  size={16}
+                  strokeWidth={1.8}
+                />
+
+              </button>
+
+
+              <button
+                type="button"
+                className="chat-voice-preview-send"
+                onClick={
+                  handleSendVoice
+                }
+                disabled={
+                  voiceSending
+                }
+                aria-label="Send voice message"
+              >
+
+                {voiceSending ? (
+
+                  <RefreshCw
+                    size={16}
+                    className="chat-spin"
+                  />
+
+                ) : (
+
+                  <Send
+                    size={16}
+                    strokeWidth={1.8}
+                  />
+
+                )}
+
+              </button>
+
+            </div>
+
+          ) : recording ? (
+
+            <div className="chat-recording">
+
+              <button
+                type="button"
+                className="chat-recording-cancel"
+                onClick={
+                  handleCancelRecording
+                }
+                aria-label="Cancel recording"
+              >
+
+                <X
+                  size={16}
+                  strokeWidth={1.8}
+                />
+
+              </button>
+
+
+              <span className="chat-recording-indicator" />
+
+
+              <div className="chat-recording-info">
+
+                <span className="chat-recording-title">
+                  Recording voice message
+                </span>
+
+                <span className="chat-recording-time">
+                  {
+                    formatRecordingTime(
+                      recordingSeconds
                     )
                   }
-                >
+                </span>
 
-                  <div
-                    className="chat-controller-modal"
-                    role="dialog"
-                    aria-modal="true"
-                    aria-labelledby="chat-end-title"
-                    onClick={(event) =>
-                      event.stopPropagation()
-                    }
-                  >
-
-                    <div
-                      className="chat-controller-modal-icon"
-                    >
-
-                      <LogOut
-                        size={22}
-                      />
-
-                    </div>
+              </div>
 
 
-                    <h3
-                      id="chat-end-title"
-                    >
-                      End conversation?
-                    </h3>
+              <button
+                type="button"
+                className="chat-recording-finish"
+                onClick={
+                  handleFinishRecording
+                }
+                aria-label="Finish recording"
+              >
+
+                <Square
+                  size={15}
+                  fill="currentColor"
+                  strokeWidth={1.8}
+                />
+
+              </button>
+
+            </div>
+
+          ) : (
+
+            <>
+
+              {/* EMOJI */}
+
+              <button
+                type="button"
+                className="chat-reply-icon"
+                onClick={() =>
+                  setEmojiOpen(
+                    (value) =>
+                      !value
+                  )
+                }
+                aria-label="Open emoji picker"
+              >
+
+                <Smile
+                  size={18}
+                  strokeWidth={1.8}
+                />
+
+              </button>
 
 
-                    <p>
-                      This will close your
-                      current conversation.
-                    </p>
+              {/* TEXT INPUT */}
+
+              <textarea
+                ref={
+                  inputRef
+                }
+                value={
+                  messageText
+                }
+                onChange={
+                  handleMessageChange
+                }
+                onKeyDown={
+                  handleMessageKeyDown
+                }
+                placeholder="Write a message..."
+                rows={1}
+                disabled={
+                  chatState.sending ||
+                  voiceSending ||
+                  fileSending
+                }
+                aria-label="Write a message"
+              />
 
 
-                    <div
-                      className="chat-controller-modal-actions"
-                    >
+              {/* ATTACH FILE */}
 
-                      <button
-                        type="button"
-                        className="chat-controller-modal-cancel"
-                        onClick={() =>
-                          setEndConversationOpen(
-                            false
-                          )
-                        }
-                        disabled={
-                          endingConversation
-                        }
-                      >
-                        Cancel
-                      </button>
+              <button
+                type="button"
+                className="chat-reply-icon"
+                onClick={
+                  handleOpenFilePicker
+                }
+                disabled={
+                  chatState.sending ||
+                  voiceSending ||
+                  fileSending
+                }
+                aria-label="Attach a file"
+              >
+
+                <Paperclip
+                  size={18}
+                  strokeWidth={1.8}
+                />
+
+              </button>
 
 
-                      <button
-                        type="button"
-                        className="chat-controller-modal-confirm"
-                        onClick={
-                          handleEndConversation
-                        }
-                        disabled={
-                          endingConversation
-                        }
-                      >
+              {/* MICROPHONE */}
 
-                        {endingConversation ? (
+              <button
+                type="button"
+                className="chat-reply-microphone"
+                onClick={
+                  handleStartRecording
+                }
+                disabled={
+                  chatState.sending ||
+                  voiceSending ||
+                  fileSending
+                }
+                aria-label="Record voice message"
+              >
 
-                          <RefreshCw
-                            size={15}
-                            className="chat-controller-spin"
-                          />
+                <Mic
+                  size={18}
+                  strokeWidth={1.8}
+                />
 
-                        ) : (
+              </button>
 
-                          "End Conversation"
 
-                        )}
+              {/* SEND */}
 
-                      </button>
+              <button
+                type="submit"
+                className="chat-reply-icon"
+                disabled={
+                  chatState.sending ||
+                  voiceSending ||
+                  fileSending ||
+                  !messageText.trim()
+                }
+                aria-label="Send message"
+              >
 
-                    </div>
+                {chatState.sending ? (
 
-                  </div>
+                  <RefreshCw
+                    size={17}
+                    className="chat-spin"
+                  />
 
-                </div>
+                ) : (
 
-              )}
+                  <Send
+                    size={17}
+                    strokeWidth={1.8}
+                  />
+
+                )}
+
+              </button>
 
             </>
 
           )}
 
-        </section>
+        </form>
+
+
+        {/* =================================================
+            END CONVERSATION
+        ================================================= */}
+
+        <div className="chat-end-conversation">
+
+          <button
+            type="button"
+            className="chat-end-conversation-button"
+            onClick={
+              handleOpenEndConversation
+            }
+            disabled={
+              endingConversation ||
+              chatState.sending ||
+              voiceSending ||
+              fileSending
+            }
+          >
+
+            <LogOut
+              size={14}
+              strokeWidth={1.8}
+            />
+
+            <span>
+              End Conversation
+            </span>
+
+          </button>
+
+        </div>
+
+      </section>
+
+
+      {/* =================================================
+          END CONVERSATION MODAL
+      ================================================= */}
+
+      {endConversationOpen && (
+
+        <div
+          className="chat-end-modal-backdrop"
+          onMouseDown={(event) => {
+
+            if (
+              event.target ===
+              event.currentTarget &&
+              !endingConversation
+            ) {
+
+              handleCancelEndConversation();
+
+            }
+
+          }}
+        >
+
+          <div
+            className="chat-end-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="chat-end-title"
+          >
+
+            <div className="chat-end-modal-icon">
+
+              <LogOut
+                size={22}
+                strokeWidth={1.8}
+              />
+
+            </div>
+
+
+            <div className="chat-end-modal-content">
+
+              <h3 id="chat-end-title">
+                End this conversation?
+              </h3>
+
+              <p>
+                Your current conversation
+                will be closed. You can start
+                another conversation later.
+              </p>
+
+            </div>
+
+
+            <div className="chat-end-modal-actions">
+
+              <button
+                type="button"
+                className="chat-end-modal-cancel"
+                onClick={
+                  handleCancelEndConversation
+                }
+                disabled={
+                  endingConversation
+                }
+              >
+                Cancel
+              </button>
+
+
+              <button
+                type="button"
+                className="chat-end-modal-confirm"
+                onClick={
+                  handleEndConversation
+                }
+                disabled={
+                  endingConversation
+                }
+              >
+
+                {endingConversation ? (
+
+                  <>
+                    <RefreshCw
+                      size={14}
+                      className="chat-spin"
+                    />
+
+                    <span>
+                      Ending...
+                    </span>
+                  </>
+
+                ) : (
+
+                  <span>
+                    End Conversation
+                  </span>
+
+                )}
+
+              </button>
+
+            </div>
+
+          </div>
+
+        </div>
 
       )}
 
-    </>
+    </div>
+
   );
+
 }

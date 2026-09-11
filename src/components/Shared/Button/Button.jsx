@@ -65,9 +65,7 @@ function Button({
     "btn",
     `btn-${variant}`,
     `btn-${size}`,
-    disabled
-      ? "btn-disabled"
-      : "",
+    disabled ? "btn-disabled" : "",
     className,
   ]
     .filter(Boolean)
@@ -110,31 +108,49 @@ function Button({
 
 
   /* =======================================================
+     MAGNETIC WRAPPER
+     Only used when magnetic={true}
+  ======================================================= */
+
+  const renderMagnetic = ({
+    children: magneticChildren,
+    ...elementProps
+  }) => (
+    <MagneticButton
+      {...magneticProps}
+      {...elementProps}
+    >
+      {magneticChildren}
+    </MagneticButton>
+  );
+
+
+  /* =======================================================
      NORMAL BUTTON
   ======================================================= */
 
   if (!href) {
 
+    const buttonProps = {
+      type,
+      className: classes,
+      disabled,
+      ...props,
+    };
+
+
     if (magnetic) {
-      return (
-        <MagneticButton
-          {...magneticProps}
-          className={classes}
-          disabled={disabled}
-          type={type}
-          {...props}
-        >
-          {content}
-        </MagneticButton>
-      );
+      return renderMagnetic({
+        ...buttonProps,
+        disabled,
+        type,
+      });
     }
+
 
     return (
       <button
-        type={type}
-        className={classes}
-        disabled={disabled}
-        {...props}
+        {...buttonProps}
       >
         {content}
       </button>
@@ -144,12 +160,12 @@ function Button({
 
   /* =======================================================
      DOWNLOAD
-     → ANCHOR
   ======================================================= */
 
   if (download) {
 
     const handleClick = (event) => {
+
       if (disabled) {
         event.preventDefault();
       }
@@ -158,10 +174,30 @@ function Button({
     };
 
 
+    const anchorProps = {
+      as: "a",
+      href,
+      className: classes,
+      download,
+      "aria-disabled": disabled
+        ? "true"
+        : undefined,
+      onClick: handleClick,
+      ...Object.fromEntries(
+        Object.entries(props).filter(
+          ([key]) => key !== "onClick"
+        )
+      ),
+    };
+
+
+    if (magnetic) {
+      return renderMagnetic(anchorProps);
+    }
+
+
     return (
-      <MagneticButton
-        {...magneticProps}
-        as="a"
+      <a
         href={href}
         className={classes}
         download
@@ -179,19 +215,19 @@ function Button({
         )}
       >
         {content}
-      </MagneticButton>
+      </a>
     );
   }
 
 
   /* =======================================================
      EXTERNAL LINK
-     → ANCHOR
   ======================================================= */
 
   if (external) {
 
     const handleClick = (event) => {
+
       if (disabled) {
         event.preventDefault();
       }
@@ -200,10 +236,31 @@ function Button({
     };
 
 
+    const externalProps = {
+      as: "a",
+      href,
+      className: classes,
+      target: "_blank",
+      rel: "noopener noreferrer",
+      "aria-disabled": disabled
+        ? "true"
+        : undefined,
+      onClick: handleClick,
+      ...Object.fromEntries(
+        Object.entries(props).filter(
+          ([key]) => key !== "onClick"
+        )
+      ),
+    };
+
+
+    if (magnetic) {
+      return renderMagnetic(externalProps);
+    }
+
+
     return (
-      <MagneticButton
-        {...magneticProps}
-        as="a"
+      <a
         href={href}
         className={classes}
         target="_blank"
@@ -222,17 +279,18 @@ function Button({
         )}
       >
         {content}
-      </MagneticButton>
+      </a>
     );
   }
 
 
   /* =======================================================
      INTERNAL ROUTE
-     → REACT ROUTER LINK
+     REACT ROUTER LINK
   ======================================================= */
 
   const handleLinkClick = (event) => {
+
     if (disabled) {
       event.preventDefault();
     }
@@ -241,10 +299,30 @@ function Button({
   };
 
 
+  const linkProps = {
+    as: Link,
+    to: href,
+    className: classes,
+    "aria-disabled": disabled
+      ? "true"
+      : undefined,
+    onClick: handleLinkClick,
+    ...Object.fromEntries(
+      Object.entries(props).filter(
+        ([key]) =>
+          key !== "onClick"
+      )
+    ),
+  };
+
+
+  if (magnetic) {
+    return renderMagnetic(linkProps);
+  }
+
+
   return (
-    <MagneticButton
-      {...magneticProps}
-      as={Link}
+    <Link
       to={href}
       className={classes}
       aria-disabled={
@@ -261,7 +339,7 @@ function Button({
       )}
     >
       {content}
-    </MagneticButton>
+    </Link>
   );
 }
 

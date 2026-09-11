@@ -23,7 +23,7 @@ GLOBAL EFFECTS
 
 import CursorGlow from "./CursorGlow/CursorGlow.jsx";
 import BackgroundParticles from "./BackgroundParticles/BackgroundParticles.jsx";
-import PageTransition from "./PageTransition/PageTransition.jsx";
+import PageTransition from "./Transition/PageTransition.jsx";
 // import ScrollEffects from "./ScrollEffects.jsx";
 
 /* =========================================================

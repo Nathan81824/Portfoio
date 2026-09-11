@@ -1,0 +1,635 @@
+/* =========================================================
+   3D EXPERIENCE SECTION
+   ========================================================= */
+
+.three-d-section {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  padding: 140px 0;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+
+/* =========================================================
+   BACKGROUND
+   ========================================================= */
+
+.three-d-background {
+  position: absolute;
+  inset: 0;
+  z-index: -3;
+
+  background:
+    radial-gradient(
+      circle at 20% 50%,
+      color-mix(
+        in srgb,
+        var(--accent-primary) 7%,
+        transparent
+      ),
+      transparent 32%
+    ),
+    radial-gradient(
+      circle at 80% 45%,
+      color-mix(
+        in srgb,
+        var(--accent-secondary) 5%,
+        transparent
+      ),
+      transparent 34%
+    );
+}
+
+
+.three-d-grid {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+
+  background-image:
+    linear-gradient(
+      color-mix(
+        in srgb,
+        var(--accent-primary) 2%,
+        transparent
+      ) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      color-mix(
+        in srgb,
+        var(--accent-primary) 2%,
+        transparent
+      ) 1px,
+      transparent 1px
+    );
+
+  background-size: 70px 70px;
+
+  mask-image: linear-gradient(
+    to bottom,
+    transparent,
+    black 20%,
+    black 80%,
+    transparent
+  );
+
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent,
+    black 20%,
+    black 80%,
+    transparent
+  );
+
+  opacity: 0.45;
+}
+
+
+/* =========================================================
+   CONTAINER
+   ========================================================= */
+
+.three-d-container {
+  position: relative;
+  width: min(1200px, calc(100% - 48px));
+  margin: 0 auto;
+}
+
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+.three-d-header {
+  max-width: 720px;
+  margin: 0 auto 70px;
+  text-align: center;
+}
+
+
+.three-d-header .section-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  margin-bottom: 18px;
+
+  color: var(--accent-primary);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+}
+
+
+.three-d-header .section-title {
+  margin: 0;
+
+  color: var(--text-primary);
+
+  font-size: clamp(
+    2.4rem,
+    5vw,
+    4.4rem
+  );
+
+  line-height: 1.05;
+  letter-spacing: -0.04em;
+}
+
+
+.three-d-header .section-title span {
+  color: var(--accent-primary);
+}
+
+
+.three-d-header-text {
+  max-width: 580px;
+  margin: 22px auto 0;
+
+  color: var(--text-secondary);
+
+  font-size: 1rem;
+  line-height: 1.8;
+}
+
+
+/* =========================================================
+   MAIN LAYOUT
+   ========================================================= */
+
+.three-d-main {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1.15fr)
+    minmax(360px, 0.85fr);
+
+  align-items: center;
+
+  gap: 70px;
+}
+
+
+/* =========================================================
+   3D CANVAS
+   ========================================================= */
+
+.three-d-canvas {
+  position: relative;
+
+  width: 100%;
+  height: 570px;
+
+  border: 1px solid color-mix(
+    in srgb,
+    var(--accent-primary) 12%,
+    var(--border-primary)
+  );
+
+  border-radius: 28px;
+
+  overflow: hidden;
+
+  background:
+    radial-gradient(
+      circle at center,
+      color-mix(
+        in srgb,
+        var(--accent-primary) 5%,
+        transparent
+      ),
+      transparent 58%
+    ),
+    color-mix(
+      in srgb,
+      var(--bg-secondary) 55%,
+      transparent
+    );
+
+  box-shadow:
+    0 25px 80px color-mix(
+      in srgb,
+      var(--accent-primary) 6%,
+      transparent
+    );
+
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+
+.three-d-canvas canvas {
+  position: relative !important;
+  z-index: 2 !important;
+
+  width: 100% !important;
+  height: 100% !important;
+
+  display: block;
+}
+
+
+/* =========================================================
+   CANVAS GLOW
+   ========================================================= */
+
+.three-d-canvas-glow {
+  position: absolute;
+
+  width: 260px;
+  height: 260px;
+
+  top: 50%;
+  left: 50%;
+
+  transform: translate(
+    -50%,
+    -50%
+  );
+
+  border-radius: 50%;
+
+  background: color-mix(
+    in srgb,
+    var(--accent-primary) 9%,
+    transparent
+  );
+
+  filter: blur(80px);
+
+  pointer-events: none;
+
+  z-index: 1;
+}
+
+
+/* =========================================================
+   3D CONTENT
+   ========================================================= */
+
+.three-d-content {
+  position: relative;
+  z-index: 2;
+}
+
+
+.three-d-content-label {
+  display: inline-block;
+
+  margin-bottom: 18px;
+
+  color: var(--accent-primary);
+
+  font-size: 0.72rem;
+  font-weight: 700;
+
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+
+.three-d-content h3 {
+  margin: 0;
+
+  color: var(--text-primary);
+
+  font-size: clamp(
+    2rem,
+    4vw,
+    3.2rem
+  );
+
+  line-height: 1.1;
+
+  letter-spacing: -0.035em;
+}
+
+
+.three-d-content h3 span {
+  color: var(--accent-primary);
+}
+
+
+.three-d-content > p {
+  max-width: 520px;
+
+  margin: 22px 0 0;
+
+  color: var(--text-secondary);
+
+  font-size: 0.98rem;
+
+  line-height: 1.85;
+}
+
+
+/* =========================================================
+   FEATURES
+   ========================================================= */
+
+.three-d-features {
+  display: flex;
+  flex-direction: column;
+
+  gap: 14px;
+
+  margin-top: 34px;
+}
+
+
+.three-d-feature {
+  display: flex;
+  align-items: center;
+
+  gap: 15px;
+
+  padding: 14px 16px;
+
+  border: 1px solid color-mix(
+    in srgb,
+    var(--border-primary) 75%,
+    transparent
+  );
+
+  border-radius: 14px;
+
+  background: color-mix(
+    in srgb,
+    var(--bg-secondary) 45%,
+    transparent
+  );
+
+  transition:
+    transform 0.35s ease,
+    border-color 0.35s ease,
+    background 0.35s ease;
+}
+
+
+.three-d-feature:hover {
+  transform: translateX(7px);
+
+  border-color: color-mix(
+    in srgb,
+    var(--accent-primary) 35%,
+    var(--border-primary)
+  );
+
+  background: color-mix(
+    in srgb,
+    var(--accent-primary) 5%,
+    var(--bg-secondary)
+  );
+}
+
+
+.three-d-feature-icon {
+  flex: 0 0 auto;
+
+  width: 38px;
+  height: 38px;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 10px;
+
+  color: var(--accent-primary);
+
+  background: color-mix(
+    in srgb,
+    var(--accent-primary) 8%,
+    transparent
+  );
+
+  border: 1px solid color-mix(
+    in srgb,
+    var(--accent-primary) 15%,
+    transparent
+  );
+}
+
+
+.three-d-feature > div:last-child {
+  display: flex;
+  flex-direction: column;
+
+  gap: 3px;
+}
+
+
+.three-d-feature strong {
+  color: var(--text-primary);
+
+  font-size: 0.9rem;
+  font-weight: 650;
+}
+
+
+.three-d-feature span {
+  color: var(--text-secondary);
+
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+
+
+/* =========================================================
+   STATUS
+   ========================================================= */
+
+.three-d-status {
+  display: inline-flex;
+  align-items: center;
+
+  gap: 9px;
+
+  margin-top: 28px;
+
+  color: var(--text-secondary);
+
+  font-size: 0.78rem;
+}
+
+
+.three-d-status-dot {
+  width: 7px;
+  height: 7px;
+
+  flex: 0 0 auto;
+
+  border-radius: 50%;
+
+  background: var(--accent-primary);
+
+  box-shadow:
+    0 0 0 4px color-mix(
+      in srgb,
+      var(--accent-primary) 8%,
+      transparent
+    ),
+    0 0 14px color-mix(
+      in srgb,
+      var(--accent-primary) 35%,
+      transparent
+    );
+
+  animation: three-d-status-pulse 2s ease-in-out infinite;
+}
+
+
+@keyframes three-d-status-pulse {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: scale(0.9);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+}
+
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media (max-width: 1024px) {
+  .three-d-section {
+    padding: 110px 0;
+  }
+
+  .three-d-main {
+    grid-template-columns: 1fr;
+
+    gap: 55px;
+  }
+
+  .three-d-canvas {
+    height: 520px;
+  }
+
+  .three-d-content {
+    max-width: 720px;
+    margin: 0 auto;
+  }
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 768px) {
+  .three-d-section {
+    padding: 90px 0;
+  }
+
+  .three-d-container {
+    width: min(
+      100% - 32px,
+      600px
+    );
+  }
+
+  .three-d-header {
+    margin-bottom: 45px;
+  }
+
+  .three-d-header .section-title {
+    font-size: clamp(
+      2.1rem,
+      10vw,
+      3rem
+    );
+  }
+
+  .three-d-header-text {
+    font-size: 0.92rem;
+  }
+
+  .three-d-canvas {
+    height: 420px;
+
+    border-radius: 22px;
+  }
+
+  .three-d-content h3 {
+    font-size: 2.15rem;
+  }
+
+  .three-d-content > p {
+    font-size: 0.9rem;
+  }
+
+  .three-d-features {
+    gap: 11px;
+  }
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+   ========================================================= */
+
+@media (max-width: 480px) {
+  .three-d-section {
+    padding: 75px 0;
+  }
+
+  .three-d-container {
+    width: calc(100% - 24px);
+  }
+
+  .three-d-canvas {
+    height: 350px;
+
+    border-radius: 18px;
+  }
+
+  .three-d-feature {
+    padding: 12px;
+  }
+
+  .three-d-feature-icon {
+    width: 34px;
+    height: 34px;
+  }
+
+  .three-d-feature strong {
+    font-size: 0.82rem;
+  }
+
+  .three-d-feature span {
+    font-size: 0.72rem;
+  }
+
+  .three-d-status {
+    font-size: 0.7rem;
+  }
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .three-d-feature {
+    transition: none;
+  }
+
+  .three-d-feature:hover {
+    transform: none;
+  }
+
+  .three-d-status-dot {
+    animation: none;
+  }
+}

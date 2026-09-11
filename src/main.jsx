@@ -1,73 +1,35 @@
-import { StrictMode } from "react";
+import React from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
-import { registerSW } from "virtual:pwa-register";
 
 import App from "./App.jsx";
-
-import {
-ThemeProvider,
-} from "./components/Detection/context/ThemeContext.jsx";
-
 import Detection from "./components/Detection/Detection.jsx";
+import { ThemeProvider } from "./components/Detection/context/ThemeContext.jsx";
+import ThemeTransition from "./components/Detection/Effects/Transition/ThemeTransition.jsx";
 
 import "./index.css";
+import "./App.css";
 
-/* =====================================================
-ROUTER BASE PATH
-===================================================== */
+const rootElement = document.getElementById("root");
 
 const isGitHubPages =
-window.location.hostname.includes("github.io");
+window.location.hostname.endsWith("github.io");
 
 const basename = isGitHubPages
 ? "/Portfoio"
-: "";
+: "/";
 
-/* =====================================================
-SERVICE WORKER
-===================================================== */
+const root = createRoot(rootElement);
 
-registerSW({
-immediate: true,
-
-onOfflineReady() {
-console.log("✅ App is ready to work offline.");
-},
-
-onNeedRefresh() {
-console.log("🔄 New version of the app is available.");
-},
-
-onRegisteredSW(swUrl, registration) {
-console.log(
-"✅ Service Worker registered:",
-swUrl
-);
-
-
-if (registration) {
-  console.log(
-    "✅ Offline caching is active."
-  );
-}
-
-
-},
-
-onRegisterError(error) {
-console.error(
-"❌ Service worker registration failed:",
-error
-);
-},
-});
-
-/* =====================================================
-REACT ROOT
-===================================================== */
-
-createRoot(
-document.getElementById("root")
-).render( <StrictMode> <BrowserRouter basename={basename}> <ThemeProvider> <Detection> <App /> </Detection> </ThemeProvider> </BrowserRouter> </StrictMode>
+root.render(
+<React.StrictMode>
+<BrowserRouter basename={basename}>
+<ThemeProvider>
+<Detection>
+<ThemeTransition />
+<App />
+</Detection>
+</ThemeProvider>
+</BrowserRouter>
+</React.StrictMode>
 );

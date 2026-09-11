@@ -1,11 +1,24 @@
 import { useEffect, useRef } from "react";
+import { Link } from "react-router-dom";
 import gsap from "gsap";
 
 function MagneticButton({
   children,
   strength = 0.25,
   duration = 0.35,
+
+  variant = "primary",
+  size = "md",
+  icon: Icon,
+
+  href,
+  download = false,
+  external = false,
+
   className = "",
+  disabled = false,
+  type = "button",
+
   ...props
 }) {
   const buttonRef = useRef(null);
@@ -23,24 +36,16 @@ function MagneticButton({
       "(prefers-reduced-motion: reduce)"
     ).matches;
 
-    if (isTouchDevice || prefersReducedMotion) {
-      return;
-    }
+    if (isTouchDevice || prefersReducedMotion) return;
 
     const handleMouseMove = (event) => {
       const rect = button.getBoundingClientRect();
 
-      const buttonCenterX =
-        rect.left + rect.width / 2;
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
 
-      const buttonCenterY =
-        rect.top + rect.height / 2;
-
-      const distanceX =
-        event.clientX - buttonCenterX;
-
-      const distanceY =
-        event.clientY - buttonCenterY;
+      const distanceX = event.clientX - centerX;
+      const distanceY = event.clientY - centerY;
 
       gsap.to(button, {
         x: distanceX * strength,
@@ -71,49 +76,122 @@ function MagneticButton({
       });
     };
 
-    button.addEventListener(
-      "mousemove",
-      handleMouseMove
-    );
-
-    button.addEventListener(
-      "mouseenter",
-      handleMouseEnter
-    );
-
-    button.addEventListener(
-      "mouseleave",
-      handleMouseLeave
-    );
+    button.addEventListener("mousemove", handleMouseMove);
+    button.addEventListener("mouseenter", handleMouseEnter);
+    button.addEventListener("mouseleave", handleMouseLeave);
 
     return () => {
-      button.removeEventListener(
-        "mousemove",
-        handleMouseMove
-      );
-
-      button.removeEventListener(
-        "mouseenter",
-        handleMouseEnter
-      );
-
-      button.removeEventListener(
-        "mouseleave",
-        handleMouseLeave
-      );
+      button.removeEventListener("mousemove", handleMouseMove);
+      button.removeEventListener("mouseenter", handleMouseEnter);
+      button.removeEventListener("mouseleave", handleMouseLeave);
 
       gsap.killTweensOf(button);
     };
   }, [strength, duration]);
 
+  const classes = [
+    "btn",
+    `btn-${variant}`,
+    `btn-${size}`,
+    "magnetic-button",
+    disabled ? "btn-disabled" : "",
+    className,
+  ]
+    .filter(Boolean)
+    .join(" ");
+
+  const content = (
+    <>
+      <span className="btn-text">{children}</span>
+
+      {Icon && (
+        <span className="btn-icon" aria-hidden="true">
+          <Icon size={18} strokeWidth={2} />
+        </span>
+      )}
+    </>
+  );
+
+  const handleClick = (event) => {
+    if (disabled) {
+      event.preventDefault();
+      return;
+    }
+
+    props.onClick?.(event);
+  };
+
+  const commonProps = {
+    ref: buttonRef,
+    className: classes,
+    "aria-disabled": disabled ? "true" : undefined,
+    onClick: handleClick,
+  };
+
+  if (!href) {
+    return (
+      <button
+        {...commonProps}
+        type={type}
+        disabled={disabled}
+        {...Object.fromEntries(
+          Object.entries(props).filter(
+            ([key]) => key !== "onClick"
+          )
+        )}
+      >
+        {content}
+      </button>
+    );
+  }
+
+  if (download) {
+    return (
+      <a
+        {...commonProps}
+        href={href}
+        download
+        {...Object.fromEntries(
+          Object.entries(props).filter(
+            ([key]) => key !== "onClick"
+          )
+        )}
+      >
+        {content}
+      </a>
+    );
+  }
+
+  if (external) {
+    return (
+      <a
+        {...commonProps}
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        {...Object.fromEntries(
+          Object.entries(props).filter(
+            ([key]) => key !== "onClick"
+          )
+        )}
+      >
+        {content}
+      </a>
+    );
+  }
+
   return (
-    <button
-      ref={buttonRef}
-      className={`magnetic-button ${className}`.trim()}
-      {...props}
+    <Link
+      {...commonProps}
+      to={href}
+      {...Object.fromEntries(
+        Object.entries(props).filter(
+          ([key]) => key !== "onClick"
+        )
+      )}
     >
-      {children}
-    </button>
+      {content}
+    </Link>
   );
 }
 

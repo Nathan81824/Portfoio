@@ -10,7 +10,7 @@
    - Framer Motion
    - Lucide React
    - Reusable Button component
-   - React Router
+   - MagneticButton
    - Background video
 ========================================================= */
 
@@ -25,7 +25,6 @@ import {
 ========================================================= */
 
 import {
-  // ArrowDown,
   ArrowRight,
   Download,
 } from "lucide-react";
@@ -53,7 +52,9 @@ import video from "../../assets/videos/hero-background.mp4";
    BUTTON
 ========================================================= */
 
-import Button from "../Shared/Button/Button.jsx";
+import Button, {
+  MagneticButton,
+} from "../Shared/Button/Button.jsx";
 
 
 /* =========================================================
@@ -63,18 +64,6 @@ import Button from "../Shared/Button/Button.jsx";
 import {
   getData,
 } from "../../javascript/data/data.js";
-
-
-/* =========================================================
-   ROUTER
-========================================================= */
-
-import {
-  Link,
-} from "react-router-dom";
-
-
-
 
 
 /* =========================================================
@@ -132,7 +121,7 @@ export default function Hero() {
 
 
   /* =======================================================
-     ROLE ROTATION
+     ROLE INDEX
   ======================================================= */
 
   const [
@@ -142,7 +131,7 @@ export default function Hero() {
 
 
   /* =======================================================
-     ROLE ROTATION EFFECT
+     ROLE ROTATION
   ======================================================= */
 
   useEffect(() => {
@@ -191,11 +180,9 @@ export default function Hero() {
 
   const currentRole =
     roles.length > 0
-
       ? roles[
           roleIndex % roles.length
         ]
-
       : "Frontend Developer";
 
 
@@ -206,6 +193,14 @@ export default function Hero() {
   const resumeUrl =
     personalInfo.resume ||
     `${import.meta.env.BASE_URL}resume.pdf`;
+
+
+  /* =======================================================
+     PROJECTS URL
+  ======================================================= */
+
+  const projectsUrl =
+    `${import.meta.env.BASE_URL}projects`;
 
 
   /* =======================================================
@@ -252,7 +247,7 @@ export default function Hero() {
 
 
       {/* ===================================================
-          AMBIENT GLOWS
+          AMBIENT GLOW ONE
       =================================================== */}
 
       <div
@@ -262,6 +257,11 @@ export default function Hero() {
         "
         aria-hidden="true"
       />
+
+
+      {/* ===================================================
+          AMBIENT GLOW TWO
+      =================================================== */}
 
       <div
         className="
@@ -283,41 +283,46 @@ export default function Hero() {
             HERO CONTENT
         ================================================= */}
 
-        <motion.div
-
-          className="hero-content"
-
-          initial={
-            shouldReduceMotion
-              ? false
-              : {
-                  opacity: 0,
-                  y: 25,
-                }
-          }
-
-          animate={
-            shouldReduceMotion
-              ? undefined
-              : {
-                  opacity: 1,
-                  y: 0,
-                }
-          }
-
-          transition={{
-            duration: 0.8,
-            ease: "easeOut",
-          }}
-        >
+        <div className="hero-content">
 
 
           {/* ===============================================
-              ROTATING ROLE
+              EYEBROW
+
+              Direction:
+              TOP → CENTER
           =============================================== */}
 
-          <div
+          <motion.div
+
             className="hero-eyebrow"
+
+            initial={
+              shouldReduceMotion
+                ? false
+                : {
+                    opacity: 0,
+                    y: -45,
+                    scale: 0.96,
+                  }
+            }
+
+            animate={
+              shouldReduceMotion
+                ? undefined
+                : {
+                    opacity: 1,
+                    y: 0,
+                    scale: 1,
+                  }
+            }
+
+            transition={{
+              duration: 0.75,
+              delay: 0.1,
+              ease: [0.22, 1, 0.36, 1],
+            }}
+
             aria-live="polite"
           >
 
@@ -351,7 +356,7 @@ export default function Hero() {
                       }
                     : {
                         opacity: 0,
-                        y: 8,
+                        y: 10,
                       }
                 }
 
@@ -368,7 +373,7 @@ export default function Hero() {
                       }
                     : {
                         opacity: 0,
-                        y: -8,
+                        y: -10,
                       }
                 }
 
@@ -384,11 +389,14 @@ export default function Hero() {
 
             </AnimatePresence>
 
-          </div>
+          </motion.div>
 
 
           {/* ===============================================
               MAIN HEADING
+
+              Direction:
+              LEFT → CENTER
           =============================================== */}
 
           <motion.h1
@@ -398,7 +406,8 @@ export default function Hero() {
                 ? false
                 : {
                     opacity: 0,
-                    y: 25,
+                    x: -90,
+                    scale: 0.97,
                   }
             }
 
@@ -407,14 +416,15 @@ export default function Hero() {
                 ? undefined
                 : {
                     opacity: 1,
-                    y: 0,
+                    x: 0,
+                    scale: 1,
                   }
             }
 
             transition={{
-              duration: 0.7,
-              delay: 0.3,
-              ease: "easeOut",
+              duration: 0.9,
+              delay: 0.35,
+              ease: [0.22, 1, 0.36, 1],
             }}
           >
 
@@ -436,6 +446,9 @@ export default function Hero() {
 
           {/* ===============================================
               SUBTITLE
+
+              Direction:
+              RIGHT → CENTER
           =============================================== */}
 
           <motion.h2
@@ -445,7 +458,8 @@ export default function Hero() {
                 ? false
                 : {
                     opacity: 0,
-                    y: 25,
+                    x: 90,
+                    scale: 0.97,
                   }
             }
 
@@ -454,14 +468,15 @@ export default function Hero() {
                 ? undefined
                 : {
                     opacity: 1,
-                    y: 0,
+                    x: 0,
+                    scale: 1,
                   }
             }
 
             transition={{
-              duration: 0.7,
-              delay: 0.45,
-              ease: "easeOut",
+              duration: 0.9,
+              delay: 0.55,
+              ease: [0.22, 1, 0.36, 1],
             }}
           >
 
@@ -475,6 +490,9 @@ export default function Hero() {
 
           {/* ===============================================
               DESCRIPTION
+
+              Direction:
+              LEFT → CENTER
           =============================================== */}
 
           <motion.p
@@ -488,7 +506,7 @@ export default function Hero() {
                 ? false
                 : {
                     opacity: 0,
-                    y: 20,
+                    x: -70,
                   }
             }
 
@@ -497,14 +515,14 @@ export default function Hero() {
                 ? undefined
                 : {
                     opacity: 1,
-                    y: 0,
+                    x: 0,
                   }
             }
 
             transition={{
-              duration: 0.7,
-              delay: 0.55,
-              ease: "easeOut",
+              duration: 0.85,
+              delay: 0.75,
+              ease: [0.22, 1, 0.36, 1],
             }}
           >
 
@@ -519,6 +537,9 @@ export default function Hero() {
 
           {/* ===============================================
               HERO ACTIONS
+
+              Direction:
+              BOTTOM → CENTER
           =============================================== */}
 
           <motion.div
@@ -530,7 +551,8 @@ export default function Hero() {
                 ? false
                 : {
                     opacity: 0,
-                    y: 20,
+                    y: 60,
+                    scale: 0.96,
                   }
             }
 
@@ -540,25 +562,32 @@ export default function Hero() {
                 : {
                     opacity: 1,
                     y: 0,
+                    scale: 1,
                   }
             }
 
             transition={{
-              duration: 0.7,
-              delay: 0.65,
-              ease: "easeOut",
+              duration: 0.9,
+              delay: 0.95,
+              ease: [0.22, 1, 0.36, 1],
             }}
           >
 
 
             {/* =============================================
                 VIEW MY WORK
+
+                ONE MAGNETIC BUTTON
             ============================================= */}
 
-            <Button
-              href="/projects"
+            <MagneticButton
+
+              href={projectsUrl}
+
               variant="primary"
+
               size="lg"
+
               icon={ArrowRight}
             >
 
@@ -567,18 +596,25 @@ export default function Hero() {
                 "View My Work"
               }
 
-            </Button>
+            </MagneticButton>
 
 
             {/* =============================================
                 DOWNLOAD RESUME
+
+                NORMAL BUTTON
             ============================================= */}
 
             <Button
+
               href={resumeUrl}
+
               variant="secondary"
+
               size="lg"
+
               icon={Download}
+
               download
             >
 
@@ -591,79 +627,12 @@ export default function Hero() {
 
           </motion.div>
 
-        </motion.div>
 
-
-        {/* =================================================
-            SCROLL INDICATOR
-        ================================================= */}
-
-        {/* <Link
-          to="/"
-          className="hero-scroll"
-          aria-label="Scroll to About section"
-          onClick={(event) => {
-
-            event.preventDefault();
-
-            document
-              .getElementById("about")
-              ?.scrollIntoView({
-                behavior:
-                  shouldReduceMotion
-                    ? "auto"
-                    : "smooth",
-              });
-
-          }}
-        >
-
-          <span>
-
-            {
-              homeText.scroll ||
-              "Scroll to explore"
-            }
-
-          </span>
-
-
-          <motion.div
-
-            animate={
-              shouldReduceMotion
-                ? undefined
-                : {
-                    y: [0, 7, 0],
-                  }
-            }
-
-            transition={{
-              duration: 1.5,
-
-              repeat:
-                shouldReduceMotion
-                  ? 0
-                  : Infinity,
-
-              ease: "easeInOut",
-            }}
-          >
-
-            <ArrowDown
-              size={18}
-              strokeWidth={2}
-              aria-hidden="true"
-            />
-
-          </motion.div>
-
-        </Link> */}
+        </div>
 
       </div>
 
     </section>
 
   );
-
 }

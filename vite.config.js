@@ -3,7 +3,9 @@ import react from "@vitejs/plugin-react";
 import { VitePWA } from "vite-plugin-pwa";
 
 export default defineConfig({
-base: process.env.VERCEL ? "/" : "/Portfoio/",
+base: process.env.NODE_ENV === "production"
+? "/Portfoio/"
+: "/",
 
 plugins: [
 react(),
