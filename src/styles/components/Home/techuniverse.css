@@ -1,0 +1,1869 @@
+/* =========================================================
+TECH UNIVERSE
+Nathan — Frontend Developer Portfolio
+========================================================= */
+
+.tech-universe {
+position: relative;
+width: 100%;
+min-height: 900px;
+padding: clamp(90px, 9vw, 140px) var(--section-padding-x, 6vw)
+clamp(90px, 8vw, 130px);
+
+overflow: hidden;
+isolation: isolate;
+
+background:
+radial-gradient(
+circle at 50% 48%,
+color-mix(in srgb, var(--accent-primary) 7%, transparent) 0%,
+transparent 30%
+),
+var(--bg-primary);
+
+color: var(--text-primary);
+}
+
+/* =========================================================
+BACKGROUND
+========================================================= */
+
+.tech-universe-background {
+position: absolute;
+inset: 0;
+z-index: -5;
+pointer-events: none;
+}
+
+.tech-universe-grid {
+position: absolute;
+inset: 0;
+
+background-image:
+linear-gradient(
+color-mix(in srgb, var(--text-primary) 3%, transparent) 1px,
+transparent 1px
+),
+linear-gradient(
+90deg,
+color-mix(in srgb, var(--text-primary) 3%, transparent) 1px,
+transparent 1px
+);
+
+background-size: 70px 70px;
+
+opacity: 0.35;
+
+mask-image: radial-gradient(
+ellipse at center,
+black 0%,
+rgba(0, 0, 0, 0.75) 40%,
+transparent 82%
+);
+
+-webkit-mask-image: radial-gradient(
+ellipse at center,
+black 0%,
+rgba(0, 0, 0, 0.75) 40%,
+transparent 82%
+);
+}
+
+.tech-universe-glow {
+position: absolute;
+border-radius: 50%;
+
+pointer-events: none;
+
+filter: blur(70px);
+}
+
+.tech-universe-glow-one {
+width: 520px;
+height: 520px;
+
+top: 18%;
+left: 50%;
+
+transform: translateX(-50%);
+
+background: color-mix(
+in srgb,
+var(--accent-primary) 8%,
+transparent
+);
+
+opacity: 0.8;
+}
+
+.tech-universe-glow-two {
+width: 320px;
+height: 320px;
+
+bottom: 5%;
+left: 12%;
+
+background: color-mix(
+in srgb,
+var(--accent-secondary) 6%,
+transparent
+);
+
+opacity: 0.65;
+}
+
+/* =========================================================
+HEADER
+========================================================= */
+
+.tech-universe-header {
+position: relative;
+z-index: 5;
+
+width: min(760px, 100%);
+
+margin: 0 auto clamp(45px, 6vw, 70px);
+
+text-align: center;
+}
+
+.tech-universe-eyebrow {
+display: inline-flex;
+align-items: center;
+justify-content: center;
+gap: 9px;
+
+margin-bottom: 16px;
+
+font-size: 0.72rem;
+font-weight: 700;
+
+letter-spacing: 0.2em;
+text-transform: uppercase;
+
+color: var(--accent-primary);
+}
+
+.tech-universe-eyebrow::before,
+.tech-universe-eyebrow::after {
+content: "";
+
+width: 26px;
+height: 1px;
+
+background: linear-gradient(
+90deg,
+transparent,
+var(--accent-primary)
+);
+}
+
+.tech-universe-eyebrow::after {
+background: linear-gradient(
+90deg,
+var(--accent-primary),
+transparent
+);
+}
+
+.tech-universe-header h2 {
+margin: 0;
+
+font-size: clamp(2.1rem, 5vw, 4.3rem);
+line-height: 1.02;
+
+letter-spacing: -0.045em;
+
+color: var(--text-primary);
+}
+
+.tech-universe-header p {
+max-width: 650px;
+
+margin: 22px auto 0;
+
+font-size: clamp(0.95rem, 1.5vw, 1.08rem);
+line-height: 1.8;
+
+color: var(--text-secondary);
+}
+
+/* =========================================================
+MAIN STAGE
+========================================================= */
+
+.tech-universe-stage {
+position: relative;
+
+width: min(1050px, 100%);
+height: 650px;
+
+margin: 0 auto;
+
+perspective: 1400px;
+transform-style: preserve-3d;
+}
+
+/* =========================================================
+ORBIT RINGS
+========================================================= */
+
+.tech-orbit {
+position: absolute;
+
+top: 50%;
+left: 50%;
+
+border: 1px solid
+color-mix(in srgb, var(--accent-primary) 18%, transparent);
+
+border-radius: 50%;
+
+transform-style: preserve-3d;
+
+pointer-events: none;
+
+box-shadow:
+0 0 25px
+color-mix(in srgb, var(--accent-primary) 4%, transparent),
+inset 0 0 25px
+color-mix(in srgb, var(--accent-primary) 3%, transparent);
+}
+
+.tech-orbit-one {
+width: 450px;
+height: 450px;
+
+margin-left: -225px;
+margin-top: -225px;
+
+transform: rotateX(67deg) rotateZ(-12deg);
+
+opacity: 0.9;
+}
+
+.tech-orbit-two {
+width: 700px;
+height: 390px;
+
+margin-left: -350px;
+margin-top: -195px;
+
+transform: rotateX(67deg) rotateY(-16deg) rotateZ(15deg);
+
+opacity: 0.62;
+}
+
+.tech-orbit-three {
+width: 900px;
+height: 500px;
+
+margin-left: -450px;
+margin-top: -250px;
+
+transform: rotateX(68deg) rotateY(18deg) rotateZ(-20deg);
+
+opacity: 0.4;
+}
+
+/* =========================================================
+ORBIT HIGHLIGHTS
+========================================================= */
+
+.tech-orbit::before {
+content: "";
+
+position: absolute;
+
+top: 50%;
+left: 0;
+
+width: 7px;
+height: 7px;
+
+transform: translate(-50%, -50%);
+
+border-radius: 50%;
+
+background: var(--accent-primary);
+
+box-shadow:
+0 0 10px var(--accent-primary),
+0 0 25px var(--accent-primary),
+0 0 50px
+color-mix(in srgb, var(--accent-primary) 70%, transparent);
+}
+
+.tech-orbit-two::before {
+top: 100%;
+left: 50%;
+}
+
+.tech-orbit-three::before {
+top: 0;
+left: 72%;
+}
+
+/* =========================================================
+CONNECTION LINES
+========================================================= */
+
+.tech-connection {
+position: absolute;
+
+height: 1px;
+
+transform-origin: left center;
+
+background: linear-gradient(
+90deg,
+color-mix(in srgb, var(--accent-primary) 30%, transparent),
+color-mix(in srgb, var(--accent-primary) 8%, transparent),
+transparent
+);
+
+opacity: 0.4;
+
+pointer-events: none;
+
+box-shadow:
+0 0 7px
+color-mix(in srgb, var(--accent-primary) 18%, transparent);
+}
+
+.tech-connection-react {
+width: 210px;
+
+top: 39%;
+left: 27%;
+
+transform: rotate(25deg);
+}
+
+.tech-connection-javascript {
+width: 235px;
+
+top: 42%;
+left: 58%;
+
+transform: rotate(154deg);
+}
+
+.tech-connection-html {
+width: 190px;
+
+top: 64%;
+left: 32%;
+
+transform: rotate(-27deg);
+}
+
+.tech-connection-css {
+width: 220px;
+
+top: 67%;
+left: 56%;
+
+transform: rotate(204deg);
+}
+
+.tech-connection-vite {
+width: 170px;
+
+top: 30%;
+left: 45%;
+
+transform: rotate(74deg);
+}
+
+.tech-connection-git {
+width: 180px;
+
+top: 69%;
+left: 45%;
+
+transform: rotate(-78deg);
+}
+
+/* =========================================================
+CONNECTION PULSE
+========================================================= */
+
+.tech-connection::after {
+content: "";
+
+position: absolute;
+
+left: 0;
+top: 50%;
+
+width: 5px;
+height: 5px;
+
+transform: translateY(-50%);
+
+border-radius: 50%;
+
+background: var(--accent-primary);
+
+box-shadow:
+0 0 8px var(--accent-primary),
+0 0 16px var(--accent-primary);
+
+animation: techConnectionPulse 2.5s ease-in-out infinite;
+}
+
+@keyframes techConnectionPulse {
+0% {
+left: 0;
+opacity: 0;
+}
+
+15% {
+opacity: 1;
+}
+
+80% {
+opacity: 0.8;
+}
+
+100% {
+left: 100%;
+opacity: 0;
+}
+}
+
+/* =========================================================
+CENTER
+========================================================= */
+
+.tech-universe-center {
+position: absolute;
+
+top: 50%;
+left: 50%;
+
+width: 190px;
+height: 190px;
+
+transform: translate(-50%, -50%);
+
+display: flex;
+align-items: center;
+justify-content: center;
+
+z-index: 20;
+
+transform-style: preserve-3d;
+}
+
+.tech-center-ring {
+position: absolute;
+
+inset: 0;
+
+border-radius: 50%;
+
+border: 1px solid
+color-mix(in srgb, var(--accent-primary) 42%, transparent);
+
+pointer-events: none;
+}
+
+.tech-center-ring-one {
+animation: centerRingRotate 18s linear infinite;
+
+box-shadow:
+0 0 20px
+color-mix(in srgb, var(--accent-primary) 12%, transparent);
+}
+
+.tech-center-ring-two {
+inset: 13px;
+
+border-style: dashed;
+
+border-color:
+color-mix(in srgb, var(--accent-secondary) 35%, transparent);
+
+animation: centerRingRotateReverse 14s linear infinite;
+}
+
+@keyframes centerRingRotate {
+from {
+transform: rotate(0deg);
+}
+
+to {
+transform: rotate(360deg);
+}
+}
+
+@keyframes centerRingRotateReverse {
+from {
+transform: rotate(360deg);
+}
+
+to {
+transform: rotate(0deg);
+}
+}
+
+/* =========================================================
+CENTER CORE
+========================================================= */
+
+.tech-center-core {
+position: relative;
+
+width: 128px;
+height: 128px;
+
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+
+border-radius: 50%;
+
+border: 1px solid
+color-mix(in srgb, var(--accent-primary) 38%, transparent);
+
+background:
+radial-gradient(
+circle,
+color-mix(in srgb, var(--accent-primary) 12%, transparent),
+color-mix(in srgb, var(--bg-secondary) 92%, transparent) 70%
+);
+
+backdrop-filter: blur(14px);
+-webkit-backdrop-filter: blur(14px);
+
+box-shadow:
+0 0 30px
+color-mix(in srgb, var(--accent-primary) 12%, transparent),
+inset 0 0 25px
+color-mix(in srgb, var(--accent-primary) 5%, transparent);
+
+z-index: 2;
+}
+
+.tech-center-core::before {
+content: "";
+
+position: absolute;
+
+inset: 8px;
+
+border-radius: 50%;
+
+border: 1px solid
+color-mix(in srgb, var(--accent-primary) 12%, transparent);
+
+animation: corePulse 3s ease-in-out infinite;
+}
+
+@keyframes corePulse {
+0%,
+100% {
+transform: scale(0.95);
+opacity: 0.4;
+}
+
+50% {
+transform: scale(1.05);
+opacity: 1;
+}
+}
+
+.tech-center-icon {
+width: 27px;
+height: 27px;
+
+margin-bottom: 8px;
+
+color: var(--accent-primary);
+
+filter:
+drop-shadow(
+0 0 8px
+color-mix(in srgb, var(--accent-primary) 70%, transparent)
+);
+}
+
+.tech-center-core span {
+display: block;
+
+text-align: center;
+}
+
+.tech-center-core span:first-of-type {
+font-size: 0.68rem;
+font-weight: 800;
+
+letter-spacing: 0.17em;
+
+color: var(--text-primary);
+}
+
+.tech-center-core span:last-of-type {
+margin-top: 4px;
+
+font-size: 0.48rem;
+font-weight: 600;
+
+letter-spacing: 0.11em;
+
+color: var(--text-tertiary);
+}
+
+/* =========================================================
+TECHNOLOGY NODES
+========================================================= */
+
+.tech-node {
+position: absolute;
+
+z-index: 15;
+
+width: 150px;
+
+transform-style: preserve-3d;
+
+cursor: default;
+
+transition:
+filter 0.35s ease,
+z-index 0.35s ease;
+}
+
+.tech-node:hover {
+z-index: 50;
+
+filter:
+drop-shadow(
+0 0 18px
+color-mix(in srgb, var(--accent-primary) 22%, transparent)
+);
+}
+
+.tech-node-inner {
+position: relative;
+
+min-height: 76px;
+
+padding: 12px 14px;
+
+display: flex;
+align-items: center;
+gap: 11px;
+
+border: 1px solid
+color-mix(in srgb, var(--text-primary) 9%, transparent);
+
+border-radius: 14px;
+
+background:
+linear-gradient(
+135deg,
+color-mix(in srgb, var(--bg-card) 94%, transparent),
+color-mix(in srgb, var(--bg-secondary) 90%, transparent)
+);
+
+backdrop-filter: blur(14px);
+-webkit-backdrop-filter: blur(14px);
+
+box-shadow:
+0 15px 40px
+color-mix(in srgb, var(--shadow-color) 60%, transparent);
+
+transform-style: preserve-3d;
+
+transition:
+border-color 0.35s ease,
+background 0.35s ease,
+box-shadow 0.35s ease,
+transform 0.35s ease;
+}
+
+.tech-node:hover .tech-node-inner {
+border-color:
+color-mix(in srgb, var(--accent-primary) 48%, transparent);
+
+background:
+linear-gradient(
+135deg,
+color-mix(in srgb, var(--accent-primary) 8%, var(--bg-card)),
+color-mix(in srgb, var(--bg-secondary) 92%, transparent)
+);
+
+box-shadow:
+0 20px 50px
+color-mix(in srgb, var(--shadow-color) 70%, transparent),
+0 0 25px
+color-mix(in srgb, var(--accent-primary) 10%, transparent);
+}
+
+.tech-node-icon {
+flex-shrink: 0;
+
+width: 31px;
+height: 31px;
+
+display: flex;
+align-items: center;
+justify-content: center;
+
+border-radius: 9px;
+
+color: var(--accent-primary);
+
+background:
+color-mix(in srgb, var(--accent-primary) 9%, transparent);
+
+border: 1px solid
+color-mix(in srgb, var(--accent-primary) 13%, transparent);
+
+transition:
+transform 0.35s ease,
+background 0.35s ease,
+box-shadow 0.35s ease;
+}
+
+.tech-node-icon svg {
+width: 18px;
+height: 18px;
+}
+
+.tech-node:hover .tech-node-icon {
+transform: translateZ(18px) scale(1.08);
+
+background:
+color-mix(in srgb, var(--accent-primary) 15%, transparent);
+
+box-shadow:
+0 0 15px
+color-mix(in srgb, var(--accent-primary) 18%, transparent);
+}
+
+.tech-node-info {
+min-width: 0;
+}
+
+.tech-node-name {
+display: block;
+
+overflow: hidden;
+
+font-size: 0.78rem;
+font-weight: 700;
+
+line-height: 1.2;
+
+white-space: nowrap;
+text-overflow: ellipsis;
+
+color: var(--text-primary);
+}
+
+.tech-node-category {
+display: block;
+
+margin-top: 5px;
+
+font-size: 0.58rem;
+font-weight: 600;
+
+letter-spacing: 0.05em;
+
+color: var(--text-tertiary);
+}
+
+/* =========================================================
+NODE POSITIONS
+========================================================= */
+
+.tech-node-react {
+top: 18%;
+left: 18%;
+
+transform: translateZ(90px);
+}
+
+.tech-node-javascript {
+top: 10%;
+right: 20%;
+
+transform: translateZ(140px);
+}
+
+.tech-node-html5 {
+top: 42%;
+left: 3%;
+
+transform: translateZ(45px);
+}
+
+.tech-node-css3 {
+top: 67%;
+left: 13%;
+
+transform: translateZ(110px);
+}
+
+.tech-node-tailwind {
+top: 76%;
+left: 42%;
+
+transform: translateZ(70px);
+}
+
+.tech-node-vite {
+top: 66%;
+right: 10%;
+
+transform: translateZ(145px);
+}
+
+.tech-node-git {
+top: 40%;
+right: 2%;
+
+transform: translateZ(80px);
+}
+
+.tech-node-github {
+top: 21%;
+right: 5%;
+
+transform: translateZ(55px);
+}
+
+.tech-node-react-router {
+top: 52%;
+right: 19%;
+
+transform: translateZ(125px);
+}
+
+.tech-node-rest-apis {
+top: 29%;
+left: 7%;
+
+transform: translateZ(150px);
+}
+
+.tech-node-clean-code {
+top: 57%;
+left: 30%;
+
+transform: translateZ(180px);
+}
+
+.tech-node-components {
+top: 25%;
+left: 40%;
+
+transform: translateZ(210px);
+}
+
+/* =========================================================
+NODE ACCENT DOT
+========================================================= */
+
+.tech-node-inner::after {
+content: "";
+
+position: absolute;
+
+top: 8px;
+right: 8px;
+
+width: 4px;
+height: 4px;
+
+border-radius: 50%;
+
+background: var(--accent-primary);
+
+opacity: 0.45;
+
+box-shadow:
+0 0 8px
+color-mix(in srgb, var(--accent-primary) 60%, transparent);
+
+transition:
+opacity 0.3s ease,
+transform 0.3s ease;
+}
+
+.tech-node:hover .tech-node-inner::after {
+opacity: 1;
+
+transform: scale(1.4);
+}
+
+/* =========================================================
+CORE PARTICLES
+========================================================= */
+
+.tech-core-particle {
+position: absolute;
+
+width: 5px;
+height: 5px;
+
+border-radius: 50%;
+
+background: var(--accent-primary);
+
+box-shadow:
+0 0 8px var(--accent-primary),
+0 0 18px
+color-mix(in srgb, var(--accent-primary) 65%, transparent);
+
+pointer-events: none;
+}
+
+.tech-core-particle-one {
+top: 16%;
+left: 47%;
+}
+
+.tech-core-particle-two {
+top: 69%;
+left: 57%;
+}
+
+.tech-core-particle-three {
+top: 48%;
+left: 82%;
+}
+
+/* =========================================================
+BACKGROUND PARTICLES
+========================================================= */
+
+.tech-particles {
+position: absolute;
+inset: 0;
+
+z-index: -1;
+
+pointer-events: none;
+}
+
+.tech-particle {
+position: absolute;
+
+width: 3px;
+height: 3px;
+
+border-radius: 50%;
+
+background: var(--accent-primary);
+
+box-shadow:
+0 0 7px
+color-mix(in srgb, var(--accent-primary) 70%, transparent);
+
+opacity: 0.35;
+}
+
+.tech-particle-one {
+top: 18%;
+left: 10%;
+}
+
+.tech-particle-two {
+top: 28%;
+left: 84%;
+}
+
+.tech-particle-three {
+top: 65%;
+left: 8%;
+}
+
+.tech-particle-four {
+top: 78%;
+left: 88%;
+}
+
+.tech-particle-five {
+top: 12%;
+left: 63%;
+}
+
+.tech-particle-six {
+top: 86%;
+left: 57%;
+}
+
+/* =========================================================
+FOOTER MESSAGE
+========================================================= */
+
+.tech-universe-footer {
+position: relative;
+
+width: min(700px, 100%);
+
+margin: 40px auto 0;
+
+display: flex;
+align-items: center;
+justify-content: center;
+gap: 14px;
+
+text-align: center;
+}
+
+.tech-footer-line {
+width: 55px;
+height: 1px;
+
+flex-shrink: 0;
+
+background: linear-gradient(
+90deg,
+transparent,
+color-mix(in srgb, var(--accent-primary) 40%, transparent)
+);
+}
+
+.tech-footer-line:last-of-type {
+background: linear-gradient(
+90deg,
+color-mix(in srgb, var(--accent-primary) 40%, transparent),
+transparent
+);
+}
+
+.tech-universe-footer p {
+margin: 0;
+
+font-size: 0.72rem;
+font-weight: 600;
+
+letter-spacing: 0.08em;
+
+color: var(--text-tertiary);
+}
+
+.tech-footer-icon {
+width: 15px;
+height: 15px;
+
+flex-shrink: 0;
+
+color: var(--accent-primary);
+
+filter:
+drop-shadow(
+0 0 6px
+color-mix(in srgb, var(--accent-primary) 55%, transparent)
+);
+}
+
+/* =========================================================
+LIGHT THEME
+========================================================= */
+
+.light-theme .tech-universe {
+background:
+radial-gradient(
+circle at 50% 48%,
+color-mix(in srgb, var(--accent-primary) 6%, transparent),
+transparent 31%
+),
+var(--bg-primary);
+}
+
+.light-theme .tech-universe-grid {
+opacity: 0.22;
+}
+
+.light-theme .tech-node-inner {
+box-shadow:
+0 15px 40px
+color-mix(in srgb, var(--shadow-color) 70%, transparent);
+}
+
+.light-theme .tech-center-core {
+background:
+radial-gradient(
+circle,
+color-mix(in srgb, var(--accent-primary) 7%, transparent),
+var(--bg-secondary) 72%
+);
+}
+
+/* =========================================================
+TABLET
+========================================================= */
+
+@media (max-width: 1050px) {
+.tech-universe {
+min-height: 850px;
+}
+
+.tech-universe-stage {
+height: 610px;
+}
+
+.tech-orbit-one {
+width: 400px;
+height: 400px;
+
+
+margin-left: -200px;
+margin-top: -200px;
+
+
+}
+
+.tech-orbit-two {
+width: 620px;
+height: 350px;
+
+
+margin-left: -310px;
+margin-top: -175px;
+
+
+}
+
+.tech-orbit-three {
+width: 780px;
+height: 440px;
+
+
+margin-left: -390px;
+margin-top: -220px;
+
+
+}
+
+.tech-node {
+width: 140px;
+}
+
+.tech-node-inner {
+min-height: 70px;
+padding: 11px 12px;
+}
+
+.tech-node-react {
+left: 14%;
+}
+
+.tech-node-javascript {
+right: 14%;
+}
+
+.tech-node-html5 {
+left: 1%;
+}
+
+.tech-node-css3 {
+left: 8%;
+}
+
+.tech-node-git {
+right: 0;
+}
+
+.tech-node-github {
+right: 2%;
+}
+
+.tech-node-vite {
+right: 6%;
+}
+}
+
+/* =========================================================
+TABLET / SMALL LAPTOP
+========================================================= */
+
+@media (max-width: 850px) {
+.tech-universe {
+min-height: 800px;
+
+
+padding-top: 80px;
+padding-bottom: 90px;
+
+
+}
+
+.tech-universe-stage {
+height: 570px;
+
+
+transform: scale(0.94);
+transform-origin: center;
+
+
+}
+
+.tech-orbit-three {
+opacity: 0.22;
+}
+
+.tech-node {
+width: 132px;
+}
+
+.tech-node-inner {
+min-height: 66px;
+}
+
+.tech-node-category {
+font-size: 0.54rem;
+}
+
+.tech-node-clean-code {
+left: 27%;
+}
+
+.tech-node-components {
+left: 37%;
+}
+
+.tech-connection {
+opacity: 0.25;
+}
+}
+
+/* =========================================================
+MOBILE
+========================================================= */
+
+@media (max-width: 700px) {
+.tech-universe {
+min-height: auto;
+
+
+padding:
+  75px
+  20px
+  80px;
+
+
+}
+
+.tech-universe-header {
+margin-bottom: 25px;
+}
+
+.tech-universe-eyebrow {
+font-size: 0.62rem;
+
+
+letter-spacing: 0.15em;
+
+
+}
+
+.tech-universe-eyebrow::before,
+.tech-universe-eyebrow::after {
+width: 18px;
+}
+
+.tech-universe-header h2 {
+font-size: clamp(2rem, 10vw, 3rem);
+}
+
+.tech-universe-header p {
+margin-top: 17px;
+
+
+font-size: 0.9rem;
+
+line-height: 1.7;
+
+
+}
+
+/*
+On mobile we turn the 3D universe into
+a cleaner compact technology constellation.
+*/
+
+.tech-universe-stage {
+width: 100%;
+height: 600px;
+
+
+transform: none;
+
+perspective: 1000px;
+
+
+}
+
+.tech-orbit-one {
+width: 330px;
+height: 330px;
+
+
+margin-left: -165px;
+margin-top: -165px;
+
+opacity: 0.7;
+
+
+}
+
+.tech-orbit-two {
+width: 470px;
+height: 280px;
+
+
+margin-left: -235px;
+margin-top: -140px;
+
+opacity: 0.35;
+
+
+}
+
+.tech-orbit-three {
+width: 560px;
+height: 330px;
+
+
+margin-left: -280px;
+margin-top: -165px;
+
+opacity: 0.15;
+
+
+}
+
+.tech-universe-center {
+width: 150px;
+height: 150px;
+}
+
+.tech-center-core {
+width: 105px;
+height: 105px;
+}
+
+.tech-center-icon {
+width: 22px;
+height: 22px;
+
+
+margin-bottom: 6px;
+
+
+}
+
+.tech-center-core span:first-of-type {
+font-size: 0.58rem;
+}
+
+.tech-center-core span:last-of-type {
+font-size: 0.4rem;
+}
+
+.tech-node {
+width: 122px;
+}
+
+.tech-node-inner {
+min-height: 62px;
+
+
+padding: 9px 10px;
+
+gap: 8px;
+
+border-radius: 12px;
+
+
+}
+
+.tech-node-icon {
+width: 27px;
+height: 27px;
+
+
+border-radius: 7px;
+
+
+}
+
+.tech-node-icon svg {
+width: 15px;
+height: 15px;
+}
+
+.tech-node-name {
+font-size: 0.66rem;
+}
+
+.tech-node-category {
+margin-top: 3px;
+
+
+font-size: 0.48rem;
+
+
+}
+
+/* Reposition mobile nodes */
+
+.tech-node-react {
+top: 8%;
+left: 1%;
+}
+
+.tech-node-javascript {
+top: 8%;
+right: 1%;
+}
+
+.tech-node-html5 {
+top: 28%;
+left: -1%;
+}
+
+.tech-node-css3 {
+top: 49%;
+left: 0;
+}
+
+.tech-node-tailwind {
+top: 72%;
+left: 5%;
+}
+
+.tech-node-vite {
+top: 73%;
+right: 3%;
+}
+
+.tech-node-git {
+top: 49%;
+right: 0;
+}
+
+.tech-node-github {
+top: 28%;
+right: 0;
+}
+
+.tech-node-react-router {
+top: 58%;
+right: 8%;
+}
+
+.tech-node-rest-apis {
+top: 20%;
+left: 34%;
+}
+
+.tech-node-clean-code {
+top: 78%;
+left: 35%;
+}
+
+.tech-node-components {
+top: 35%;
+left: 34%;
+}
+
+/*
+Keep mobile connection lines subtle.
+*/
+
+.tech-connection {
+opacity: 0.16;
+}
+
+.tech-connection-react {
+width: 100px;
+
+
+top: 25%;
+left: 27%;
+
+
+}
+
+.tech-connection-javascript {
+width: 100px;
+
+
+top: 25%;
+left: 59%;
+
+
+}
+
+.tech-connection-html {
+width: 100px;
+
+
+top: 49%;
+left: 25%;
+
+
+}
+
+.tech-connection-css {
+width: 110px;
+
+
+top: 65%;
+left: 57%;
+
+
+}
+
+.tech-connection-vite,
+.tech-connection-git {
+opacity: 0.1;
+}
+
+.tech-particle {
+opacity: 0.22;
+}
+
+.tech-universe-footer {
+margin-top: 10px;
+
+
+gap: 9px;
+
+
+}
+
+.tech-universe-footer p {
+font-size: 0.6rem;
+
+
+line-height: 1.6;
+
+
+}
+
+.tech-footer-line {
+width: 25px;
+}
+}
+
+/* =========================================================
+SMALL MOBILE
+========================================================= */
+
+@media (max-width: 480px) {
+.tech-universe {
+padding:
+65px
+14px
+70px;
+}
+
+.tech-universe-header h2 {
+font-size: 2rem;
+}
+
+.tech-universe-header p {
+font-size: 0.84rem;
+}
+
+.tech-universe-stage {
+height: 560px;
+}
+
+.tech-orbit-one {
+width: 290px;
+height: 290px;
+
+
+margin-left: -145px;
+margin-top: -145px;
+
+
+}
+
+.tech-orbit-two {
+width: 400px;
+height: 240px;
+
+
+margin-left: -200px;
+margin-top: -120px;
+
+
+}
+
+.tech-orbit-three {
+width: 480px;
+height: 290px;
+
+
+margin-left: -240px;
+margin-top: -145px;
+
+
+}
+
+.tech-universe-center {
+width: 130px;
+height: 130px;
+}
+
+.tech-center-core {
+width: 92px;
+height: 92px;
+}
+
+.tech-node {
+width: 108px;
+}
+
+.tech-node-inner {
+min-height: 56px;
+
+
+padding: 8px;
+
+gap: 7px;
+
+
+}
+
+.tech-node-icon {
+width: 24px;
+height: 24px;
+}
+
+.tech-node-icon svg {
+width: 13px;
+height: 13px;
+}
+
+.tech-node-name {
+font-size: 0.58rem;
+}
+
+.tech-node-category {
+font-size: 0.42rem;
+}
+
+.tech-node-react {
+top: 7%;
+}
+
+.tech-node-javascript {
+top: 7%;
+}
+
+.tech-node-html5 {
+top: 27%;
+}
+
+.tech-node-github {
+top: 27%;
+}
+
+.tech-node-components {
+top: 35%;
+}
+
+.tech-node-css3 {
+top: 49%;
+}
+
+.tech-node-git {
+top: 49%;
+}
+
+.tech-node-react-router {
+top: 60%;
+}
+
+.tech-node-tailwind {
+top: 73%;
+}
+
+.tech-node-vite {
+top: 73%;
+}
+
+.tech-node-clean-code {
+top: 79%;
+}
+
+.tech-universe-footer p {
+font-size: 0.54rem;
+
+
+letter-spacing: 0.04em;
+
+
+}
+
+.tech-footer-line {
+width: 16px;
+}
+}
+
+/* =========================================================
+VERY SMALL DEVICES
+========================================================= */
+
+@media (max-width: 360px) {
+.tech-universe {
+padding-left: 10px;
+padding-right: 10px;
+}
+
+.tech-universe-stage {
+height: 520px;
+}
+
+.tech-node {
+width: 98px;
+}
+
+.tech-node-inner {
+padding: 7px;
+
+
+gap: 6px;
+
+
+}
+
+.tech-node-icon {
+width: 22px;
+height: 22px;
+}
+
+.tech-node-name {
+font-size: 0.54rem;
+}
+
+.tech-node-category {
+display: none;
+}
+
+.tech-universe-center {
+width: 115px;
+height: 115px;
+}
+
+.tech-center-core {
+width: 82px;
+height: 82px;
+}
+}
+
+/* =========================================================
+REDUCED MOTION
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+.tech-orbit,
+.tech-center-ring,
+.tech-center-core::before,
+.tech-connection::after {
+animation: none !important;
+}
+
+.tech-node-inner,
+.tech-node-icon,
+.tech-node {
+transition: none !important;
+}
+
+.tech-universe * {
+scroll-behavior: auto !important;
+}
+}
+
+/* =========================================================
+HOVER CAPABLE DEVICES
+========================================================= */
+
+@media (hover: hover) and (pointer: fine) {
+.tech-node:hover {
+transform: translateZ(35px) scale(1.04);
+}
+}
+
+/* =========================================================
+TOUCH DEVICES
+========================================================= */
+
+@media (hover: none) {
+.tech-node {
+cursor: default;
+}
+
+.tech-node:hover {
+filter: none;
+}
+
+.tech-node:hover .tech-node-inner {
+border-color:
+color-mix(in srgb, var(--text-primary) 9%, transparent);
+
+
+background:
+  linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--bg-card) 94%, transparent),
+    color-mix(in srgb, var(--bg-secondary) 90%, transparent)
+  );
+
+box-shadow:
+  0 15px 40px
+    color-mix(in srgb, var(--shadow-color) 60%, transparent);
+
+
+}
+
+.tech-node:hover .tech-node-icon {
+transform: none;
+
+
+background:
+  color-mix(in srgb, var(--accent-primary) 9%, transparent);
+
+box-shadow: none;
+
+
+}
+}
+
+/* =========================================================
+HIGH CONTRAST / FALLBACK
+========================================================= */
+
+@supports not (color: color-mix(in srgb, white 50%, black)) {
+.tech-universe {
+background: var(--bg-primary);
+}
+
+.tech-orbit {
+border-color: rgba(255, 159, 0, 0.18);
+}
+
+.tech-node-inner {
+background: var(--bg-card);
+border-color: var(--border-primary);
+}
+
+.tech-center-core {
+background: var(--bg-secondary);
+}
+}

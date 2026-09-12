@@ -2,8 +2,9 @@
    ABOUT PAGE
    Nathan — Frontend Developer Portfolio
 ========================================================= */
-@import"about-hero.css";
 
+@import"about-hero.css";
+@import"ThreeDSection.css";
 /* =========================================================
    ABOUT VARIABLES
 ========================================================= */

@@ -1,11 +1,14 @@
 import AboutHero from "../components/About/AboutHero"
+import ThreeDSection from "../components/Home/ThhreeDSection"
 
 
 function About() {
   return (
     <div>
       <AboutHero/>
-    </div>
+      
+      <ThreeDSection/>
+       </div>
   )
 }
 

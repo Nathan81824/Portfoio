@@ -19,211 +19,217 @@ import ChatController from "./components/Contact/ChatController.jsx";
 import NotFound from "./components/Detection/Error/NotFound.jsx";
 import ServerError from "./components/Detection/Error/ServerError.jsx";
 
+import PageTransition from "./components/Detection/Effects/Transition/PageTransition.jsx";
+import Loader from "./components/Detection/Loader/Loader.jsx";
+
 import { getData } from "./javascript/data/data.js";
 
-import PageTransition from "./components/Detection/Effects/Transition/PageTransition.jsx";
-
-
 /* =====================================================
-   PUBLIC PORTFOLIO
+PUBLIC PORTFOLIO
 ===================================================== */
 
 function PublicPortfolio() {
-  const data = getData();
+const data = getData();
 
-  return (
-    <div className="app">
-      <PageTransition>
+return ( <Loader> <div className="app">
+
+
+    <PageTransition>
 
       <Navbar data={data} />
 
       <main className="app-content">
 
-          <Routes>
+        <Routes>
 
-            <Route
-              path="/"
-              element={<Home data={data} />}
-            />
+          <Route
+            path="/"
+            element={<Home data={data} />}
+          />
 
-            <Route
-              path="/about"
-              element={<About data={data} />}
-            />
+          <Route
+            path="/about"
+            element={<About data={data} />}
+          />
 
-            <Route
-              path="/skills"
-              element={<Skills data={data} />}
-            />
+          <Route
+            path="/skills"
+            element={<Skills data={data} />}
+          />
 
-            <Route
-              path="/projects"
-              element={<Projects data={data} />}
-            />
+          <Route
+            path="/projects"
+            element={<Projects data={data} />}
+          />
 
-            <Route
-              path="/contact"
-              element={<Contact data={data} />}
-            />
+          <Route
+            path="/contact"
+            element={<Contact data={data} />}
+          />
 
-          </Routes>
+        </Routes>
+
       </main>
 
       <Footer data={data} />
 
       <ChatController data={data} />
-              </PageTransition>
+
+    </PageTransition>
+
+  </div>
+</Loader>
 
 
-    </div>
-  );
+);
 }
 
-
 /* =====================================================
-   APP
+APP
 ===================================================== */
 
 function App() {
 
-  const location = useLocation();
+const location = useLocation();
 
-  const pathname = location.pathname;
+const pathname = location.pathname;
 
+/* =====================================================
+BOTTOM BLUR SCROLL CONTROL
 
-  /* =====================================================
-     BOTTOM BLUR SCROLL CONTROL
+```
+ - Hidden at the top
+ - Appears after scrolling 10vh
+ - Disappears at the bottom
+```
 
-     - Hidden at the top
-     - Appears after scrolling 10vh
-     - Disappears at the bottom
 ===================================================== */
 
-  useEffect(() => {
-
-    const handleScroll = () => {
-
-      const scrollTop = window.scrollY;
-
-      const viewportHeight = window.innerHeight;
-
-      const documentHeight =
-        document.documentElement.scrollHeight;
+useEffect(() => {
 
 
-      const passedIntro =
-        scrollTop > viewportHeight * 0.1;
+const handleScroll = () => {
+
+  const scrollTop = window.scrollY;
+
+  const viewportHeight = window.innerHeight;
+
+  const documentHeight =
+    document.documentElement.scrollHeight;
 
 
-      const reachedBottom =
-        scrollTop + viewportHeight >=
-        documentHeight - 10;
+  const passedIntro =
+    scrollTop > viewportHeight * 0.1;
 
 
-      document.documentElement.classList.toggle(
-        "show-bottom-blur",
-        passedIntro && !reachedBottom
-      );
-
-    };
+  const reachedBottom =
+    scrollTop + viewportHeight >=
+    documentHeight - 10;
 
 
-    handleScroll();
+  document.documentElement.classList.toggle(
+    "show-bottom-blur",
+    passedIntro && !reachedBottom
+  );
+
+};
 
 
-    window.addEventListener(
-      "scroll",
-      handleScroll,
-      {
-        passive: true,
-      }
-    );
+handleScroll();
 
 
-    window.addEventListener(
-      "resize",
-      handleScroll
-    );
-
-
-    return () => {
-
-      window.removeEventListener(
-        "scroll",
-        handleScroll
-      );
-
-
-      window.removeEventListener(
-        "resize",
-        handleScroll
-      );
-
-    };
-
-  }, []);
-
-
-  /* =====================================================
-     500 ERROR PAGE
-===================================================== */
-
-  if (pathname === "/500") {
-    return <ServerError />;
+window.addEventListener(
+  "scroll",
+  handleScroll,
+  {
+    passive: true,
   }
+);
 
 
-  /* =====================================================
-     ADMIN LOGIN
+window.addEventListener(
+  "resize",
+  handleScroll
+);
+
+
+return () => {
+
+  window.removeEventListener(
+    "scroll",
+    handleScroll
+  );
+
+
+  window.removeEventListener(
+    "resize",
+    handleScroll
+  );
+
+};
+
+
+}, []);
+
+/* =====================================================
+SERVER ERROR
 ===================================================== */
 
-  if (pathname === "/admin/login") {
-    return <AdminLogin />;
-  }
-
-
-  /* =====================================================
-     ADMIN ROUTES
-===================================================== */
-
-  if (
-    pathname === "/admin" ||
-    pathname === "/admin/chat"
-  ) {
-
-    return (
-      <ProtectedAdmin>
-        <Admin />
-      </ProtectedAdmin>
-    );
-
-  }
-
-
-  /* =====================================================
-     VALID PUBLIC ROUTES
-===================================================== */
-
-  const publicRoutes = [
-    "/",
-    "/about",
-    "/skills",
-    "/projects",
-    "/contact",
-  ];
-
-
-  if (publicRoutes.includes(pathname)) {
-    return <PublicPortfolio />;
-  }
-
-
-  /* =====================================================
-     404 — STANDALONE
-===================================================== */
-
-  return <NotFound />;
+if (
+pathname === "/server-error" ||
+pathname === "/500"
+) {
+return <ServerError />;
 }
 
+/* =====================================================
+ADMIN LOGIN
+===================================================== */
+
+if (pathname === "/admin/login") {
+return <AdminLogin />;
+}
+
+/* =====================================================
+ADMIN ROUTES
+===================================================== */
+
+if (
+pathname === "/admin" ||
+pathname === "/admin/chat"
+) {
+
+
+return (
+  <ProtectedAdmin>
+    <Admin />
+  </ProtectedAdmin>
+);
+
+
+}
+
+/* =====================================================
+VALID PUBLIC ROUTES
+===================================================== */
+
+const publicRoutes = [
+"/",
+"/about",
+"/skills",
+"/projects",
+"/contact",
+];
+
+if (publicRoutes.includes(pathname)) {
+return <PublicPortfolio />;
+}
+
+/* =====================================================
+404 — STANDALONE
+===================================================== */
+
+return <NotFound />;
+}
 
 export default App;

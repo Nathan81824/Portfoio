@@ -1,0 +1,562 @@
+.skills-marquee {
+  position: relative;
+  width: 100%;
+  height: 105px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  background: var(--bg-primary);
+  border-top: 1px solid var(--border-primary);
+  isolation: isolate;
+}
+
+/* =========================================================
+   MOVING TOP LIGHT
+========================================================= */
+
+.skills-marquee-top-line {
+  position: absolute;
+  top: 0;
+  left: -35%;
+  width: 35%;
+  height: 1px;
+
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--accent-primary),
+    var(--accent-hover),
+    transparent
+  );
+
+  box-shadow:
+    0 0 8px rgba(255, 159, 0, 0.45),
+    0 0 20px rgba(255, 159, 0, 0.2);
+
+  animation: marqueeTopLine 5s linear infinite;
+
+  z-index: 10;
+  pointer-events: none;
+}
+
+@keyframes marqueeTopLine {
+  0% {
+    left: -35%;
+  }
+
+  100% {
+    left: 100%;
+  }
+}
+
+/* =========================================================
+   MARQUEE TRACK
+========================================================= */
+
+.skills-marquee-track {
+  display: flex;
+  align-items: center;
+  width: max-content;
+  flex-shrink: 0;
+
+  will-change: transform;
+}
+
+.skills-marquee-group {
+  display: flex;
+  align-items: center;
+  gap: 48px;
+
+  flex-shrink: 0;
+
+  padding-right: 48px;
+}
+
+.skills-marquee-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  flex-shrink: 0;
+
+  color: var(--text-secondary);
+
+  white-space: nowrap;
+
+  font-size: 0.95rem;
+  font-weight: 600;
+
+  letter-spacing: 0.02em;
+
+  transition:
+    color 0.35s ease,
+    transform 0.35s ease,
+    text-shadow 0.35s ease;
+}
+
+.skills-marquee-item:hover {
+  color: var(--text-primary);
+
+  transform: translateY(-3px);
+
+  text-shadow:
+    0 0 10px rgba(255, 159, 0, 0.3),
+    0 0 25px rgba(255, 159, 0, 0.12);
+}
+
+.skills-marquee-icon {
+  width: 22px;
+  height: 22px;
+
+  flex-shrink: 0;
+
+  color: var(--accent-primary);
+
+  fill: currentColor;
+
+  transition:
+    transform 0.35s ease,
+    color 0.35s ease,
+    filter 0.35s ease;
+}
+
+.skills-marquee-item:hover .skills-marquee-icon {
+  color: var(--accent-hover);
+
+  transform: scale(1.15);
+
+  filter:
+    drop-shadow(0 0 5px rgba(255, 159, 0, 0.45))
+    drop-shadow(0 0 12px rgba(255, 159, 0, 0.2));
+}
+
+/* =========================================================
+   EDGE FADE
+========================================================= */
+
+.skills-marquee-fade {
+  position: absolute;
+
+  top: 0;
+  bottom: 0;
+
+  width: 190px;
+
+  z-index: 7;
+
+  pointer-events: none;
+}
+
+.skills-marquee-fade-left {
+  left: 0;
+
+  background:
+    linear-gradient(
+      to right,
+      var(--bg-primary) 0%,
+      var(--bg-primary) 15%,
+      rgba(8, 8, 8, 0.94) 35%,
+      rgba(8, 8, 8, 0.62) 60%,
+      transparent 100%
+    );
+
+  backdrop-filter: blur(7px);
+  -webkit-backdrop-filter: blur(7px);
+
+  mask-image:
+    linear-gradient(
+      to right,
+      black 0%,
+      black 28%,
+      transparent 100%
+    );
+
+  -webkit-mask-image:
+    linear-gradient(
+      to right,
+      black 0%,
+      black 28%,
+      transparent 100%
+    );
+}
+
+.skills-marquee-fade-right {
+  right: 0;
+
+  background:
+    linear-gradient(
+      to left,
+      var(--bg-primary) 0%,
+      var(--bg-primary) 15%,
+      rgba(8, 8, 8, 0.94) 35%,
+      rgba(8, 8, 8, 0.62) 60%,
+      transparent 100%
+    );
+
+  backdrop-filter: blur(7px);
+  -webkit-backdrop-filter: blur(7px);
+
+  mask-image:
+    linear-gradient(
+      to left,
+      black 0%,
+      black 28%,
+      transparent 100%
+    );
+
+  -webkit-mask-image:
+    linear-gradient(
+      to left,
+      black 0%,
+      black 28%,
+      transparent 100%
+    );
+}
+
+/* =========================================================
+   WAVE CONTAINER
+========================================================= */
+
+.skills-marquee-wave {
+  position: absolute;
+
+  left: -5%;
+  bottom: -2px;
+
+  width: 110%;
+  height: 52px;
+
+  z-index: 8;
+
+  overflow: hidden;
+
+  pointer-events: none;
+
+  opacity: 0.9;
+
+  transition:
+    height 0.6s ease,
+    opacity 0.6s ease,
+    filter 0.6s ease;
+}
+
+.skills-marquee-wave svg {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  overflow: visible;
+}
+
+/* =========================================================
+   BASE WAVE
+========================================================= */
+
+.skills-wave-path {
+  fill: none;
+
+  stroke-linecap: round;
+  stroke-linejoin: round;
+
+  vector-effect: non-scaling-stroke;
+
+  transform-origin: center;
+}
+
+/* =========================================================
+   MAIN WAVE
+========================================================= */
+
+.skills-wave-one {
+  stroke: var(--accent-primary);
+
+  stroke-width: 1.5;
+
+  opacity: 0.72;
+
+  filter:
+    drop-shadow(0 0 4px rgba(255, 159, 0, 0.5))
+    drop-shadow(0 0 12px rgba(255, 159, 0, 0.18));
+
+  animation:
+    realisticWaveOne 5.5s ease-in-out infinite;
+}
+
+/* =========================================================
+   SECONDARY WAVE
+========================================================= */
+
+.skills-wave-two {
+  stroke: var(--accent-secondary);
+
+  stroke-width: 1;
+
+  opacity: 0.38;
+
+  filter:
+    drop-shadow(0 0 4px rgba(255, 138, 0, 0.35))
+    drop-shadow(0 0 10px rgba(255, 138, 0, 0.12));
+
+  animation:
+    realisticWaveTwo 7s ease-in-out infinite reverse;
+}
+
+/* =========================================================
+   REALISTIC WAVE MOVEMENT
+========================================================= */
+
+@keyframes realisticWaveOne {
+  0% {
+    transform:
+      translate3d(-2%, 3px, 0)
+      scaleY(0.72);
+  }
+
+  20% {
+    transform:
+      translate3d(0%, -2px, 0)
+      scaleY(1);
+  }
+
+  40% {
+    transform:
+      translate3d(2%, 2px, 0)
+      scaleY(1.18);
+  }
+
+  60% {
+    transform:
+      translate3d(0%, -1px, 0)
+      scaleY(0.9);
+  }
+
+  80% {
+    transform:
+      translate3d(-2%, 2px, 0)
+      scaleY(1.08);
+  }
+
+  100% {
+    transform:
+      translate3d(-2%, 3px, 0)
+      scaleY(0.72);
+  }
+}
+
+@keyframes realisticWaveTwo {
+  0% {
+    transform:
+      translate3d(2%, -1px, 0)
+      scaleY(0.9);
+  }
+
+  25% {
+    transform:
+      translate3d(-1%, 3px, 0)
+      scaleY(1.15);
+  }
+
+  50% {
+    transform:
+      translate3d(-3%, -2px, 0)
+      scaleY(0.78);
+  }
+
+  75% {
+    transform:
+      translate3d(1%, 2px, 0)
+      scaleY(1.12);
+  }
+
+  100% {
+    transform:
+      translate3d(2%, -1px, 0)
+      scaleY(0.9);
+  }
+}
+
+/* =========================================================
+   SUBTLE HOVER RESPONSE
+========================================================= */
+
+.skills-marquee:hover .skills-marquee-wave {
+  height: 58px;
+
+  opacity: 1;
+
+  filter:
+    drop-shadow(0 0 8px rgba(255, 159, 0, 0.12));
+}
+
+.skills-marquee:hover .skills-wave-one {
+  animation-duration: 3.8s;
+
+  stroke-width: 1.8;
+}
+
+.skills-marquee:hover .skills-wave-two {
+  animation-duration: 4.8s;
+
+  stroke-width: 1.2;
+}
+
+/* =========================================================
+   INNER GLOW ABOVE WAVE
+========================================================= */
+
+.skills-marquee-wave::before {
+  content: "";
+
+  position: absolute;
+
+  left: 0;
+  right: 0;
+
+  bottom: 18px;
+
+  height: 20px;
+
+  background:
+    radial-gradient(
+      ellipse at center,
+      rgba(255, 159, 0, 0.1),
+      transparent 70%
+    );
+
+  filter: blur(12px);
+
+  opacity: 0.55;
+
+  pointer-events: none;
+}
+
+/* =========================================================
+   BOTTOM ATMOSPHERE
+========================================================= */
+
+.skills-marquee::after {
+  content: "";
+
+  position: absolute;
+
+  left: 0;
+  right: 0;
+
+  bottom: 0;
+
+  height: 28px;
+
+  background:
+    linear-gradient(
+      to top,
+      rgba(255, 159, 0, 0.035),
+      transparent
+    );
+
+  pointer-events: none;
+
+  z-index: 3;
+}
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 900px) {
+  .skills-marquee {
+    height: 95px;
+  }
+
+  .skills-marquee-group {
+    gap: 36px;
+    padding-right: 36px;
+  }
+
+  .skills-marquee-fade {
+    width: 140px;
+  }
+
+  .skills-marquee-item {
+    font-size: 0.9rem;
+  }
+
+  .skills-marquee-icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  .skills-marquee-wave {
+    height: 46px;
+  }
+}
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 600px) {
+  .skills-marquee {
+    height: 82px;
+  }
+
+  .skills-marquee-group {
+    gap: 28px;
+    padding-right: 28px;
+  }
+
+  .skills-marquee-item {
+    gap: 9px;
+
+    font-size: 0.78rem;
+  }
+
+  .skills-marquee-icon {
+    width: 18px;
+    height: 18px;
+  }
+
+  .skills-marquee-fade {
+    width: 85px;
+  }
+
+  .skills-marquee-fade-left,
+  .skills-marquee-fade-right {
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+  }
+
+  .skills-marquee-wave {
+    height: 38px;
+  }
+
+  .skills-wave-one {
+    stroke-width: 1.2;
+  }
+
+  .skills-wave-two {
+    stroke-width: 0.8;
+  }
+
+  .skills-marquee:hover .skills-marquee-wave {
+    height: 42px;
+  }
+}
+
+/* =========================================================
+   REDUCED MOTION
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .skills-marquee-top-line,
+  .skills-wave-one,
+  .skills-wave-two {
+    animation: none;
+  }
+
+  .skills-marquee-item,
+  .skills-marquee-wave,
+  .skills-marquee-icon {
+    transition: none;
+  }
+}

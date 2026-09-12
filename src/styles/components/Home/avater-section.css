@@ -1,1373 +1,518 @@
-/* =========================================================
-   AVATAR SECTION
-========================================================= */
-
 .avatar-section {
-  position: relative;
-  width: 100%;
-  min-height: 100vh;
-  padding: 140px 0 90px;
-  overflow: hidden;
-  isolation: isolate;
+position: relative;
+width: 100%;
+min-height: 100vh;
+padding: 120px 6%;
+display: flex;
+align-items: center;
+overflow: hidden;
+background: var(--bg-primary);
 }
-
-
-/* =========================================================
-   BACKGROUND GLOW
-========================================================= */
-
-.avatar-background {
-  position: absolute;
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: -3;
-  filter: blur(110px);
-}
-
-.avatar-background-one {
-  width: 430px;
-  height: 430px;
-  left: -170px;
-  top: 18%;
-  background: color-mix(
-    in srgb,
-    var(--accent-primary) 8%,
-    transparent
-  );
-}
-
-.avatar-background-two {
-  width: 380px;
-  height: 380px;
-  right: -150px;
-  bottom: 5%;
-  background: color-mix(
-    in srgb,
-    var(--accent-secondary) 7%,
-    transparent
-  );
-}
-
-
-/* =========================================================
-   GRID
-========================================================= */
-
-.avatar-grid {
-  position: absolute;
-  inset: 0;
-  z-index: -2;
-  pointer-events: none;
-
-  background-image:
-    linear-gradient(
-      color-mix(
-        in srgb,
-        var(--accent-primary) 2%,
-        transparent
-      ) 1px,
-      transparent 1px
-    ),
-    linear-gradient(
-      90deg,
-      color-mix(
-        in srgb,
-        var(--accent-primary) 2%,
-        transparent
-      ) 1px,
-      transparent 1px
-    );
-
-  background-size: 70px 70px;
-
-  mask-image: linear-gradient(
-    to bottom,
-    transparent,
-    black 20%,
-    black 80%,
-    transparent
-  );
-
-  -webkit-mask-image: linear-gradient(
-    to bottom,
-    transparent,
-    black 20%,
-    black 80%,
-    transparent
-  );
-
-  opacity: 0.42;
-}
-
-
-/* =========================================================
-   MAIN CONTAINER
-========================================================= */
 
 .avatar-container {
-  position: relative;
-
-  width: min(
-    1180px,
-    calc(100% - 48px)
-  );
-
-  margin: 0 auto;
-
-  display: grid;
-
-  grid-template-columns:
-    minmax(0, 1fr)
-    minmax(0, 0.95fr);
-
-  align-items: center;
-
-  gap: 90px;
+position: relative;
+z-index: 2;
+width: 100%;
+max-width: 1250px;
+margin: 0 auto;
+display: grid;
+grid-template-columns: 1fr 1fr;
+align-items: center;
+gap: 80px;
 }
 
-
-/* =========================================================
-   AVATAR VISUAL
-========================================================= */
-
-.avatar-visual {
-  position: relative;
-
-  min-height: 600px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-
-/* =========================================================
-   AVATAR GLOW
-========================================================= */
-
-.avatar-glow {
-  position: absolute;
-
-  width: 430px;
-  height: 430px;
-
-  top: 50%;
-  left: 50%;
-
-  transform:
-    translate(-50%, -50%);
-
-  border-radius: 50%;
-
-  background: radial-gradient(
-    circle,
-    color-mix(
-      in srgb,
-      var(--accent-primary) 17%,
-      transparent
-    ),
-    transparent 68%
-  );
-
-  filter: blur(60px);
-
-  pointer-events: none;
-}
-
-
-/* =========================================================
-   VIDEO WRAPPER
-========================================================= */
-
-.avatar-video-wrapper {
-  position: relative;
-
-  z-index: 3;
-
-  width: min(
-    450px,
-    88%
-  );
-
-  height: 540px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  overflow: hidden;
-
-  border-radius: 32px;
-
-  border: 1px solid
-    color-mix(
-      in srgb,
-      var(--accent-primary) 14%,
-      var(--border-primary)
-    );
-
-  background: color-mix(
-    in srgb,
-    var(--bg-secondary) 55%,
-    transparent
-  );
-
-  box-shadow:
-    0 30px 80px
-      color-mix(
-        in srgb,
-        var(--accent-primary) 7%,
-        transparent
-      ),
-    inset 0 0 45px
-      color-mix(
-        in srgb,
-        var(--accent-primary) 3%,
-        transparent
-      );
-
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-}
-
-
-/* =========================================================
-   VIDEO
-========================================================= */
-
-.avatar-video {
-  display: block;
-
-  width: 100%;
-  height: 100%;
-
-  object-fit: cover;
-  object-position: center;
-
-  border-radius: inherit;
-
-  background: var(--bg-primary);
-
-  user-select: none;
-  pointer-events: none;
-
-  -webkit-user-drag: none;
-}
-
-
-/* =========================================================
-   VIDEO INNER GLOW
-========================================================= */
-
-.avatar-video-wrapper::before {
-  content: "";
-
-  position: absolute;
-  inset: 0;
-
-  z-index: 2;
-
-  pointer-events: none;
-
-  border-radius: inherit;
-
-  box-shadow:
-    inset 0 0 90px
-      color-mix(
-        in srgb,
-        var(--accent-primary) 7%,
-        transparent
-      );
-
-  opacity: 0.9;
-}
-
-
-/* =========================================================
-   BOTTOM VIDEO BLUR
-========================================================= */
-
-.avatar-video-wrapper::after {
-  content: "";
-
-  position: absolute;
-
-  left: -8%;
-  right: -8%;
-
-  bottom: -10%;
-
-  height: 42%;
-
-  z-index: 4;
-
-  pointer-events: none;
-
-  background: linear-gradient(
-    to top,
-    var(--bg-primary) 0%,
-    color-mix(
-      in srgb,
-      var(--bg-primary) 88%,
-      transparent
-    ) 25%,
-    color-mix(
-      in srgb,
-      var(--bg-primary) 48%,
-      transparent
-    ) 55%,
-    transparent 100%
-  );
-
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-
-  filter: blur(3px);
-
-  transform: translateY(18px);
-
-  opacity: 0.95;
-
-  mask-image: linear-gradient(
-    to top,
-    black 0%,
-    black 35%,
-    transparent 100%
-  );
-
-  -webkit-mask-image: linear-gradient(
-    to top,
-    black 0%,
-    black 35%,
-    transparent 100%
-  );
-}
-
-
-/* =========================================================
-   ORBIT
-========================================================= */
-
-.avatar-orbit {
-  position: absolute;
-
-  width: 450px;
-  height: 450px;
-
-  top: 50%;
-  left: 50%;
-
-  transform:
-    translate(-50%, -50%);
-
-  border: 1px solid
-    color-mix(
-      in srgb,
-      var(--accent-primary) 18%,
-      transparent
-    );
-
-  border-radius: 50%;
-
-  z-index: 1;
-
-  pointer-events: none;
-}
-
-.avatar-orbit::before {
-  content: "";
-
-  position: absolute;
-
-  inset: 28px;
-
-  border-radius: 50%;
-
-  border: 1px dashed
-    color-mix(
-      in srgb,
-      var(--accent-primary) 10%,
-      transparent
-    );
-}
-
-.avatar-orbit::after {
-  content: "";
-
-  position: absolute;
-
-  inset: -1px;
-
-  border-radius: 50%;
-
-  box-shadow:
-    0 0 35px
-      color-mix(
-        in srgb,
-        var(--accent-primary) 9%,
-        transparent
-      );
-}
-
-.avatar-orbit-dot {
-  position: absolute;
-
-  width: 11px;
-  height: 11px;
-
-  top: 50%;
-  right: -5px;
-
-  transform:
-    translateY(-50%);
-
-  border-radius: 50%;
-
-  background: var(--accent-primary);
-
-  box-shadow:
-    0 0 0 5px
-      color-mix(
-        in srgb,
-        var(--accent-primary) 8%,
-        transparent
-      ),
-    0 0 25px
-      color-mix(
-        in srgb,
-        var(--accent-primary) 45%,
-        transparent
-      );
-}
-
-
-/* =========================================================
-   SUBTITLE OVER VIDEO
-========================================================= */
-
-.avatar-subtitle-overlay {
-  position: absolute;
-
-  left: 8%;
-  right: 8%;
-
-  bottom: 13%;
-
-  z-index: 7;
-
-  display: flex;
-
-  justify-content: center;
-
-  pointer-events: none;
-
-  text-align: center;
-}
-
-
-/* =========================================================
-   SUBTITLE TEXT
-========================================================= */
-
-.avatar-subtitle-text {
-  max-width: 90%;
-
-  padding: 12px 20px;
-
-  border: 1px solid
-    color-mix(
-      in srgb,
-      var(--accent-primary) 24%,
-      transparent
-    );
-
-  border-radius: 14px;
-
-  background: color-mix(
-    in srgb,
-    var(--bg-primary) 72%,
-    transparent
-  );
-
-  color: var(--text-primary);
-
-  font-size: clamp(
-    0.9rem,
-    1.8vw,
-    1.2rem
-  );
-
-  font-weight: 750;
-
-  letter-spacing: 0.08em;
-
-  line-height: 1.4;
-
-  text-shadow:
-    0 0 22px
-      color-mix(
-        in srgb,
-        var(--accent-primary) 25%,
-        transparent
-      );
-
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-
-  box-shadow:
-    0 12px 35px
-      color-mix(
-        in srgb,
-        var(--bg-primary) 35%,
-        transparent
-      );
-}
-
-
-/* =========================================================
-   SUBTITLE PROGRESS BAR
-========================================================= */
-
-.avatar-subtitle-progress {
-  position: absolute;
-
-  left: 18%;
-  right: 18%;
-
-  bottom: 7%;
-
-  height: 2px;
-
-  z-index: 8;
-
-  overflow: hidden;
-
-  border-radius: 999px;
-
-  background: color-mix(
-    in srgb,
-    var(--text-primary) 12%,
-    transparent
-  );
-}
-
-.avatar-subtitle-progress span {
-  display: block;
-
-  width: 0%;
-
-  height: 100%;
-
-  background: var(--accent-primary);
-
-  box-shadow:
-    0 0 12px
-      color-mix(
-        in srgb,
-        var(--accent-primary) 45%,
-        transparent
-      );
-}
-
-
-/* =========================================================
-   BADGES
-========================================================= */
-
-.avatar-badge {
-  position: absolute;
-
-  z-index: 10;
-
-  display: inline-flex;
-
-  align-items: center;
-
-  gap: 8px;
-
-  padding: 9px 13px;
-
-  border: 1px solid
-    color-mix(
-      in srgb,
-      var(--border-primary) 80%,
-      transparent
-    );
-
-  border-radius: 999px;
-
-  background: color-mix(
-    in srgb,
-    var(--bg-secondary) 82%,
-    transparent
-  );
-
-  color: var(--text-primary);
-
-  box-shadow:
-    0 15px 35px
-      color-mix(
-        in srgb,
-        var(--bg-primary) 35%,
-        transparent
-      );
-
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-
-  font-size: 0.72rem;
-
-  font-weight: 650;
-
-  white-space: nowrap;
-
-  cursor: default;
-
-  transition:
-    border-color 0.3s ease,
-    box-shadow 0.3s ease;
-}
-
-.avatar-badge-icon {
-  width: 27px;
-  height: 27px;
-
-  display: grid;
-  place-items: center;
-
-  border-radius: 8px;
-
-  color: var(--accent-primary);
-
-  background: color-mix(
-    in srgb,
-    var(--accent-primary) 8%,
-    transparent
-  );
-
-  border: 1px solid
-    color-mix(
-      in srgb,
-      var(--accent-primary) 15%,
-      transparent
-    );
-}
-
-.avatar-badge-react {
-  top: 16%;
-  right: 5%;
-}
-
-.avatar-badge-creative {
-  top: 45%;
-  left: 1%;
-}
-
-.avatar-badge-interactive {
-  bottom: 16%;
-  right: 1%;
-}
-
-
-/* =========================================================
-   CONTENT
-========================================================= */
+/* =========================
+CONTENT
+========================= */
 
 .avatar-content {
-  position: relative;
-
-  z-index: 2;
-
-  max-width: 570px;
+grid-column: 2;
+grid-row: 1;
+position: relative;
+z-index: 5;
+max-width: 620px;
 }
 
-
-/* =========================================================
-   EYEBROW
-========================================================= */
-
-.avatar-eyebrow {
-  display: inline-flex;
-
-  align-items: center;
-
-  gap: 9px;
-
-  margin-bottom: 22px;
-
-  color: var(--accent-primary);
-
-  font-size: 0.72rem;
-
-  font-weight: 700;
-
-  letter-spacing: 0.16em;
-
-  text-transform: uppercase;
+.avatar-badge {
+width: fit-content;
+display: flex;
+align-items: center;
+gap: 8px;
+padding: 9px 15px;
+margin-bottom: 24px;
+border: 1px solid var(--border-accent);
+border-radius: var(--radius-full);
+background: rgba(255, 159, 0, 0.07);
+color: var(--accent-primary);
+font-size: 0.85rem;
+font-weight: 600;
+letter-spacing: 0.02em;
+backdrop-filter: blur(var(--glass-blur));
+-webkit-backdrop-filter: blur(var(--glass-blur));
 }
 
-
-/* =========================================================
-   TITLE
-========================================================= */
+.avatar-badge svg {
+flex-shrink: 0;
+color: var(--accent-primary);
+}
 
 .avatar-title {
-  margin: 0;
-
-  color: var(--text-primary);
-
-  font-size: clamp(
-    3rem,
-    6vw,
-    5rem
-  );
-
-  line-height: 0.98;
-
-  letter-spacing: -0.055em;
+margin: 0;
+color: var(--text-primary);
+font-size: clamp(2.8rem, 5vw, 5.2rem);
+line-height: 1.02;
+letter-spacing: -0.045em;
+font-weight: 800;
 }
 
 .avatar-title span {
-  color: var(--accent-primary);
+display: block;
+color: var(--accent-primary);
 }
-
-
-/* =========================================================
-   PROFESSION
-========================================================= */
 
 .avatar-subtitle {
-  margin: 18px 0 0;
-
-  color: var(--text-secondary);
-
-  font-size: clamp(
-    1.15rem,
-    2vw,
-    1.5rem
-  );
-
-  font-weight: 600;
-
-  letter-spacing: -0.02em;
+max-width: 570px;
+margin: 26px 0 0;
+color: var(--text-secondary);
+font-size: 1.05rem;
+line-height: 1.8;
 }
 
-
-/* =========================================================
-   DESCRIPTION
-========================================================= */
-
-.avatar-description {
-  max-width: 530px;
-
-  margin: 22px 0 0;
-
-  color: var(--text-secondary);
-
-  font-size: 0.98rem;
-
-  line-height: 1.85;
+.avatar-skills {
+display: flex;
+flex-wrap: wrap;
+gap: 12px;
+margin-top: 32px;
 }
 
-
-/* =========================================================
-   STATUS
-========================================================= */
-
-.avatar-status {
-  display: inline-flex;
-
-  align-items: center;
-
-  gap: 9px;
-
-  margin-top: 28px;
-
-  padding: 8px 13px;
-
-  border: 1px solid
-    color-mix(
-      in srgb,
-      var(--accent-primary) 12%,
-      var(--border-primary)
-    );
-
-  border-radius: 999px;
-
-  background: color-mix(
-    in srgb,
-    var(--bg-secondary) 55%,
-    transparent
-  );
-
-  color: var(--text-secondary);
-
-  font-size: 0.76rem;
-
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+.avatar-skill {
+display: flex;
+align-items: center;
+gap: 8px;
+padding: 10px 14px;
+border: 1px solid var(--border-primary);
+border-radius: var(--radius-md);
+background: var(--bg-card);
+color: var(--text-secondary);
+font-size: 0.85rem;
+font-weight: 500;
+backdrop-filter: blur(var(--glass-blur));
+-webkit-backdrop-filter: blur(var(--glass-blur));
+transition:
+transform 0.3s ease,
+border-color 0.3s ease,
+background-color 0.3s ease,
+color 0.3s ease,
+box-shadow 0.3s ease;
 }
 
-.avatar-status-dot {
-  width: 7px;
-  height: 7px;
-
-  flex: 0 0 auto;
-
-  border-radius: 50%;
-
-  background: var(--accent-primary);
-
-  box-shadow:
-    0 0 0 4px
-      color-mix(
-        in srgb,
-        var(--accent-primary) 8%,
-        transparent
-      ),
-    0 0 15px
-      color-mix(
-        in srgb,
-        var(--accent-primary) 35%,
-        transparent
-      );
-
-  animation:
-    avatar-status-pulse
-    2s ease-in-out infinite;
+.avatar-skill svg {
+flex-shrink: 0;
+color: var(--accent-primary);
 }
 
-@keyframes avatar-status-pulse {
-  0%,
-  100% {
-    opacity: 0.55;
-    transform: scale(0.9);
-  }
-
-  50% {
-    opacity: 1;
-    transform: scale(1.15);
-  }
+.avatar-skill:hover {
+transform: translateY(-4px);
+border-color: var(--border-hover);
+background: var(--bg-card-hover);
+color: var(--text-primary);
+box-shadow: var(--shadow-accent);
 }
 
-
-/* =========================================================
-   SOCIALS
-========================================================= */
+/* =========================
+SOCIALS
+========================= */
 
 .avatar-socials {
-  display: flex;
-
-  align-items: center;
-
-  gap: 12px;
-
-  margin-top: 30px;
+display: flex;
+align-items: center;
+gap: 14px;
+margin-top: 34px;
 }
 
-.avatar-social {
-  display: inline-flex;
-
-  align-items: center;
-
-  gap: 9px;
-
-  padding: 11px 15px;
-
-  border: 1px solid var(--border-primary);
-
-  border-radius: 12px;
-
-  background: color-mix(
-    in srgb,
-    var(--bg-secondary) 55%,
-    transparent
-  );
-
-  color: var(--text-secondary);
-
-  text-decoration: none;
-
-  font-size: 0.78rem;
-
-  font-weight: 600;
-
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-
-  transition:
-    transform 0.35s ease,
-    color 0.35s ease,
-    border-color 0.35s ease,
-    background 0.35s ease,
-    box-shadow 0.35s ease;
+.avatar-socials a {
+width: 44px;
+height: 44px;
+display: flex;
+align-items: center;
+justify-content: center;
+border: 1px solid var(--border-primary);
+border-radius: 50%;
+background: var(--bg-card);
+color: var(--text-secondary);
+font-size: 1.15rem;
+text-decoration: none;
+backdrop-filter: blur(var(--glass-blur));
+-webkit-backdrop-filter: blur(var(--glass-blur));
+transition:
+color 0.3s ease,
+border-color 0.3s ease,
+background-color 0.3s ease,
+transform 0.3s ease,
+box-shadow 0.3s ease;
 }
 
-.avatar-social:hover {
-  transform: translateY(-4px);
-
-  color: var(--accent-primary);
-
-  border-color:
-    color-mix(
-      in srgb,
-      var(--accent-primary) 30%,
-      var(--border-primary)
-    );
-
-  background:
-    color-mix(
-      in srgb,
-      var(--accent-primary) 6%,
-      var(--bg-secondary)
-    );
-
-  box-shadow:
-    0 12px 30px
-      color-mix(
-        in srgb,
-        var(--accent-primary) 8%,
-        transparent
-      );
+.avatar-socials a:hover {
+color: var(--accent-primary);
+border-color: var(--border-accent);
+background: rgba(255, 159, 0, 0.08);
+transform: translateY(-3px);
+box-shadow: var(--shadow-accent);
 }
 
+/* =========================
+VISUAL
+========================= */
 
-/* =========================================================
-   BOTTOM MESSAGE
-========================================================= */
-
-.avatar-bottom {
-  width: min(
-    1180px,
-    calc(100% - 48px)
-  );
-
-  margin: 75px auto 0;
-
-  display: flex;
-
-  align-items: center;
-
-  justify-content: center;
-
-  gap: 12px;
-
-  padding-top: 30px;
-
-  border-top: 1px solid
-    color-mix(
-      in srgb,
-      var(--border-primary) 70%,
-      transparent
-    );
+.avatar-visual {
+grid-column: 1;
+grid-row: 1;
+position: relative;
+min-height: 550px;
+display: flex;
+align-items: center;
+justify-content: center;
 }
 
-.avatar-bottom > span {
-  width: 34px;
-  height: 34px;
+/* =========================
+VIDEO
+========================= */
 
-  display: grid;
-
-  place-items: center;
-
-  flex: 0 0 auto;
-
-  border-radius: 10px;
-
-  color: var(--accent-primary);
-
-  background:
-    color-mix(
-      in srgb,
-      var(--accent-primary) 7%,
-      transparent
-    );
-
-  border: 1px solid
-    color-mix(
-      in srgb,
-      var(--accent-primary) 12%,
-      transparent
-    );
+.avatar-video-wrapper {
+position: relative;
+z-index: 3;
+width: min(100%, 480px);
+aspect-ratio: 1 / 1;
+overflow: hidden;
+border: 1px solid var(--border-accent);
+border-radius: var(--radius-xl);
+background: var(--bg-secondary);
+box-shadow:
+var(--shadow-heavy),
+0 0 70px rgba(255, 138, 0, 0.12);
 }
 
-.avatar-bottom p {
-  margin: 0;
-
-  color: var(--text-secondary);
-
-  font-size: 0.82rem;
-
-  line-height: 1.6;
-
-  text-align: center;
+.avatar-video-wrapper::before {
+content: "";
+position: absolute;
+inset: 0;
+z-index: 2;
+pointer-events: none;
+border-radius: inherit;
+background:
+linear-gradient(
+135deg,
+rgba(255, 159, 0, 0.12),
+transparent 35%,
+transparent 65%,
+rgba(255, 138, 0, 0.08)
+);
 }
 
-.avatar-bottom strong {
-  color: var(--text-primary);
-
-  font-weight: 650;
+.avatar-video-wrapper::after {
+content: "";
+position: absolute;
+inset: 0;
+z-index: 4;
+pointer-events: none;
+border-radius: inherit;
+box-shadow:
+inset 0 0 45px rgba(255, 159, 0, 0.08);
 }
 
-
-/* =========================================================
-   TABLET
-========================================================= */
-
-@media (max-width: 1024px) {
-
-  .avatar-section {
-    padding: 115px 0 80px;
-  }
-
-  .avatar-container {
-    width: min(
-      760px,
-      calc(100% - 48px)
-    );
-
-    grid-template-columns: 1fr;
-
-    gap: 45px;
-  }
-
-  .avatar-visual {
-    min-height: 560px;
-  }
-
-  .avatar-content {
-    max-width: 680px;
-
-    margin: 0 auto;
-
-    text-align: center;
-  }
-
-  .avatar-eyebrow {
-    justify-content: center;
-  }
-
-  .avatar-description {
-    margin-left: auto;
-    margin-right: auto;
-  }
-
-  .avatar-status {
-    margin-left: auto;
-    margin-right: auto;
-  }
-
-  .avatar-socials {
-    justify-content: center;
-  }
-
-  .avatar-badge-react {
-    right: 13%;
-  }
-
-  .avatar-badge-interactive {
-    right: 9%;
-  }
+.avatar-video-wrapper video {
+width: 100%;
+height: 100%;
+display: block;
+object-fit: cover;
+border-radius: inherit;
+outline: none;
+background: var(--bg-secondary);
 }
 
+/* =========================
+GLOW
+========================= */
 
-/* =========================================================
-   MOBILE
-========================================================= */
-
-@media (max-width: 768px) {
-
-  .avatar-section {
-    min-height: auto;
-
-    padding: 90px 0 65px;
-  }
-
-  .avatar-container {
-    width: min(
-      calc(100% - 32px),
-      600px
-    );
-
-    gap: 30px;
-  }
-
-  .avatar-visual {
-    min-height: 490px;
-  }
-
-  .avatar-video-wrapper {
-    width: min(
-      390px,
-      88%
-    );
-
-    height: 450px;
-
-    border-radius: 24px;
-  }
-
-  .avatar-orbit {
-    width: 370px;
-    height: 370px;
-  }
-
-  .avatar-glow {
-    width: 320px;
-    height: 320px;
-
-    filter: blur(55px);
-  }
-
-  .avatar-subtitle-overlay {
-    left: 5%;
-    right: 5%;
-
-    bottom: 14%;
-  }
-
-  .avatar-subtitle-text {
-    max-width: 94%;
-
-    padding: 10px 15px;
-
-    font-size: 0.78rem;
-
-    letter-spacing: 0.06em;
-  }
-
-  .avatar-subtitle-progress {
-    left: 15%;
-    right: 15%;
-
-    bottom: 8%;
-  }
-
-  .avatar-badge {
-    padding: 8px 10px;
-
-    font-size: 0.68rem;
-  }
-
-  .avatar-badge-icon {
-    width: 24px;
-    height: 24px;
-  }
-
-  .avatar-badge-react {
-    top: 13%;
-    right: 1%;
-  }
-
-  .avatar-badge-creative {
-    left: 0;
-    top: 43%;
-  }
-
-  .avatar-badge-interactive {
-    right: 0;
-    bottom: 13%;
-  }
-
-  .avatar-title {
-    font-size: clamp(
-      2.7rem,
-      12vw,
-      4rem
-    );
-  }
-
-  .avatar-subtitle {
-    font-size: 1.15rem;
-  }
-
-  .avatar-description {
-    font-size: 0.9rem;
-
-    line-height: 1.8;
-  }
-
-  .avatar-bottom {
-    width: calc(100% - 32px);
-
-    margin-top: 55px;
-  }
+.avatar-glow {
+position: absolute;
+border-radius: 50%;
+pointer-events: none;
+filter: blur(85px);
+opacity: 0.45;
 }
 
-
-/* =========================================================
-   SMALL MOBILE
-========================================================= */
-
-@media (max-width: 480px) {
-
-  .avatar-section {
-    padding: 75px 0 55px;
-  }
-
-  .avatar-container {
-    width: calc(100% - 24px);
-  }
-
-  .avatar-visual {
-    min-height: 410px;
-  }
-
-  .avatar-video-wrapper {
-    width: min(
-      310px,
-      88%
-    );
-
-    height: 365px;
-
-    border-radius: 20px;
-  }
-
-  .avatar-orbit {
-    width: 295px;
-    height: 295px;
-  }
-
-  .avatar-orbit::before {
-    inset: 18px;
-  }
-
-  .avatar-orbit-dot {
-    width: 8px;
-    height: 8px;
-
-    right: -4px;
-  }
-
-  .avatar-glow {
-    width: 250px;
-    height: 250px;
-
-    filter: blur(45px);
-  }
-
-  .avatar-subtitle-overlay {
-    bottom: 15%;
-  }
-
-  .avatar-subtitle-text {
-    padding: 8px 12px;
-
-    font-size: 0.65rem;
-
-    border-radius: 10px;
-  }
-
-  .avatar-subtitle-progress {
-    left: 14%;
-    right: 14%;
-
-    bottom: 9%;
-  }
-
-  .avatar-badge {
-    padding: 6px 8px;
-
-    gap: 6px;
-
-    font-size: 0.62rem;
-  }
-
-  .avatar-badge-icon {
-    width: 21px;
-    height: 21px;
-  }
-
-  .avatar-badge-icon svg {
-    width: 13px;
-    height: 13px;
-  }
-
-  .avatar-badge-react {
-    top: 10%;
-    right: 0;
-  }
-
-  .avatar-badge-creative {
-    left: 0;
-    top: 42%;
-  }
-
-  .avatar-badge-interactive {
-    right: 0;
-    bottom: 10%;
-  }
-
-  .avatar-eyebrow {
-    font-size: 0.63rem;
-
-    letter-spacing: 0.12em;
-  }
-
-  .avatar-title {
-    font-size: 2.65rem;
-  }
-
-  .avatar-subtitle {
-    margin-top: 14px;
-
-    font-size: 1rem;
-  }
-
-  .avatar-description {
-    font-size: 0.84rem;
-  }
-
-  .avatar-status {
-    font-size: 0.68rem;
-  }
-
-  .avatar-socials {
-    gap: 8px;
-  }
-
-  .avatar-social {
-    padding: 9px 12px;
-
-    font-size: 0.7rem;
-  }
-
-  .avatar-bottom {
-    margin-top: 45px;
-
-    flex-direction: column;
-
-    gap: 9px;
-  }
-
-  .avatar-bottom p {
-    max-width: 300px;
-
-    font-size: 0.72rem;
-  }
+.avatar-glow-one {
+width: 320px;
+height: 320px;
+top: 3%;
+right: 3%;
+background: rgba(255, 159, 0, 0.18);
 }
 
+.avatar-glow-two {
+width: 250px;
+height: 250px;
+bottom: 3%;
+left: 3%;
+background: rgba(255, 138, 0, 0.14);
+}
 
-/* =========================================================
-   REDUCED MOTION
-========================================================= */
+/* =========================
+FLOATING BADGES
+========================= */
+
+.avatar-floating-badge {
+position: absolute;
+z-index: 8;
+display: flex;
+align-items: center;
+gap: 8px;
+padding: 11px 15px;
+border: 1px solid var(--border-accent);
+border-radius: var(--radius-md);
+background: var(--bg-glass);
+color: var(--text-primary);
+font-size: 0.8rem;
+font-weight: 600;
+box-shadow:
+var(--shadow-medium),
+0 0 25px rgba(255, 138, 0, 0.08);
+backdrop-filter: blur(var(--glass-blur));
+-webkit-backdrop-filter: blur(var(--glass-blur));
+}
+
+.avatar-floating-badge svg {
+flex-shrink: 0;
+color: var(--accent-primary);
+}
+
+.avatar-floating-badge-one {
+top: 14%;
+left: 0;
+}
+
+.avatar-floating-badge-two {
+right: 0;
+bottom: 16%;
+}
+
+/* =========================
+TABLET
+========================= */
+
+@media (max-width: 1100px) {
+.avatar-container {
+gap: 50px;
+}
+
+.avatar-title {
+font-size: clamp(2.6rem, 5vw, 4.2rem);
+}
+
+.avatar-visual {
+min-height: 480px;
+}
+
+.avatar-video-wrapper {
+width: min(100%, 410px);
+}
+}
+
+/* =========================
+MOBILE / TABLET
+========================= */
+
+@media (max-width: 900px) {
+.avatar-section {
+padding: 100px 5%;
+}
+
+.avatar-container {
+grid-template-columns: 1fr;
+gap: 70px;
+}
+
+/* VIDEO FIRST */
+.avatar-visual {
+grid-column: 1;
+grid-row: 1;
+min-height: 520px;
+}
+
+/* TEXT SECOND */
+.avatar-content {
+grid-column: 1;
+grid-row: 2;
+max-width: 750px;
+margin: 0 auto;
+text-align: center;
+}
+
+.avatar-badge {
+margin-left: auto;
+margin-right: auto;
+}
+
+.avatar-subtitle {
+margin-left: auto;
+margin-right: auto;
+}
+
+.avatar-skills {
+justify-content: center;
+}
+
+.avatar-socials {
+justify-content: center;
+}
+
+.avatar-video-wrapper {
+width: min(100%, 460px);
+}
+
+.avatar-floating-badge-one {
+left: 8%;
+}
+
+.avatar-floating-badge-two {
+right: 8%;
+}
+}
+
+/* =========================
+SMALL MOBILE
+========================= */
+
+@media (max-width: 600px) {
+.avatar-section {
+min-height: auto;
+padding: 80px 20px;
+}
+
+.avatar-container {
+gap: 55px;
+}
+
+.avatar-badge {
+font-size: 0.78rem;
+padding: 8px 12px;
+}
+
+.avatar-title {
+font-size: clamp(2.3rem, 11vw, 3.4rem);
+line-height: 1.05;
+}
+
+.avatar-subtitle {
+margin-top: 20px;
+font-size: 0.95rem;
+line-height: 1.7;
+}
+
+.avatar-skills {
+gap: 8px;
+margin-top: 26px;
+}
+
+.avatar-skill {
+padding: 8px 11px;
+font-size: 0.75rem;
+}
+
+.avatar-socials {
+margin-top: 28px;
+}
+
+.avatar-socials a {
+width: 42px;
+height: 42px;
+}
+
+.avatar-visual {
+min-height: 390px;
+}
+
+.avatar-video-wrapper {
+width: min(100%, 350px);
+border-radius: var(--radius-lg);
+}
+
+.avatar-floating-badge {
+padding: 9px 11px;
+font-size: 0.7rem;
+border-radius: var(--radius-sm);
+}
+
+.avatar-floating-badge svg {
+width: 15px;
+height: 15px;
+}
+
+.avatar-floating-badge-one {
+top: 8%;
+left: 0;
+}
+
+.avatar-floating-badge-two {
+right: 0;
+bottom: 8%;
+}
+
+.avatar-glow-one {
+width: 220px;
+height: 220px;
+}
+
+.avatar-glow-two {
+width: 180px;
+height: 180px;
+}
+}
+
+/* =========================
+VERY SMALL DEVICES
+========================= */
+
+@media (max-width: 400px) {
+.avatar-section {
+padding-left: 15px;
+padding-right: 15px;
+}
+
+.avatar-title {
+font-size: 2.25rem;
+}
+
+.avatar-visual {
+min-height: 330px;
+}
+
+.avatar-video-wrapper {
+width: 300px;
+}
+
+.avatar-floating-badge-one {
+left: -5px;
+}
+
+.avatar-floating-badge-two {
+right: -5px;
+}
+}
+
+/* =========================
+REDUCED MOTION
+========================= */
 
 @media (prefers-reduced-motion: reduce) {
+.avatar-skill,
+.avatar-socials a,
+.avatar-video-wrapper {
+transition: none;
+}
 
-  .avatar-status-dot {
-    animation: none;
-  }
-
-  .avatar-social {
-    transition: none;
-  }
-
-  .avatar-social:hover {
-    transform: none;
-  }
-
-  .avatar-subtitle-text {
-    transition: none;
-  }
+.avatar-glow {
+filter: blur(60px);
+}
 }

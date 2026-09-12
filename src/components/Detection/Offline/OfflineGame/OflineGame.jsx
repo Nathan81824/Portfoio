@@ -27,7 +27,7 @@ const PLAYER_HEIGHT = 64;
 const PLAYER_DUCK_HEIGHT = 38;
 
 const GRAVITY = 0.72;
-const JUMP_FORCE = -13;
+const JUMP_FORCE = -16;
 const INITIAL_GAME_SPEED = 5;
 const MAX_GAME_SPEED = 11;
 const MAGNET_RANGE = 200;

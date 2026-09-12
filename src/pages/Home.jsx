@@ -1,13 +1,16 @@
 import Hero from "../components/Home/Hero";
+import SkillsMarquee from "../components/Home/SkillsMarquee";
 import AboutPreview from "../components/Home/AboutPreview";
 import WhatIDo from "../components/Home/WhatIDo";
 import AvatarSection from "../components/Home/AvaterSection";
-import ThreeDSection from "../components/Home/ThhreeDSection";
+import TechUniverse from "../components/Home/TechUniverse";
 
 function Home() {
   return (
     <main>
       <Hero />
+
+      <SkillsMarquee/>
 
       <AboutPreview />
 
@@ -15,7 +18,9 @@ function Home() {
 
       <AvatarSection />
 
-      <ThreeDSection />
+      <TechUniverse/>
+
+
     </main>
   );
 }
