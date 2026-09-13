@@ -1,16 +1,26 @@
-// portfolioCheck.js
-
 import { getData } from "../data/data.js";
+
+
+/* =====================================================
+   PORTFOLIO CHECK STATE
+===================================================== */
 
 const portfolioState = {
   started: false,
   finished: false,
+
   dataLoaded: false,
   pagesLoaded: false,
   imagesLoaded: false,
   videosLoaded: false,
+
   errors: [],
 };
+
+
+/* =====================================================
+   ERROR HANDLER
+===================================================== */
 
 const addError = (name, error) => {
   const message =
@@ -23,40 +33,58 @@ const addError = (name, error) => {
     message,
   });
 
-  console.warn(`Portfolio check failed: ${name}`, error);
+  console.warn(
+    `Portfolio check warning: ${name}`,
+    error
+  );
 };
 
-const safeImport = async (name, importer) => {
-  try {
-    await importer();
-    return true;
-  } catch (error) {
-    addError(name, error);
-    return false;
-  }
-};
+
+/* =====================================================
+   LOAD PORTFOLIO DATA
+===================================================== */
 
 const loadData = async () => {
   try {
-    const data = await Promise.resolve(getData());
+    const data = await Promise.resolve(
+      getData()
+    );
 
     portfolioState.dataLoaded = true;
 
+    console.log(
+      "✓ Portfolio data loaded successfully."
+    );
+
     return data;
   } catch (error) {
-    addError("Portfolio data", error);
+    addError(
+      "Portfolio data",
+      error
+    );
 
     return null;
   }
 };
 
-const collectAssets = (value, assets = new Set()) => {
+
+/* =====================================================
+   COLLECT ASSETS
+===================================================== */
+
+const collectAssets = (
+  value,
+  assets = new Set()
+) => {
   if (!value) {
     return assets;
   }
 
   if (typeof value === "string") {
-    const cleanValue = value.split("?")[0].toLowerCase();
+    const cleanValue =
+      value
+        .split("?")[0]
+        .toLowerCase();
 
     const imageExtensions = [
       ".png",
@@ -76,19 +104,27 @@ const collectAssets = (value, assets = new Set()) => {
     ];
 
     if (
-      imageExtensions.some((extension) =>
-        cleanValue.endsWith(extension)
+      imageExtensions.some(
+        (extension) =>
+          cleanValue.endsWith(extension)
       )
     ) {
-      assets.add(value);
+      assets.add({
+        src: value,
+        type: "image",
+      });
     }
 
     if (
-      videoExtensions.some((extension) =>
-        cleanValue.endsWith(extension)
+      videoExtensions.some(
+        (extension) =>
+          cleanValue.endsWith(extension)
       )
     ) {
-      assets.add(value);
+      assets.add({
+        src: value,
+        type: "video",
+      });
     }
 
     return assets;
@@ -96,49 +132,33 @@ const collectAssets = (value, assets = new Set()) => {
 
   if (Array.isArray(value)) {
     value.forEach((item) => {
-      collectAssets(item, assets);
+      collectAssets(
+        item,
+        assets
+      );
     });
 
     return assets;
   }
 
   if (typeof value === "object") {
-    Object.values(value).forEach((item) => {
-      collectAssets(item, assets);
-    });
+    Object.values(value).forEach(
+      (item) => {
+        collectAssets(
+          item,
+          assets
+        );
+      }
+    );
   }
 
   return assets;
 };
 
-const isImage = (src) => {
-  const cleanSrc = src.split("?")[0].toLowerCase();
 
-  return [
-    ".png",
-    ".jpg",
-    ".jpeg",
-    ".webp",
-    ".gif",
-    ".svg",
-    ".avif",
-  ].some((extension) =>
-    cleanSrc.endsWith(extension)
-  );
-};
-
-const isVideo = (src) => {
-  const cleanSrc = src.split("?")[0].toLowerCase();
-
-  return [
-    ".mp4",
-    ".webm",
-    ".ogg",
-    ".mov",
-  ].some((extension) =>
-    cleanSrc.endsWith(extension)
-  );
-};
+/* =====================================================
+   IMAGE LOADER
+===================================================== */
 
 const preloadImage = (src) => {
   return new Promise((resolve) => {
@@ -164,7 +184,11 @@ const preloadImage = (src) => {
     };
 
     image.onerror = () => {
-      console.warn("Image could not be loaded:", src);
+      console.warn(
+        "Image could not be loaded:",
+        src
+      );
+
       finish(false);
     };
 
@@ -172,13 +196,19 @@ const preloadImage = (src) => {
 
     window.setTimeout(() => {
       finish(false);
-    }, 10000);
+    }, 8000);
   });
 };
 
+
+/* =====================================================
+   VIDEO LOADER
+===================================================== */
+
 const preloadVideo = (src) => {
   return new Promise((resolve) => {
-    const video = document.createElement("video");
+    const video =
+      document.createElement("video");
 
     let finished = false;
 
@@ -189,31 +219,77 @@ const preloadVideo = (src) => {
 
       finished = true;
 
+      video.onloadedmetadata = null;
       video.onloadeddata = null;
       video.onerror = null;
+
+      video.removeAttribute("src");
+
+      try {
+        video.load();
+      } catch {
+        // Ignore cleanup errors.
+      }
 
       resolve(result);
     };
 
+    /*
+      We only need metadata here.
+
+      The checker should NOT wait for
+      the entire video to download.
+    */
+
     video.preload = "metadata";
+
+    video.onloadedmetadata = () => {
+      finish(true);
+    };
 
     video.onloadeddata = () => {
       finish(true);
     };
 
     video.onerror = () => {
-      console.warn("Video could not be loaded:", src);
+      console.warn(
+        "Video could not be loaded:",
+        src
+      );
+
       finish(false);
     };
 
     video.src = src;
-    video.load();
+
+    try {
+      video.load();
+    } catch (error) {
+      finish(false);
+    }
+
+    /*
+      Video loading is optional.
+
+      If it is slow, the portfolio
+      continues normally.
+    */
 
     window.setTimeout(() => {
+      console.warn(
+        "Video preload timed out. Continuing portfolio:",
+        src
+      );
+
       finish(false);
-    }, 10000);
+    }, 5000);
   });
 };
+
+
+/* =====================================================
+   LOAD ASSETS
+===================================================== */
 
 const loadAssets = async (data) => {
   try {
@@ -228,114 +304,246 @@ const loadAssets = async (data) => {
       ...collectAssets(data),
     ];
 
-    const imageAssets = assets.filter(isImage);
-    const videoAssets = assets.filter(isVideo);
+    const imageAssets =
+      assets.filter(
+        (asset) =>
+          asset.type === "image"
+      );
 
-    await Promise.all(
-      imageAssets.map((src) =>
-        preloadImage(src)
-      )
-    );
+    const videoAssets =
+      assets.filter(
+        (asset) =>
+          asset.type === "video"
+      );
 
-    portfolioState.imagesLoaded = true;
 
-    await Promise.all(
-      videoAssets.map((src) =>
-        preloadVideo(src)
-      )
-    );
+    /* =================================================
+       IMAGES
+    ================================================= */
 
-    portfolioState.videosLoaded = true;
-  } catch (error) {
-    addError("Portfolio assets", error);
+    const imageResults =
+      await Promise.all(
+        imageAssets.map(
+          async (asset) => {
+            const loaded =
+              await preloadImage(
+                asset.src
+              );
 
-    /*
-      Assets failing must NEVER prevent
-      the portfolio from opening.
-    */
-    portfolioState.imagesLoaded = true;
-    portfolioState.videosLoaded = true;
-  }
-};
-
-const loadPages = async () => {
-  const pages = [
-    [
-      "Home",
-      () => import("../../pages/Home.jsx"),
-    ],
-    [
-      "About",
-      () => import("../../pages/About.jsx"),
-    ],
-    [
-      "Skills",
-      () => import("../../pages/Skills.jsx"),
-    ],
-    [
-      "Projects",
-      () => import("../../pages/Projects.jsx"),
-    ],
-    [
-      "Contact",
-      () => import("../../pages/Contact.jsx"),
-    ],
-    [
-      "NotFound",
-      () => import("../../pages/NotFound.jsx"),
-    ],
-  ];
-
-  try {
-    await Promise.all(
-      pages.map(([name, importer]) =>
-        safeImport(
-          `Page: ${name}`,
-          importer
+            return {
+              ...asset,
+              loaded,
+            };
+          }
         )
-      )
+      );
+
+
+    imageResults.forEach(
+      (result) => {
+        if (result.loaded) {
+          console.log(
+            "✓ Image loaded:",
+            result.src
+          );
+        } else {
+          addError(
+            `Image: ${result.src}`,
+            new Error(
+              "Image failed to load."
+            )
+          );
+        }
+      }
+    );
+
+
+    portfolioState.imagesLoaded = true;
+
+
+    /* =================================================
+       VIDEOS
+    ================================================= */
+
+    const videoResults =
+      await Promise.all(
+        videoAssets.map(
+          async (asset) => {
+            const loaded =
+              await preloadVideo(
+                asset.src
+              );
+
+            return {
+              ...asset,
+              loaded,
+            };
+          }
+        )
+      );
+
+
+    videoResults.forEach(
+      (result) => {
+        if (result.loaded) {
+          console.log(
+            "✓ Video loaded:",
+            result.src
+          );
+        } else {
+          console.warn(
+            "⚠ Video skipped:",
+            result.src
+          );
+        }
+      }
+    );
+
+
+    /*
+      Videos are never allowed to
+      block the portfolio.
+    */
+
+    portfolioState.videosLoaded = true;
+
+  } catch (error) {
+    addError(
+      "Portfolio assets",
+      error
+    );
+
+    /*
+      Even if the asset checker itself
+      crashes, the portfolio continues.
+    */
+
+    portfolioState.imagesLoaded = true;
+    portfolioState.videosLoaded = true;
+  }
+};
+
+
+/* =====================================================
+   PAGE CHECK
+===================================================== */
+
+const checkPages = () => {
+  try {
+    /*
+      IMPORTANT:
+
+      These pages are already statically
+      imported by App.jsx.
+
+      Do NOT dynamically import them here.
+
+      Doing both creates Vite's:
+
+      INEFFECTIVE_DYNAMIC_IMPORT
+
+      warning.
+    */
+
+    const pages = [
+      "Home",
+      "About",
+      "Skills",
+      "Projects",
+      "Contact",
+      "NotFound",
+    ];
+
+    console.log(
+      "✓ Pages registered:",
+      pages.join(", ")
     );
 
     portfolioState.pagesLoaded = true;
+
+    return true;
   } catch (error) {
-    addError("Portfolio pages", error);
+    addError(
+      "Portfolio pages",
+      error
+    );
 
     /*
-      A page import problem must not
-      redirect or stop the application.
+      A page-check problem should never
+      redirect or stop the portfolio.
     */
+
     portfolioState.pagesLoaded = true;
+
+    return false;
   }
 };
+
+
+/* =====================================================
+   PORTFOLIO CHECK
+===================================================== */
 
 const portfolioCheck = async () => {
+  /*
+    Prevent duplicate startup checks.
+  */
+
   if (portfolioState.started) {
     return {
       ...portfolioState,
-      errors: [...portfolioState.errors],
+
+      errors: [
+        ...portfolioState.errors,
+      ],
     };
   }
 
+
   portfolioState.started = true;
 
+
+  console.log(
+    "===================================="
+  );
+
+  console.log(
+    "PORTFOLIO STARTUP CHECK"
+  );
+
+  console.log(
+    "===================================="
+  );
+
+
   try {
-    console.log("Starting portfolio checks...");
+    /* ================================================
+       DATA
+    ================================================ */
 
-    /*
-      Load your existing data.js.
+    const data =
+      await loadData();
 
-      We do NOT create or replace data.js.
-    */
-    const data = await loadData();
 
-    /*
-      Load pages and assets independently.
-      One failure cannot stop the other.
-    */
-    await Promise.all([
-      loadPages(),
-      loadAssets(data),
-    ]);
+    /* ================================================
+       PAGES
+    ================================================ */
+
+    checkPages();
+
+
+    /* ================================================
+       ASSETS
+
+       Asset checking runs separately so
+       a slow asset cannot block page
+       registration.
+    ================================================ */
+
+    await loadAssets(
+      data
+    );
+
   } catch (error) {
     addError(
       "Unexpected portfolio check",
@@ -343,53 +551,98 @@ const portfolioCheck = async () => {
     );
   }
 
-  /*
-    Always mark the checker as finished.
 
-    There is:
-    - no Supabase startup request
-    - no server check
-    - no server-error redirect
-    - no navigate()
-    - no fatal rejection
-  */
+  /* =================================================
+     ALWAYS FINISH
+  ================================================= */
+
   portfolioState.finished = true;
 
+
   console.log(
-    "Portfolio checks finished."
+    "===================================="
   );
 
-  if (portfolioState.errors.length > 0) {
+  console.log(
+    "PORTFOLIO STARTUP CHECK COMPLETE"
+  );
+
+  console.log(
+    "===================================="
+  );
+
+
+  if (
+    portfolioState.errors.length > 0
+  ) {
     console.warn(
-      "Some portfolio checks had problems, but the portfolio will continue.",
+      "Some optional portfolio checks failed.",
       portfolioState.errors
+    );
+
+    console.warn(
+      "The portfolio will continue normally."
+    );
+  } else {
+    console.log(
+      "✓ All portfolio checks completed successfully."
     );
   }
 
+
   return {
     ...portfolioState,
-    errors: [...portfolioState.errors],
+
+    errors: [
+      ...portfolioState.errors,
+    ],
   };
 };
+
+
+/* =====================================================
+   GET CHECK STATE
+===================================================== */
 
 export const getPortfolioCheckState = () => {
   return {
     ...portfolioState,
-    errors: [...portfolioState.errors],
+
+    errors: [
+      ...portfolioState.errors,
+    ],
   };
 };
+
+
+/* =====================================================
+   PORTFOLIO READY
+===================================================== */
 
 export const isPortfolioReady = () => {
   return portfolioState.finished;
 };
 
-/*
-  IMPORTANT:
-  Loader.jsx uses:
 
-  import portfolioCheck from
-  "../../../javascript/utils/portfolioCheck";
+/* =====================================================
+   RESET
+===================================================== */
 
-  Therefore this MUST be a default export.
-*/
+export const resetPortfolioCheck = () => {
+  portfolioState.started = false;
+  portfolioState.finished = false;
+
+  portfolioState.dataLoaded = false;
+  portfolioState.pagesLoaded = false;
+  portfolioState.imagesLoaded = false;
+  portfolioState.videosLoaded = false;
+
+  portfolioState.errors = [];
+};
+
+
+/* =====================================================
+   DEFAULT EXPORT
+===================================================== */
+
 export default portfolioCheck;
