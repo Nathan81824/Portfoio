@@ -1,500 +1,251 @@
-import { useMemo, useState } from "react";
-
+import { useEffect, useRef } from "react";
+import { motion } from "framer-motion";
 import {
-  ArrowRight,
-  ExternalLink,
+  Code2,
+  Sparkles,
+  Layers3,
+  ArrowUpRight,
 } from "lucide-react";
 
-import {
-  visibleSkills,
-  skillCategories,
-} from "../../javascript/skills/skills.js";
+import createSkillsScene from "../../javascript/skills/skills";
 
 
-/* =========================================================
-   SKILLS PAGE
-========================================================= */
 
-export default function Skills() {
+function Skills() {
+  const sceneRef = useRef(null);
 
-  /* =======================================================
-     STATE
-  ======================================================= */
+  useEffect(() => {
+    if (!sceneRef.current) return;
 
-  const [activeCategory, setActiveCategory] =
-    useState("All");
+    const cleanup =
+      createSkillsScene(sceneRef.current);
 
-
-  /* =======================================================
-     FILTER SKILLS
-  ======================================================= */
-
-  const filteredSkills =
-    useMemo(() => {
-
-      if (
-        !activeCategory ||
-        activeCategory === "All"
-      ) {
-
-        return visibleSkills;
-
+    return () => {
+      if (typeof cleanup === "function") {
+        cleanup();
       }
-
-
-      return visibleSkills.filter(
-        (skill) =>
-          skill.category ===
-          activeCategory
-      );
-
-    }, [
-      activeCategory,
-    ]);
-
-
-  /* =======================================================
-     HANDLE CATEGORY
-  ======================================================= */
-
-  const handleCategoryChange =
-    (category) => {
-
-      setActiveCategory(
-        category
-      );
-
     };
-
-
-  /* =======================================================
-     RETURN
-  ======================================================= */
+  }, []);
 
   return (
+    <main className="skills-page">
+      {/* ========================================
+          BACKGROUND
+      ======================================== */}
 
-    <main
-      className="skills-page"
-      id="skills"
-    >
+      <section className="skills-hero">
 
-      {/* ===================================================
-          HERO / INTRO
-      =================================================== */}
+        <div className="skills-background">
+          <div className="skills-glow skills-glow-one" />
+          <div className="skills-glow skills-glow-two" />
+          <div className="skills-grid" />
+        </div>
 
-      <section
-        className="skills-section"
-      >
+        {/* ======================================
+            CONTENT
+        ====================================== */}
 
-        <div
-          className="skills-container"
-        >
+        <div className="skills-container">
 
-          {/* =================================================
+          {/* ====================================
               LEFT SIDE
-          ================================================= */}
+          ==================================== */}
 
-          <div
-            className="skills-intro"
+          <motion.div
+            className="skills-content"
+
+            initial={{
+              opacity: 0,
+              x: -50,
+            }}
+
+            animate={{
+              opacity: 1,
+              x: 0,
+            }}
+
+            transition={{
+              duration: 0.8,
+              ease: "easeOut",
+            }}
           >
 
-            {/* =================================================
-                EYEBROW
-            ================================================= */}
+            {/* LABEL */}
 
-            <span
-              className="skills-eyebrow"
-            >
-              MY SKILLS
-            </span>
-
-
-            {/* =================================================
-                HEADING
-            ================================================= */}
-
-            <h1
-              className="skills-title"
-            >
-
-              Technologies I use
-
-              <span
-                className="
-                  skills-title-accent
-                "
-              >
-                .
+            <div className="skills-label">
+              <span className="skills-label-icon">
+                <Code2 size={16} />
               </span>
 
+              <span>
+                MY SKILLS
+              </span>
+            </div>
+
+            {/* TITLE */}
+
+            <h1 className="skills-title">
+              Building with
+              <span>
+                {" "}modern technology.
+              </span>
             </h1>
 
+            {/* DESCRIPTION */}
 
-            {/* =================================================
-                DESCRIPTION
-            ================================================= */}
-
-            <p
-              className="
-                skills-description
-              "
-            >
-              I build modern, responsive
-              and interactive web
-              experiences using a
-              combination of frontend
-              technologies, development
-              tools and animation
-              libraries.
+            <p className="skills-description">
+              I build responsive, interactive
+              and user-focused web experiences
+              using modern frontend technologies
+              and development tools.
             </p>
 
+            {/* ==================================
+                HIGHLIGHTS
+            ================================== */}
 
-            {/* =================================================
-                SKILL COUNT
-            ================================================= */}
+            <div className="skills-highlights">
 
-            <div
-              className="skills-count"
-            >
+              {/* FRONTEND */}
 
-              <strong>
-                {visibleSkills.length}
-              </strong>
+              <div className="skill-highlight">
 
-              <span>
-                technologies & tools
-              </span>
+                <div className="skill-highlight-icon">
+                  <Code2 size={20} />
+                </div>
 
-            </div>
+                <div>
+                  <h3>
+                    Frontend Development
+                  </h3>
 
-
-            {/* =================================================
-                CONTACT CTA
-            ================================================= */}
-
-            <a
-              href="#contact"
-              className="skills-cta"
-            >
-
-              <span>
-                Let's work together
-              </span>
-
-              <ArrowRight
-                size={17}
-                strokeWidth={1.8}
-                aria-hidden="true"
-              />
-
-            </a>
-
-          </div>
-
-
-          {/* =================================================
-              RIGHT SIDE
-          ================================================= */}
-
-          <div
-            className="skills-content"
-          >
-
-            {/* =================================================
-                CATEGORY FILTERS
-            ================================================= */}
-
-            <div
-              className="skills-filters"
-              aria-label="Skill categories"
-            >
-
-              {skillCategories.map(
-                (category) => (
-
-                  <button
-                    key={category}
-                    type="button"
-                    className={
-                      activeCategory ===
-                      category
-
-                        ? "skills-filter active"
-
-                        : "skills-filter"
-                    }
-                    onClick={() =>
-                      handleCategoryChange(
-                        category
-                      )
-                    }
-                    aria-pressed={
-                      activeCategory ===
-                      category
-                    }
-                  >
-
-                    {category}
-
-                  </button>
-
-                )
-              )}
-
-            </div>
-
-
-            {/* =================================================
-                SKILL GRID
-            ================================================= */}
-
-            <div
-              className="skills-grid"
-            >
-
-              {filteredSkills.map(
-                (
-                  skill,
-                  index
-                ) => (
-
-                  <article
-                    key={
-                      skill.id ||
-                      `${skill.name}-${index}`
-                    }
-
-                    className="skill-card"
-
-                    style={{
-                      "--skill-index":
-                        index,
-
-                      "--skill-color":
-                        skill.color ||
-                        "var(--accent-primary)",
-                    }}
-                  >
-
-                    {/* =========================================
-                        CARD TOP
-                    ========================================= */}
-
-                    <div
-                      className="
-                        skill-card-top
-                      "
-                    >
-
-                      {/* Skill icon */}
-
-                      <div
-                        className="skill-icon"
-
-                        style={{
-                          color:
-                            skill.color ||
-                            "var(--accent-primary)",
-                        }}
-
-                        aria-hidden="true"
-                      >
-
-                        <span>
-                          {(
-                            skill.label ||
-                            skill.name ||
-                            "S"
-                          )
-                            .charAt(0)
-                            .toUpperCase()}
-                        </span>
-
-                      </div>
-
-
-                      {/* Skill level */}
-
-                      <span
-                        className="skill-level"
-                      >
-                        {skill.level}
-                      </span>
-
-                    </div>
-
-
-                    {/* =========================================
-                        CARD CONTENT
-                    ========================================= */}
-
-                    <div
-                      className="
-                        skill-card-content
-                      "
-                    >
-
-                      <h2>
-                        {skill.name}
-                      </h2>
-
-                      <p>
-                        {skill.description}
-                      </p>
-
-                    </div>
-
-
-                    {/* =========================================
-                        PROGRESS
-                    ========================================= */}
-
-                    <div
-                      className="skill-progress"
-                    >
-
-                      <div
-                        className="
-                          skill-progress-header
-                        "
-                      >
-
-                        <span>
-                          Proficiency
-                        </span>
-
-                        <span>
-                          {skill.percentage}%
-                        </span>
-
-                      </div>
-
-
-                      <div
-                        className="
-                          skill-progress-track
-                        "
-                        role="progressbar"
-                        aria-valuemin="0"
-                        aria-valuemax="100"
-                        aria-valuenow={
-                          skill.percentage
-                        }
-                        aria-label={
-                          `${skill.name} proficiency ${skill.percentage}%`
-                        }
-                      >
-
-                        <span
-                          className="
-                            skill-progress-bar
-                          "
-
-                          style={{
-                            width:
-                              `${skill.percentage}%`,
-
-                            background:
-                              skill.color ||
-                              "var(--accent-primary)",
-                          }}
-                        />
-
-                      </div>
-
-                    </div>
-
-
-                    {/* =========================================
-                        CARD FOOTER
-                    ========================================= */}
-
-                    <div
-                      className="
-                        skill-card-footer
-                      "
-                    >
-
-                      <span>
-                        {skill.category}
-                      </span>
-
-
-                      {skill.officialUrl && (
-
-                        <a
-                          href={
-                            skill.officialUrl
-                          }
-
-                          target="_blank"
-
-                          rel="
-                            noopener noreferrer
-                          "
-
-                          className="
-                            skill-official-link
-                          "
-
-                          aria-label={
-                            `Learn more about ${skill.name}`
-                          }
-
-                          onClick={(event) => {
-
-                            event.stopPropagation();
-
-                          }}
-                        >
-
-                          <ExternalLink
-                            size={15}
-                            strokeWidth={1.8}
-                            aria-hidden="true"
-                          />
-
-                        </a>
-
-                      )}
-
-                    </div>
-
-                  </article>
-
-                )
-              )}
-
-            </div>
-
-
-            {/* =================================================
-                EMPTY STATE
-            ================================================= */}
-
-            {filteredSkills.length === 0 && (
-
-              <div
-                className="skills-empty"
-              >
-
-                <p>
-                  No skills found in this
-                  category.
-                </p>
+                  <p>
+                    React, JavaScript, HTML
+                    and CSS
+                  </p>
+                </div>
 
               </div>
 
-            )}
+              {/* TOOLS */}
 
-          </div>
+              <div className="skill-highlight">
+
+                <div className="skill-highlight-icon">
+                  <Layers3 size={20} />
+                </div>
+
+                <div>
+                  <h3>
+                    Modern Tools
+                  </h3>
+
+                  <p>
+                    Tailwind, Zustand, Git
+                    and Vite
+                  </p>
+                </div>
+
+              </div>
+
+              {/* CREATIVE */}
+
+              <div className="skill-highlight">
+
+                <div className="skill-highlight-icon">
+                  <Sparkles size={20} />
+                </div>
+
+                <div>
+                  <h3>
+                    Creative Interfaces
+                  </h3>
+
+                  <p>
+                    Animations, 3D experiences
+                    and interactions
+                  </p>
+                </div>
+
+              </div>
+
+            </div>
+
+            {/* PROJECT LINK */}
+
+            <motion.a
+              href="#projects"
+              className="skills-project-link"
+
+              whileHover={{
+                x: 5,
+              }}
+
+              transition={{
+                duration: 0.2,
+              }}
+            >
+              <span>
+                Explore my projects
+              </span>
+
+              <ArrowUpRight size={18} />
+            </motion.a>
+
+          </motion.div>
+
+          {/* ====================================
+              RIGHT SIDE — THREE.JS
+          ==================================== */}
+
+          <motion.div
+            className="skills-scene-wrapper"
+
+            initial={{
+              opacity: 0,
+              scale: 0.85,
+              x: 50,
+            }}
+
+            animate={{
+              opacity: 1,
+              scale: 1,
+              x: 0,
+            }}
+
+            transition={{
+              duration: 1,
+              delay: 0.2,
+              ease: "easeOut",
+            }}
+          >
+
+            {/* THREE.JS CANVAS */}
+
+            <div
+              ref={sceneRef}
+              className="skills-three-scene"
+            />
+
+            {/* TOP LABEL */}
+
+            <div className="scene-label scene-label-top">
+              <span />
+              3D SKILLS
+            </div>
+
+            {/* BOTTOM LABEL */}
+
+            <div className="scene-label scene-label-bottom">
+              THREE.JS
+            </div>
+
+          </motion.div>
 
         </div>
-
       </section>
-
     </main>
-
   );
-
 }
+
+export default Skills;

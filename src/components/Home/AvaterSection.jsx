@@ -1,5 +1,3 @@
-import { useEffect, useRef } from "react";
-
 import {
 Code2,
 Sparkles,
@@ -17,323 +15,359 @@ AnimatePresence,
 useReducedMotion,
 } from "framer-motion";
 
-import avatarVideo from "../../assets/videos/avater-viedio.mp4";
+import {
+useEffect,
+useRef,
+useState,
+} from "react";
+
+import avatarVideo from "../../assets/videos/avatar-viedio.mp4";
 
 function AvatarSection() {
+const sectionRef = useRef(null);
 const videoRef = useRef(null);
-const soundEnabled = useRef(false);
+
+const [soundEnabled, setSoundEnabled] = useState(false);
+
 const shouldReduceMotion = useReducedMotion();
 
 useEffect(() => {
-const enableSoundAfterScroll = () => {
+const section = sectionRef.current;
 const video = videoRef.current;
 
 
-  if (!video || soundEnabled.current) {
-    return;
-  }
+if (!section || !video) return;
 
-  soundEnabled.current = true;
+let isInsideSection = false;
 
-  video.muted = false;
-  video.volume = 1;
+const stopVideo = () => {
+  isInsideSection = false;
 
-  video.play().catch(() => {
-    soundEnabled.current = false;
-  });
+  video.pause();
+  video.currentTime = 0;
+  video.muted = true;
 
-  window.removeEventListener("scroll", enableSoundAfterScroll);
-  window.removeEventListener("wheel", enableSoundAfterScroll);
-  window.removeEventListener("touchmove", enableSoundAfterScroll);
+  setSoundEnabled(false);
 };
 
-window.addEventListener("scroll", enableSoundAfterScroll, {
-  passive: true,
-});
+const startVideo = async () => {
+  isInsideSection = true;
 
-window.addEventListener("wheel", enableSoundAfterScroll, {
-  passive: true,
-});
+  video.currentTime = 0;
+  video.muted = false;
 
-window.addEventListener("touchmove", enableSoundAfterScroll, {
-  passive: true,
-});
+  try {
+    await video.play();
+
+    if (isInsideSection) {
+      setSoundEnabled(true);
+    }
+  } catch (error) {
+    video.muted = true;
+    setSoundEnabled(false);
+
+    try {
+      await video.play();
+    } catch (playError) {
+      console.error(
+        "Avatar video could not play:",
+        playError
+      );
+    }
+  }
+};
+
+const observer = new IntersectionObserver(
+  (entries) => {
+    const entry = entries[0];
+
+    if (entry.isIntersecting) {
+      startVideo();
+    } else {
+      stopVideo();
+    }
+  },
+  {
+    threshold: 0.6,
+  }
+);
+
+observer.observe(section);
+
+stopVideo();
 
 return () => {
-  window.removeEventListener("scroll", enableSoundAfterScroll);
-  window.removeEventListener("wheel", enableSoundAfterScroll);
-  window.removeEventListener("touchmove", enableSoundAfterScroll);
+  observer.disconnect();
+  stopVideo();
 };
 
 
 }, []);
 
-const containerVariants = {
-hidden: {
-opacity: 0,
-y: 40,
-},
-
-
-visible: {
-  opacity: 1,
-  y: 0,
-  transition: {
-    duration: 0.8,
-    ease: "easeOut",
-    staggerChildren: 0.12,
-  },
-},
-
-
-};
-
-const itemVariants = {
-hidden: {
-opacity: 0,
-y: 25,
-},
-
-
-visible: {
-  opacity: 1,
-  y: 0,
-  transition: {
-    duration: 0.6,
-    ease: "easeOut",
-  },
-},
-
-
-};
-
-const floatingAnimation = shouldReduceMotion
-? {}
-: {
-y: [0, -10, 0],
-transition: {
-duration: 4,
-repeat: Infinity,
-ease: "easeInOut",
-},
-};
-
-return ( <section className="avatar-section" id="avatar">
+return ( <section
+   ref={sectionRef}
+   className="avatar-section"
+   id="avatar"
+ >
 <motion.div
 className="avatar-container"
-variants={containerVariants}
-initial="hidden"
-whileInView="visible"
+initial={
+shouldReduceMotion
+? false
+: {
+opacity: 0,
+y: 40,
+}
+}
+whileInView={
+shouldReduceMotion
+? undefined
+: {
+opacity: 1,
+y: 0,
+}
+}
 viewport={{
 once: true,
 amount: 0.2,
 }}
+transition={{
+duration: 0.8,
+ease: "easeOut",
+}}
 >
 
 
-    <motion.div
-      className="avatar-content"
-      variants={itemVariants}
-    >
-
-      <motion.div
-        className="avatar-badge"
-        variants={itemVariants}
-      >
-        <Sparkles size={16} />
-        <span>Frontend Developer</span>
-      </motion.div>
-
-
-      <motion.h2
-        className="avatar-title"
-        variants={itemVariants}
-      >
-        Building modern
-        <span> digital experiences.</span>
-      </motion.h2>
-
-
-      <motion.p
-        className="avatar-subtitle"
-        variants={itemVariants}
-      >
-        Hi, I'm Nathan — a frontend developer focused on
-        creating clean, responsive, and interactive web
-        experiences with modern technologies.
-      </motion.p>
-
-
-      <motion.div
-        className="avatar-skills"
-        variants={itemVariants}
-      >
-
-        <div className="avatar-skill">
-          <Code2 size={18} />
-          <span>Clean Code</span>
-        </div>
-
-        <div className="avatar-skill">
-          <Zap size={18} />
-          <span>Fast Performance</span>
-        </div>
-
-        <div className="avatar-skill">
-          <Sparkles size={18} />
-          <span>Modern UI</span>
-        </div>
-
-      </motion.div>
-
-
-      <motion.div
-        className="avatar-socials"
-        variants={itemVariants}
-      >
-
-        <motion.a
-          href="https://github.com/Nathan81824?tab=repositories"
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="GitHub"
-          whileHover={{
-            scale: 1.1,
-            y: -3,
-          }}
-          whileTap={{
-            scale: 0.95,
-          }}
-        >
-          <FaGithub />
-        </motion.a>
-
-
-        <motion.a
-          href="https://www.linkedin.com/in/nathan-moses-b13b143bb/"
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="LinkedIn"
-          whileHover={{
-            scale: 1.1,
-            y: -3,
-          }}
-          whileTap={{
-            scale: 0.95,
-          }}
-        >
-          <FaLinkedin />
-        </motion.a>
-
-      </motion.div>
-
-    </motion.div>
-
+    {/* =========================
+        VIDEO
+    ========================= */}
 
     <motion.div
       className="avatar-visual"
-      variants={itemVariants}
-      animate={floatingAnimation}
+      initial={
+        shouldReduceMotion
+          ? false
+          : {
+              opacity: 0,
+              x: -50,
+            }
+      }
+      whileInView={
+        shouldReduceMotion
+          ? undefined
+          : {
+              opacity: 1,
+              x: 0,
+            }
+      }
+      viewport={{
+        once: true,
+        amount: 0.25,
+      }}
+      transition={{
+        duration: 0.9,
+        ease: "easeOut",
+      }}
     >
-
       <div className="avatar-glow avatar-glow-one" />
 
       <div className="avatar-glow avatar-glow-two" />
 
-
       <motion.div
         className="avatar-video-wrapper"
-        whileHover={
+        animate={
           shouldReduceMotion
-            ? {}
+            ? undefined
             : {
-                scale: 1.02,
+                y: [0, -8, 0],
               }
         }
         transition={{
-          duration: 0.3,
+          duration: 5,
+          repeat: Infinity,
+          ease: "easeInOut",
         }}
       >
-
         <video
           ref={videoRef}
           src={avatarVideo}
-          autoPlay
-          muted
           loop
           playsInline
           preload="auto"
           disablePictureInPicture
+          muted
         />
-
       </motion.div>
 
-
       <AnimatePresence>
-
         <motion.div
           className="avatar-floating-badge avatar-floating-badge-one"
-          initial={{
-            opacity: 0,
-            scale: 0.7,
-          }}
-          whileInView={{
-            opacity: 1,
-            scale: 1,
-          }}
+          initial={
+            shouldReduceMotion
+              ? false
+              : {
+                  opacity: 0,
+                  x: -20,
+                }
+          }
+          whileInView={
+            shouldReduceMotion
+              ? undefined
+              : {
+                  opacity: 1,
+                  x: 0,
+                }
+          }
           viewport={{
             once: true,
           }}
-          animate={
-            shouldReduceMotion
-              ? {}
-              : {
-                  y: [0, -8, 0],
-                  transition: {
-                    duration: 3,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                  },
-                }
-          }
+          transition={{
+            delay: 0.5,
+            duration: 0.5,
+          }}
         >
-          <Code2 size={18} />
+          <Code2 size={17} />
           <span>React</span>
         </motion.div>
+      </AnimatePresence>
 
-
+      <AnimatePresence>
         <motion.div
           className="avatar-floating-badge avatar-floating-badge-two"
-          initial={{
-            opacity: 0,
-            scale: 0.7,
-          }}
-          whileInView={{
-            opacity: 1,
-            scale: 1,
-          }}
+          initial={
+            shouldReduceMotion
+              ? false
+              : {
+                  opacity: 0,
+                  x: 20,
+                }
+          }
+          whileInView={
+            shouldReduceMotion
+              ? undefined
+              : {
+                  opacity: 1,
+                  x: 0,
+                }
+          }
           viewport={{
             once: true,
           }}
-          animate={
-            shouldReduceMotion
-              ? {}
-              : {
-                  y: [0, 8, 0],
-                  transition: {
-                    duration: 3.5,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                  },
-                }
-          }
+          transition={{
+            delay: 0.7,
+            duration: 0.5,
+          }}
         >
-          <Zap size={18} />
+          <Zap size={17} />
           <span>JavaScript</span>
         </motion.div>
-
       </AnimatePresence>
 
+    </motion.div>
+
+    {/* =========================
+        TEXT
+    ========================= */}
+
+    <motion.div
+      className="avatar-content"
+      initial={
+        shouldReduceMotion
+          ? false
+          : {
+              opacity: 0,
+              x: 50,
+            }
+      }
+      whileInView={
+        shouldReduceMotion
+          ? undefined
+          : {
+              opacity: 1,
+              x: 0,
+            }
+      }
+      viewport={{
+        once: true,
+        amount: 0.25,
+      }}
+      transition={{
+        duration: 0.9,
+        delay: 0.15,
+        ease: "easeOut",
+      }}
+    >
+      <div className="avatar-badge">
+        <Sparkles size={16} />
+        <span>Frontend Developer</span>
+      </div>
+
+      <h2 className="avatar-title">
+        Building modern
+        <span>digital experiences.</span>
+      </h2>
+
+      <p className="avatar-subtitle">
+        Hi, I'm Nathan — a frontend developer focused on
+        creating clean, responsive, and interactive web
+        experiences with modern technologies.
+      </p>
+
+      <div className="avatar-skills">
+        <div className="avatar-skill">
+          <Code2 size={17} />
+          <span>Clean Code</span>
+        </div>
+
+        <div className="avatar-skill">
+          <Zap size={17} />
+          <span>Fast Performance</span>
+        </div>
+
+        <div className="avatar-skill">
+          <Sparkles size={17} />
+          <span>Modern UI</span>
+        </div>
+      </div>
+
+      <div className="avatar-socials">
+        <a
+          href="https://github.com/Nathan81824?tab=repositories"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Nathan's GitHub"
+        >
+          <FaGithub />
+        </a>
+
+        <a
+          href="https://www.linkedin.com/in/nathan-moses-b13b143bb/"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Nathan's LinkedIn"
+        >
+          <FaLinkedin />
+        </a>
+      </div>
+
+      <div
+        className="avatar-sound-status"
+        aria-live="polite"
+      >
+        <span
+          className={
+            soundEnabled
+              ? "avatar-sound-dot active"
+              : "avatar-sound-dot"
+          }
+        />
+
+        <span>
+          {soundEnabled
+            ? "Sound playing"
+            : "Video ready"}
+        </span>
+      </div>
     </motion.div>
 
   </motion.div>

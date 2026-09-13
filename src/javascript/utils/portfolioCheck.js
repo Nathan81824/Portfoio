@@ -1,794 +1,395 @@
-import { supabase } from "../supabase/supabaseClient";
+// portfolioCheck.js
 
-import myImage from "../../assets/images/my-image.jpg";
-import avatarImage from "../../assets/images/avatar.jpg";
-import avatarVideo from "../../assets/videos/avater-viedio.mp4";
-
-import useAnimationStore from "../../store/animationStore.js";
 import { getData } from "../data/data.js";
 
-/* =====================================================
-REQUIRED MEDIA
-===================================================== */
-
-const requiredImages = [
-{
-name: "Logo",
-src: "/logo.png",
-},
-{
-name: "My image",
-src: myImage,
-},
-{
-name: "Avatar",
-src: avatarImage,
-},
-];
-
-const requiredVideos = [
-{
-name: "Avatar video",
-src: avatarVideo,
-},
-];
-
-/* =====================================================
-CHECK APP
-===================================================== */
-
-function checkApp() {
-try {
-
-
-/*
-  If this file is running, App.js has already
-  successfully loaded the React application.
-
-  We verify that the browser has a React root.
-*/
-
-const root =
-  document.getElementById("root");
-
-
-if (!root) {
-
-  return {
-    success: false,
-    type: "app",
-    error: "React root element was not found.",
-  };
-
-}
-
-
-return {
-  success: true,
-  type: "app",
-  message: "App.js loaded successfully.",
+const portfolioState = {
+  started: false,
+  finished: false,
+  dataLoaded: false,
+  pagesLoaded: false,
+  imagesLoaded: false,
+  videosLoaded: false,
+  errors: [],
 };
 
-
-} catch (error) {
-
-
-return {
-  success: false,
-  type: "app",
-  error:
-    error?.message ||
-    "App check failed.",
-};
-
-
-}
-}
-
-/* =====================================================
-CHECK ANIMATION STORE
-===================================================== */
-
-function checkAnimationStore() {
-try {
-
-
-if (!useAnimationStore) {
-
-  return {
-    success: false,
-    type: "animation",
-    error: "Animation store could not be loaded.",
-  };
-
-}
-
-
-const state =
-  useAnimationStore.getState();
-
-
-if (!state) {
-
-  return {
-    success: false,
-    type: "animation",
-    error: "Animation store state is unavailable.",
-  };
-
-}
-
-
-if (
-  typeof state.setProgress !== "function"
-) {
-
-  return {
-    success: false,
-    type: "animation",
-    error: "Animation store setProgress is missing.",
-  };
-
-}
-
-
-if (
-  typeof state.finishLoading !== "function"
-) {
-
-  return {
-    success: false,
-    type: "animation",
-    error: "Animation store finishLoading is missing.",
-  };
-
-}
-
-
-return {
-  success: true,
-  type: "animation",
-  message: "Animation store is ready.",
-};
-
-
-} catch (error) {
-
-
-return {
-  success: false,
-  type: "animation",
-  error:
-    error?.message ||
-    "Animation store check failed.",
-};
-
-
-}
-}
-
-/* =====================================================
-CHECK PORTFOLIO DATA
-===================================================== */
-
-function checkPortfolioData() {
-try {
-
-
-if (
-  typeof getData !== "function"
-) {
-
-  return {
-    success: false,
-    type: "data",
-    error: "getData function is unavailable.",
-  };
-
-}
-
-
-const data = getData();
-
-
-if (!data) {
-
-  return {
-    success: false,
-    type: "data",
-    error: "Portfolio data returned nothing.",
-  };
-
-}
-
-
-return {
-  success: true,
-  type: "data",
-  message: "Portfolio data loaded successfully.",
-};
-
-
-} catch (error) {
-
-
-return {
-  success: false,
-  type: "data",
-  error:
-    error?.message ||
-    "Portfolio data failed to load.",
-};
-
-
-}
-}
-
-/* =====================================================
-CHECK DATA STORAGE
-===================================================== */
-
-function checkDataStorage() {
-try {
-
-
-const testKey =
-  "__portfolio_storage_test__";
-
-
-const testValue =
-  "portfolio-storage-working";
-
-
-localStorage.setItem(
-  testKey,
-  testValue
-);
-
-
-const storedValue =
-  localStorage.getItem(
-    testKey
-  );
-
-
-localStorage.removeItem(
-  testKey
-);
-
-
-if (
-  storedValue !== testValue
-) {
-
-  return {
-    success: false,
-    type: "storage",
-    error: "Data storage test failed.",
-  };
-
-}
-
-
-return {
-  success: true,
-  type: "storage",
-  message: "Data storage is working.",
-};
-
-
-} catch (error) {
-
-
-return {
-  success: false,
-  type: "storage",
-  error:
-    error?.message ||
-    "Data storage is unavailable.",
-};
-
-
-}
-}
-
-/* =====================================================
-CHECK SUPABASE
-===================================================== */
-
-async function checkSupabase() {
-try {
-
-
-if (!supabase) {
-
-  return {
-    success: false,
-    type: "supabase",
-    error: "Supabase client is unavailable.",
-  };
-
-}
-
-
-const {
-  error,
-} = await supabase.auth.getSession();
-
-
-if (error) {
-
-  return {
-    success: false,
-    type: "supabase",
-    error: error.message,
-  };
-
-}
-
-
-return {
-  success: true,
-  type: "supabase",
-  message: "Supabase is connected.",
-};
-
-
-} catch (error) {
-
-
-return {
-  success: false,
-  type: "supabase",
-  error:
-    error?.message ||
-    "Supabase connection failed.",
-};
-
-
-}
-}
-
-/* =====================================================
-CHECK IMAGE
-===================================================== */
-
-function checkImage(image) {
-return new Promise((resolve) => {
-
-
-const img =
-  new Image();
-
-
-const cleanup = () => {
-
-  img.onload = null;
-  img.onerror = null;
-
-};
-
-
-img.onload = () => {
-
-  cleanup();
-
-
-  resolve({
-    success: true,
-    type: "image",
-    name: image.name,
-    src: image.src,
-    message:
-      `${image.name} loaded successfully.`,
+const addError = (name, error) => {
+  const message =
+    error instanceof Error
+      ? error.message
+      : String(error || "Unknown error");
+
+  portfolioState.errors.push({
+    name,
+    message,
   });
 
+  console.warn(`Portfolio check failed: ${name}`, error);
 };
 
-
-img.onerror = () => {
-
-  cleanup();
-
-
-  resolve({
-    success: false,
-    type: "image",
-    name: image.name,
-    src: image.src,
-    error:
-      `${image.name} failed to load.`,
-  });
-
+const safeImport = async (name, importer) => {
+  try {
+    await importer();
+    return true;
+  } catch (error) {
+    addError(name, error);
+    return false;
+  }
 };
 
+const loadData = async () => {
+  try {
+    const data = await Promise.resolve(getData());
 
-img.src =
-  image.src;
+    portfolioState.dataLoaded = true;
 
+    return data;
+  } catch (error) {
+    addError("Portfolio data", error);
 
-});
-}
-
-/* =====================================================
-CHECK VIDEO
-===================================================== */
-
-function checkVideo(videoSource) {
-return new Promise((resolve) => {
-
-
-const video =
-  document.createElement(
-    "video"
-  );
-
-
-let finished = false;
-
-
-const cleanup = () => {
-
-  video.removeEventListener(
-    "loadedmetadata",
-    handleSuccess
-  );
-
-  video.removeEventListener(
-    "error",
-    handleError
-  );
-
+    return null;
+  }
 };
 
-
-const finish = (result) => {
-
-  if (finished) {
-    return;
+const collectAssets = (value, assets = new Set()) => {
+  if (!value) {
+    return assets;
   }
 
+  if (typeof value === "string") {
+    const cleanValue = value.split("?")[0].toLowerCase();
 
-  finished = true;
+    const imageExtensions = [
+      ".png",
+      ".jpg",
+      ".jpeg",
+      ".webp",
+      ".gif",
+      ".svg",
+      ".avif",
+    ];
 
+    const videoExtensions = [
+      ".mp4",
+      ".webm",
+      ".ogg",
+      ".mov",
+    ];
 
-  cleanup();
+    if (
+      imageExtensions.some((extension) =>
+        cleanValue.endsWith(extension)
+      )
+    ) {
+      assets.add(value);
+    }
 
+    if (
+      videoExtensions.some((extension) =>
+        cleanValue.endsWith(extension)
+      )
+    ) {
+      assets.add(value);
+    }
 
-  resolve(result);
+    return assets;
+  }
 
-};
-
-
-const handleSuccess = () => {
-
-  finish({
-    success: true,
-    type: "video",
-    name: videoSource.name,
-    src: videoSource.src,
-    message:
-      `${videoSource.name} loaded successfully.`,
-  });
-
-};
-
-
-const handleError = () => {
-
-  finish({
-    success: false,
-    type: "video",
-    name: videoSource.name,
-    src: videoSource.src,
-    error:
-      `${videoSource.name} failed to load.`,
-  });
-
-};
-
-
-video.preload =
-  "metadata";
-
-
-video.addEventListener(
-  "loadedmetadata",
-  handleSuccess
-);
-
-
-video.addEventListener(
-  "error",
-  handleError
-);
-
-
-video.src =
-  videoSource.src;
-
-
-video.load();
-
-
-window.setTimeout(() => {
-
-  if (!finished) {
-
-    finish({
-      success: false,
-      type: "video",
-      name: videoSource.name,
-      src: videoSource.src,
-      error:
-        `${videoSource.name} timed out while loading.`,
+  if (Array.isArray(value)) {
+    value.forEach((item) => {
+      collectAssets(item, assets);
     });
 
+    return assets;
   }
 
-}, 10000);
+  if (typeof value === "object") {
+    Object.values(value).forEach((item) => {
+      collectAssets(item, assets);
+    });
+  }
 
-
-});
-}
-
-/* =====================================================
-MAIN PORTFOLIO CHECK
-===================================================== */
-
-async function portfolioCheck({
-onProgress,
-onStatus,
-} = {}) {
-
-const results = [];
-
-const update = (
-progress,
-status
-) => {
-
-
-if (
-  typeof onProgress ===
-  "function"
-) {
-
-  onProgress(progress);
-
-}
-
-
-if (
-  typeof onStatus ===
-  "function"
-) {
-
-  onStatus(status);
-
-}
-
-
+  return assets;
 };
 
-/* ---------------------------------------------
-1. APP
---------------------------------------------- */
+const isImage = (src) => {
+  const cleanSrc = src.split("?")[0].toLowerCase();
 
-update(
-5,
-"Checking application..."
-);
+  return [
+    ".png",
+    ".jpg",
+    ".jpeg",
+    ".webp",
+    ".gif",
+    ".svg",
+    ".avif",
+  ].some((extension) =>
+    cleanSrc.endsWith(extension)
+  );
+};
 
-const appResult =
-checkApp();
+const isVideo = (src) => {
+  const cleanSrc = src.split("?")[0].toLowerCase();
 
-results.push(
-appResult
-);
+  return [
+    ".mp4",
+    ".webm",
+    ".ogg",
+    ".mov",
+  ].some((extension) =>
+    cleanSrc.endsWith(extension)
+  );
+};
 
-/* ---------------------------------------------
-2. ANIMATION STORE
---------------------------------------------- */
+const preloadImage = (src) => {
+  return new Promise((resolve) => {
+    const image = new Image();
 
-update(
-15,
-"Checking animation system..."
-);
+    let finished = false;
 
-const animationResult =
-checkAnimationStore();
+    const finish = (result) => {
+      if (finished) {
+        return;
+      }
 
-results.push(
-animationResult
-);
+      finished = true;
 
-/* ---------------------------------------------
-3. PORTFOLIO DATA
---------------------------------------------- */
+      image.onload = null;
+      image.onerror = null;
 
-update(
-25,
-"Loading portfolio data..."
-);
+      resolve(result);
+    };
 
-const dataResult =
-checkPortfolioData();
+    image.onload = () => {
+      finish(true);
+    };
 
-results.push(
-dataResult
-);
+    image.onerror = () => {
+      console.warn("Image could not be loaded:", src);
+      finish(false);
+    };
 
-/* ---------------------------------------------
-4. DATA STORAGE
---------------------------------------------- */
+    image.src = src;
 
-update(
-35,
-"Checking data storage..."
-);
+    window.setTimeout(() => {
+      finish(false);
+    }, 10000);
+  });
+};
 
-const storageResult =
-checkDataStorage();
+const preloadVideo = (src) => {
+  return new Promise((resolve) => {
+    const video = document.createElement("video");
 
-results.push(
-storageResult
-);
+    let finished = false;
 
-/* ---------------------------------------------
-5. SUPABASE
---------------------------------------------- */
+    const finish = (result) => {
+      if (finished) {
+        return;
+      }
 
-update(
-50,
-"Connecting to Supabase..."
-);
+      finished = true;
 
-const supabaseResult =
-await checkSupabase();
+      video.onloadeddata = null;
+      video.onerror = null;
 
-results.push(
-supabaseResult
-);
+      resolve(result);
+    };
 
-/* ---------------------------------------------
-6. IMAGES
---------------------------------------------- */
+    video.preload = "metadata";
 
-update(
-65,
-"Loading portfolio images..."
-);
+    video.onloadeddata = () => {
+      finish(true);
+    };
 
-const imageResults =
-await Promise.all(
-requiredImages.map(
-checkImage
-)
-);
+    video.onerror = () => {
+      console.warn("Video could not be loaded:", src);
+      finish(false);
+    };
 
-results.push(
-...imageResults
-);
+    video.src = src;
+    video.load();
 
-/* ---------------------------------------------
-7. VIDEOS
---------------------------------------------- */
+    window.setTimeout(() => {
+      finish(false);
+    }, 10000);
+  });
+};
 
-update(
-80,
-"Loading portfolio videos..."
-);
+const loadAssets = async (data) => {
+  try {
+    if (!data) {
+      portfolioState.imagesLoaded = true;
+      portfolioState.videosLoaded = true;
 
-const videoResults =
-await Promise.all(
-requiredVideos.map(
-checkVideo
-)
-);
+      return;
+    }
 
-results.push(
-...videoResults
-);
+    const assets = [
+      ...collectAssets(data),
+    ];
 
-/* ---------------------------------------------
-8. FINAL CHECK
---------------------------------------------- */
+    const imageAssets = assets.filter(isImage);
+    const videoAssets = assets.filter(isVideo);
 
-update(
-95,
-"Finalizing portfolio..."
-);
+    await Promise.all(
+      imageAssets.map((src) =>
+        preloadImage(src)
+      )
+    );
 
-const failedChecks =
-results.filter(
-(result) =>
-result.success === false
-);
+    portfolioState.imagesLoaded = true;
 
-/* ---------------------------------------------
-DEBUG
---------------------------------------------- */
+    await Promise.all(
+      videoAssets.map((src) =>
+        preloadVideo(src)
+      )
+    );
 
-console.log(
-"===================================="
-);
+    portfolioState.videosLoaded = true;
+  } catch (error) {
+    addError("Portfolio assets", error);
 
-console.log(
-"PORTFOLIO STARTUP CHECK"
-);
+    /*
+      Assets failing must NEVER prevent
+      the portfolio from opening.
+    */
+    portfolioState.imagesLoaded = true;
+    portfolioState.videosLoaded = true;
+  }
+};
 
-console.log(
-"===================================="
-);
+const loadPages = async () => {
+  const pages = [
+    [
+      "Home",
+      () => import("../../pages/Home.jsx"),
+    ],
+    [
+      "About",
+      () => import("../../pages/About.jsx"),
+    ],
+    [
+      "Skills",
+      () => import("../../pages/Skills.jsx"),
+    ],
+    [
+      "Projects",
+      () => import("../../pages/Projects.jsx"),
+    ],
+    [
+      "Contact",
+      () => import("../../pages/Contact.jsx"),
+    ],
+    [
+      "NotFound",
+      () => import("../../pages/NotFound.jsx"),
+    ],
+  ];
 
-results.forEach(
-(result) => {
+  try {
+    await Promise.all(
+      pages.map(([name, importer]) =>
+        safeImport(
+          `Page: ${name}`,
+          importer
+        )
+      )
+    );
 
+    portfolioState.pagesLoaded = true;
+  } catch (error) {
+    addError("Portfolio pages", error);
+
+    /*
+      A page import problem must not
+      redirect or stop the application.
+    */
+    portfolioState.pagesLoaded = true;
+  }
+};
+
+const portfolioCheck = async () => {
+  if (portfolioState.started) {
+    return {
+      ...portfolioState,
+      errors: [...portfolioState.errors],
+    };
+  }
+
+  portfolioState.started = true;
+
+  try {
+    console.log("Starting portfolio checks...");
+
+    /*
+      Load your existing data.js.
+
+      We do NOT create or replace data.js.
+    */
+    const data = await loadData();
+
+    /*
+      Load pages and assets independently.
+      One failure cannot stop the other.
+    */
+    await Promise.all([
+      loadPages(),
+      loadAssets(data),
+    ]);
+  } catch (error) {
+    addError(
+      "Unexpected portfolio check",
+      error
+    );
+  }
+
+  /*
+    Always mark the checker as finished.
+
+    There is:
+    - no Supabase startup request
+    - no server check
+    - no server-error redirect
+    - no navigate()
+    - no fatal rejection
+  */
+  portfolioState.finished = true;
 
   console.log(
-    result.success
-      ? "✓"
-      : "✕",
-    result.type,
-    result.name || "",
-    result.error || result.message || ""
+    "Portfolio checks finished."
   );
 
-}
+  if (portfolioState.errors.length > 0) {
+    console.warn(
+      "Some portfolio checks had problems, but the portfolio will continue.",
+      portfolioState.errors
+    );
+  }
 
-
-);
-
-console.log(
-"===================================="
-);
-
-/* ---------------------------------------------
-SUCCESS
---------------------------------------------- */
-
-if (
-failedChecks.length === 0
-) {
-
-
-update(
-  100,
-  "Portfolio ready"
-);
-
-
-} else {
-
-
-update(
-  100,
-  "Portfolio startup failed"
-);
-
-
-console.error(
-  "Failed portfolio checks:",
-  failedChecks
-);
-
-
-}
-
-return {
-
-
-success:
-  failedChecks.length === 0,
-
-results,
-
-failedChecks,
-
-
+  return {
+    ...portfolioState,
+    errors: [...portfolioState.errors],
+  };
 };
 
-}
+export const getPortfolioCheckState = () => {
+  return {
+    ...portfolioState,
+    errors: [...portfolioState.errors],
+  };
+};
 
+export const isPortfolioReady = () => {
+  return portfolioState.finished;
+};
+
+/*
+  IMPORTANT:
+  Loader.jsx uses:
+
+  import portfolioCheck from
+  "../../../javascript/utils/portfolioCheck";
+
+  Therefore this MUST be a default export.
+*/
 export default portfolioCheck;

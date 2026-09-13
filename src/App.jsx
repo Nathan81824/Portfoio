@@ -20,18 +20,16 @@ import NotFound from "./components/Detection/Error/NotFound.jsx";
 import ServerError from "./components/Detection/Error/ServerError.jsx";
 
 import PageTransition from "./components/Detection/Effects/Transition/PageTransition.jsx";
-import Loader from "./components/Detection/Loader/Loader.jsx";
-
 import { getData } from "./javascript/data/data.js";
 
 /* =====================================================
 PUBLIC PORTFOLIO
 ===================================================== */
 
-function PublicPortfolio() {
+function PublicPortfolio() { 
 const data = getData();
 
-return ( <Loader> <div className="app">
+return (  <div className="app">
 
 
     <PageTransition>
@@ -78,7 +76,7 @@ return ( <Loader> <div className="app">
     </PageTransition>
 
   </div>
-</Loader>
+
 
 
 );

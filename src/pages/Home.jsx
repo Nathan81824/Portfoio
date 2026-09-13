@@ -4,6 +4,7 @@ import AboutPreview from "../components/Home/AboutPreview";
 import WhatIDo from "../components/Home/WhatIDo";
 import AvatarSection from "../components/Home/AvaterSection";
 import TechUniverse from "../components/Home/TechUniverse";
+import AboutJourney from "../components/Home/AboutJourney";
 
 function Home() {
   return (
@@ -19,6 +20,8 @@ function Home() {
       <AvatarSection />
 
       <TechUniverse/>
+
+      <AboutJourney/>
 
 
     </main>

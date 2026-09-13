@@ -161,6 +161,35 @@ box-shadow: var(--shadow-accent);
 }
 
 /* =========================
+SOUND STATUS
+========================= */
+
+.avatar-sound-status {
+display: flex;
+align-items: center;
+gap: 8px;
+margin-top: 22px;
+color: var(--text-muted);
+font-size: 0.75rem;
+font-weight: 500;
+}
+
+.avatar-sound-dot {
+width: 7px;
+height: 7px;
+border-radius: 50%;
+background: var(--text-muted);
+transition:
+background-color 0.3s ease,
+box-shadow 0.3s ease;
+}
+
+.avatar-sound-dot.active {
+background: var(--accent-primary);
+box-shadow: 0 0 10px rgba(255, 159, 0, 0.8);
+}
+
+/* =========================
 VISUAL
 ========================= */
 
@@ -334,6 +363,7 @@ gap: 70px;
 }
 
 /* VIDEO FIRST */
+
 .avatar-visual {
 grid-column: 1;
 grid-row: 1;
@@ -341,6 +371,7 @@ min-height: 520px;
 }
 
 /* TEXT SECOND */
+
 .avatar-content {
 grid-column: 1;
 grid-row: 2;
@@ -364,6 +395,10 @@ justify-content: center;
 }
 
 .avatar-socials {
+justify-content: center;
+}
+
+.avatar-sound-status {
 justify-content: center;
 }
 
@@ -427,6 +462,11 @@ margin-top: 28px;
 .avatar-socials a {
 width: 42px;
 height: 42px;
+}
+
+.avatar-sound-status {
+margin-top: 18px;
+font-size: 0.7rem;
 }
 
 .avatar-visual {
@@ -508,7 +548,8 @@ REDUCED MOTION
 @media (prefers-reduced-motion: reduce) {
 .avatar-skill,
 .avatar-socials a,
-.avatar-video-wrapper {
+.avatar-video-wrapper,
+.avatar-sound-dot {
 transition: none;
 }
 

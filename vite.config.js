@@ -10,7 +10,6 @@ base: process.env.NODE_ENV === "production"
 plugins: [
 react(),
 
-
 VitePWA({
   registerType: "autoUpdate",
 
@@ -22,17 +21,18 @@ VitePWA({
     theme_color: "#090909",
     background_color: "#090909",
     display: "standalone",
-    start_url: "/",
-    scope: "/",
+
+    start_url: "/Portfoio/",
+    scope: "/Portfoio/",
 
     icons: [
       {
-        src: "logo.png",
+        src: "/Portfoio/logo.png",
         sizes: "192x192",
         type: "image/png",
       },
       {
-        src: "logo.png",
+        src: "/Portfoio/logo.png",
         sizes: "512x512",
         type: "image/png",
       },

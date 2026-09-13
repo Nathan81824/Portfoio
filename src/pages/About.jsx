@@ -1,5 +1,5 @@
 import AboutHero from "../components/About/AboutHero"
-import ThreeDSection from "../components/Home/ThhreeDSection"
+import ThreeDSection from "../components/About/ThhreeDSection"
 
 
 function About() {
