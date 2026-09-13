@@ -3,43 +3,50 @@ import react from "@vitejs/plugin-react";
 import { VitePWA } from "vite-plugin-pwa";
 
 export default defineConfig({
-base: process.env.NODE_ENV === "production"
-? "/Portfoio/"
-: "/",
+  base: "/",
 
-plugins: [
-react(),
+  plugins: [
+    react(),
 
-VitePWA({
-  registerType: "autoUpdate",
+    VitePWA({
+      registerType: "autoUpdate",
 
-  manifest: {
-    name: "Nathan — Frontend Developer",
-    short_name: "Nathan",
-    description:
-      "Nathan — Frontend Developer creating responsive, interactive and modern digital experiences.",
-    theme_color: "#090909",
-    background_color: "#090909",
-    display: "standalone",
+      manifest: {
+        name: "Nathan — Frontend Developer",
 
-    start_url: "/Portfoio/",
-    scope: "/Portfoio/",
+        short_name: "Nathan",
 
-    icons: [
-      {
-        src: "/Portfoio/logo.png",
-        sizes: "192x192",
-        type: "image/png",
+        description:
+          "Nathan — Frontend Developer creating responsive, interactive and modern digital experiences.",
+
+        theme_color: "#090909",
+
+        background_color: "#090909",
+
+        display: "standalone",
+
+        start_url: "/",
+
+        scope: "/",
+
+        icons: [
+          {
+            src: "/logo.png",
+            sizes: "192x192",
+            type: "image/png",
+          },
+
+          {
+            src: "/logo.png",
+            sizes: "512x512",
+            type: "image/png",
+          },
+        ],
       },
-      {
-        src: "/Portfoio/logo.png",
-        sizes: "512x512",
-        type: "image/png",
-      },
-    ],
+    }),
+  ],
+
+  build: {
+    chunkSizeWarningLimit: 1000,
   },
-}),
-
-
-],
 });
