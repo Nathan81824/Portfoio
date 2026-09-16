@@ -1,0 +1,1095 @@
+/* =========================================================
+   CONTACT PROCESS SECTION
+========================================================= */
+
+.contact-process {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+
+  padding: 120px var(--section-padding-x, 7vw) 110px;
+
+  overflow: hidden;
+  isolation: isolate;
+
+  background:
+    radial-gradient(
+      circle at 50% 15%,
+      rgba(255, 159, 0, 0.07),
+      transparent 30%
+    ),
+    linear-gradient(
+      180deg,
+      var(--bg-secondary),
+      var(--bg-primary)
+    );
+
+  color: var(--text-primary);
+}
+
+
+/* =========================================================
+   BACKGROUND GRID
+========================================================= */
+
+.contact-process::before {
+  content: "";
+
+  position: absolute;
+  inset: 0;
+
+  z-index: -3;
+
+  pointer-events: none;
+
+  background-image:
+    linear-gradient(
+      rgba(255, 255, 255, 0.018) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.018) 1px,
+      transparent 1px
+    );
+
+  background-size: 55px 55px;
+
+  mask-image: linear-gradient(
+    to bottom,
+    transparent,
+    black 12%,
+    black 88%,
+    transparent
+  );
+}
+
+
+/* =========================================================
+   AMBIENT GLOW
+========================================================= */
+
+.contact-process::after {
+  content: "";
+
+  position: absolute;
+
+  width: 700px;
+  height: 700px;
+
+  top: 20%;
+  left: 50%;
+
+  transform: translateX(-50%);
+
+  border-radius: 50%;
+
+  background: radial-gradient(
+    circle,
+    rgba(255, 159, 0, 0.055),
+    transparent 68%
+  );
+
+  filter: blur(40px);
+
+  pointer-events: none;
+
+  z-index: -2;
+}
+
+
+/* =========================================================
+   SECTION HEADER
+========================================================= */
+
+.contact-process-header {
+  position: relative;
+
+  width: min(760px, 100%);
+
+  margin: 0 auto 75px;
+
+  text-align: center;
+}
+
+
+.contact-process-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+
+  margin-bottom: 18px;
+
+  color: var(--accent-primary);
+
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+
+  text-transform: uppercase;
+}
+
+
+.contact-process-eyebrow::before,
+.contact-process-eyebrow::after {
+  content: "";
+
+  width: 30px;
+  height: 1px;
+
+  background: var(--accent-primary);
+
+  box-shadow:
+    0 0 9px rgba(255, 159, 0, 0.5);
+}
+
+
+.contact-process-header h2 {
+  margin: 0;
+
+  font-size: clamp(2.8rem, 5.5vw, 5.5rem);
+
+  line-height: 0.95;
+
+  letter-spacing: -0.055em;
+
+  font-weight: 900;
+
+  color: var(--text-primary);
+}
+
+
+.contact-process-header h2 span {
+  display: block;
+
+  color: transparent;
+
+  background: var(--accent-gradient);
+
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+
+.contact-process-header p {
+  width: min(620px, 100%);
+
+  margin: 25px auto 0;
+
+  color: var(--text-secondary);
+
+  font-size: clamp(0.95rem, 1.2vw, 1.05rem);
+
+  line-height: 1.75;
+}
+
+
+/* =========================================================
+   PROCESS GRID
+========================================================= */
+
+.contact-process-grid {
+  position: relative;
+
+  width: 100%;
+  max-width: 1350px;
+
+  margin: 0 auto;
+
+  display: grid;
+
+  grid-template-columns: repeat(4, 1fr);
+
+  gap: 18px;
+}
+
+
+/* =========================================================
+   PROCESS CARD
+========================================================= */
+
+.contact-process-card {
+  position: relative;
+
+  min-height: 390px;
+
+  padding: 28px;
+
+  display: flex;
+  flex-direction: column;
+
+  border: 1px solid var(--glass-border);
+
+  border-radius: 22px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.065),
+      rgba(255, 255, 255, 0.025)
+    );
+
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+
+  box-shadow:
+    var(--shadow-soft),
+    inset 0 1px 0 rgba(255, 255, 255, 0.045);
+
+  overflow: hidden;
+
+  isolation: isolate;
+
+  transition:
+    transform 0.35s ease,
+    border-color 0.35s ease,
+    background 0.35s ease,
+    box-shadow 0.35s ease;
+}
+
+
+.contact-process-card::before {
+  content: "";
+
+  position: absolute;
+
+  top: 0;
+  left: 10%;
+  right: 10%;
+
+  height: 1px;
+
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 159, 0, 0.7),
+    transparent
+  );
+
+  opacity: 0.5;
+
+  transition:
+    opacity 0.35s ease,
+    box-shadow 0.35s ease;
+}
+
+
+.contact-process-card::after {
+  content: "";
+
+  position: absolute;
+
+  width: 170px;
+  height: 170px;
+
+  right: -100px;
+  bottom: -100px;
+
+  border-radius: 50%;
+
+  background: rgba(255, 159, 0, 0.07);
+
+  filter: blur(35px);
+
+  pointer-events: none;
+
+  transition:
+    transform 0.45s ease,
+    opacity 0.45s ease;
+}
+
+
+.contact-process-card:hover {
+  transform: translateY(-9px);
+
+  border-color: var(--border-accent);
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.085),
+      rgba(255, 255, 255, 0.035)
+    );
+
+  box-shadow:
+    var(--shadow-medium),
+    0 0 35px rgba(255, 159, 0, 0.07);
+}
+
+
+.contact-process-card:hover::before {
+  opacity: 1;
+
+  box-shadow:
+    0 0 15px rgba(255, 159, 0, 0.35);
+}
+
+
+.contact-process-card:hover::after {
+  transform: scale(1.4);
+
+  opacity: 1;
+}
+
+
+/* =========================================================
+   CARD NUMBER
+========================================================= */
+
+.contact-process-number {
+  position: absolute;
+
+  top: 22px;
+  right: 24px;
+
+  font-size: 3.8rem;
+
+  line-height: 1;
+
+  font-weight: 900;
+
+  letter-spacing: -0.08em;
+
+  color: rgba(255, 255, 255, 0.045);
+
+  pointer-events: none;
+
+  transition:
+    color 0.35s ease,
+    transform 0.35s ease;
+}
+
+
+.contact-process-card:hover .contact-process-number {
+  color: rgba(255, 159, 0, 0.1);
+
+  transform: translateY(-3px);
+}
+
+
+/* =========================================================
+   ICON
+========================================================= */
+
+.contact-process-icon {
+  position: relative;
+
+  width: 56px;
+  height: 56px;
+
+  margin-bottom: 50px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid rgba(255, 159, 0, 0.25);
+
+  border-radius: 15px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255, 159, 0, 0.13),
+      rgba(255, 159, 0, 0.035)
+    );
+
+  color: var(--accent-primary);
+
+  box-shadow:
+    0 8px 25px rgba(255, 159, 0, 0.07);
+
+  transition:
+    transform 0.35s ease,
+    border-color 0.35s ease,
+    box-shadow 0.35s ease;
+}
+
+
+.contact-process-card:hover .contact-process-icon {
+  transform: translateY(-4px) rotate(-3deg);
+
+  border-color: rgba(255, 159, 0, 0.55);
+
+  box-shadow:
+    0 10px 30px rgba(255, 159, 0, 0.15);
+}
+
+
+/* =========================================================
+   CARD CONTENT
+========================================================= */
+
+.contact-process-card-content {
+  position: relative;
+
+  z-index: 2;
+}
+
+
+.contact-process-step {
+  display: block;
+
+  margin-bottom: 9px;
+
+  color: var(--accent-primary);
+
+  font-size: 0.63rem;
+  font-weight: 800;
+
+  letter-spacing: 0.15em;
+
+  opacity: 0.8;
+}
+
+
+.contact-process-card h3 {
+  margin: 0 0 14px;
+
+  font-size: 1.45rem;
+
+  line-height: 1;
+
+  letter-spacing: -0.02em;
+
+  font-weight: 900;
+
+  color: var(--text-primary);
+}
+
+
+.contact-process-card p {
+  margin: 0;
+
+  color: var(--text-secondary);
+
+  font-size: 0.88rem;
+
+  line-height: 1.7;
+}
+
+
+/* =========================================================
+   CARD ARROW
+========================================================= */
+
+.contact-process-arrow {
+  position: absolute;
+
+  left: 28px;
+  bottom: 27px;
+
+  width: 38px;
+  height: 38px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid var(--border-primary);
+
+  border-radius: 10px;
+
+  color: var(--text-tertiary);
+
+  background: var(--bg-surface);
+
+  transition:
+    transform 0.35s ease,
+    color 0.35s ease,
+    border-color 0.35s ease,
+    background 0.35s ease;
+}
+
+
+.contact-process-card:hover .contact-process-arrow {
+  transform: translateX(5px);
+
+  color: var(--accent-primary);
+
+  border-color: var(--border-accent);
+
+  background: rgba(255, 159, 0, 0.07);
+}
+
+
+/* =========================================================
+   CONNECTOR
+========================================================= */
+
+.contact-process-connector {
+  position: absolute;
+
+  top: 50%;
+  right: -19px;
+
+  width: 20px;
+  height: 1px;
+
+  z-index: 10;
+
+  pointer-events: none;
+}
+
+
+.contact-process-connector::before {
+  content: "";
+
+  position: absolute;
+
+  inset: 0;
+
+  background: linear-gradient(
+    90deg,
+    rgba(255, 159, 0, 0.05),
+    rgba(255, 159, 0, 0.45)
+  );
+}
+
+
+.contact-process-connector span {
+  position: absolute;
+
+  top: 50%;
+  right: 0;
+
+  width: 5px;
+  height: 5px;
+
+  transform: translateY(-50%) rotate(45deg);
+
+  border-top: 1px solid var(--accent-primary);
+  border-right: 1px solid var(--accent-primary);
+
+  opacity: 0.8;
+}
+
+
+/* =========================================================
+   BOTTOM CTA
+========================================================= */
+
+.contact-process-cta {
+  position: relative;
+
+  width: 100%;
+  max-width: 1350px;
+
+  min-height: 190px;
+
+  margin: 75px auto 0;
+
+  padding: 35px 40px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 35px;
+
+  border: 1px solid var(--glass-border);
+
+  border-radius: 24px;
+
+  background:
+    radial-gradient(
+      circle at 85% 50%,
+      rgba(255, 159, 0, 0.1),
+      transparent 32%
+    ),
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.06),
+      rgba(255, 255, 255, 0.025)
+    );
+
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+
+  box-shadow:
+    var(--shadow-medium);
+
+  overflow: hidden;
+}
+
+
+.contact-process-cta::before {
+  content: "";
+
+  position: absolute;
+
+  top: 0;
+  left: 8%;
+  right: 8%;
+
+  height: 1px;
+
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 159, 0, 0.7),
+    transparent
+  );
+
+  box-shadow:
+    0 0 15px rgba(255, 159, 0, 0.25);
+}
+
+
+.contact-process-cta::after {
+  content: "";
+
+  position: absolute;
+
+  width: 300px;
+  height: 300px;
+
+  right: -170px;
+  top: -150px;
+
+  border-radius: 50%;
+
+  background: rgba(255, 159, 0, 0.07);
+
+  filter: blur(45px);
+
+  pointer-events: none;
+}
+
+
+.contact-process-cta-content {
+  position: relative;
+
+  z-index: 2;
+}
+
+
+.contact-process-cta-content > span {
+  display: block;
+
+  margin-bottom: 10px;
+
+  color: var(--accent-primary);
+
+  font-size: 0.67rem;
+  font-weight: 800;
+
+  letter-spacing: 0.17em;
+
+  text-transform: uppercase;
+}
+
+
+.contact-process-cta-content h3 {
+  margin: 0;
+
+  font-size: clamp(1.7rem, 3vw, 3rem);
+
+  line-height: 1.05;
+
+  letter-spacing: -0.04em;
+
+  font-weight: 800;
+
+  color: var(--text-primary);
+}
+
+
+.contact-process-cta-content strong {
+  display: block;
+
+  color: transparent;
+
+  background: var(--accent-gradient);
+
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+
+/* =========================================================
+   CTA BUTTON
+========================================================= */
+
+.contact-process-cta-button {
+  position: relative;
+
+  z-index: 3;
+
+  flex-shrink: 0;
+
+  min-height: 52px;
+
+  padding: 0 20px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 10px;
+
+  border: 1px solid rgba(255, 159, 0, 0.4);
+
+  border-radius: 12px;
+
+  background: var(--accent-gradient);
+
+  color: #080808;
+
+  font-size: 0.8rem;
+  font-weight: 900;
+
+  letter-spacing: 0.04em;
+
+  text-decoration: none;
+
+  box-shadow:
+    0 12px 30px rgba(255, 138, 0, 0.16);
+
+  overflow: hidden;
+
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease,
+    filter 0.3s ease;
+}
+
+
+.contact-process-cta-button::before {
+  content: "";
+
+  position: absolute;
+
+  top: 0;
+  left: -100%;
+
+  width: 70%;
+  height: 100%;
+
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+
+  transform: skewX(-20deg);
+
+  transition: left 0.6s ease;
+}
+
+
+.contact-process-cta-button:hover::before {
+  left: 130%;
+}
+
+
+.contact-process-cta-button:hover {
+  transform: translateY(-3px);
+
+  box-shadow:
+    0 16px 38px rgba(255, 138, 0, 0.25);
+
+  filter: brightness(1.06);
+}
+
+
+.contact-process-cta-button svg {
+  transition: transform 0.3s ease;
+}
+
+
+.contact-process-cta-button:hover svg {
+  transform: translateX(4px);
+}
+
+
+/* =========================================================
+   LIGHT THEME
+========================================================= */
+
+.light-theme .contact-process {
+  background:
+    radial-gradient(
+      circle at 50% 15%,
+      rgba(255, 159, 0, 0.06),
+      transparent 30%
+    ),
+    linear-gradient(
+      180deg,
+      var(--bg-secondary),
+      var(--bg-primary)
+    );
+}
+
+
+.light-theme .contact-process::before {
+  background-image:
+    linear-gradient(
+      rgba(20, 20, 20, 0.035) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      rgba(20, 20, 20, 0.035) 1px,
+      transparent 1px
+    );
+}
+
+
+.light-theme .contact-process-card {
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.95),
+      rgba(255, 255, 255, 0.72)
+    );
+
+  box-shadow:
+    var(--shadow-soft),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+
+.light-theme .contact-process-card:hover {
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 1),
+      rgba(255, 255, 255, 0.88)
+    );
+}
+
+
+.light-theme .contact-process-number {
+  color: rgba(20, 20, 20, 0.045);
+}
+
+
+.light-theme .contact-process-card:hover .contact-process-number {
+  color: rgba(255, 159, 0, 0.1);
+}
+
+
+.light-theme .contact-process-cta {
+  background:
+    radial-gradient(
+      circle at 85% 50%,
+      rgba(255, 159, 0, 0.08),
+      transparent 32%
+    ),
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.95),
+      rgba(255, 255, 255, 0.75)
+    );
+}
+
+
+/* =========================================================
+   LARGE TABLET
+========================================================= */
+
+@media (max-width: 1100px) {
+  .contact-process {
+    padding-left: 5vw;
+    padding-right: 5vw;
+  }
+
+  .contact-process-grid {
+    grid-template-columns: repeat(2, 1fr);
+
+    gap: 18px;
+  }
+
+  .contact-process-card {
+    min-height: 350px;
+  }
+
+  .contact-process-connector {
+    display: none;
+  }
+}
+
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 760px) {
+  .contact-process {
+    padding-top: 90px;
+    padding-bottom: 80px;
+  }
+
+  .contact-process-header {
+    margin-bottom: 50px;
+  }
+
+  .contact-process-header h2 {
+    font-size: clamp(2.6rem, 11vw, 4rem);
+  }
+
+  .contact-process-grid {
+    grid-template-columns: 1fr;
+
+    max-width: 600px;
+  }
+
+  .contact-process-card {
+    min-height: 310px;
+
+    padding: 25px;
+  }
+
+  .contact-process-icon {
+    margin-bottom: 38px;
+  }
+
+  .contact-process-cta {
+    min-height: auto;
+
+    margin-top: 55px;
+
+    padding: 30px;
+
+    flex-direction: column;
+
+    align-items: flex-start;
+  }
+
+  .contact-process-cta-button {
+    width: 100%;
+  }
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 600px) {
+  .contact-process {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+
+  .contact-process-eyebrow::before,
+  .contact-process-eyebrow::after {
+    width: 20px;
+  }
+
+  .contact-process-header p {
+    font-size: 0.9rem;
+  }
+
+  .contact-process-card {
+    min-height: 300px;
+
+    border-radius: 18px;
+
+    padding: 22px;
+  }
+
+  .contact-process-number {
+    top: 18px;
+    right: 20px;
+
+    font-size: 3.2rem;
+  }
+
+  .contact-process-icon {
+    width: 52px;
+    height: 52px;
+
+    margin-bottom: 34px;
+  }
+
+  .contact-process-card h3 {
+    font-size: 1.3rem;
+  }
+
+  .contact-process-card p {
+    font-size: 0.84rem;
+  }
+
+  .contact-process-arrow {
+    left: 22px;
+    bottom: 22px;
+  }
+
+  .contact-process-cta {
+    padding: 25px 22px;
+
+    border-radius: 18px;
+  }
+
+  .contact-process-cta-content h3 {
+    font-size: 1.7rem;
+  }
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
+
+@media (max-width: 380px) {
+  .contact-process {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+
+  .contact-process-header h2 {
+    font-size: 2.45rem;
+  }
+
+  .contact-process-card {
+    min-height: 285px;
+
+    padding: 20px;
+  }
+
+  .contact-process-cta {
+    padding: 22px 18px;
+  }
+
+  .contact-process-cta-content h3 {
+    font-size: 1.55rem;
+  }
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .contact-process-card,
+  .contact-process-icon,
+  .contact-process-arrow,
+  .contact-process-cta-button {
+    transition: none;
+  }
+
+  .contact-process-card:hover {
+    transform: none;
+  }
+
+  .contact-process-card:hover .contact-process-icon {
+    transform: none;
+  }
+
+  .contact-process-card:hover .contact-process-arrow {
+    transform: none;
+  }
+
+  .contact-process-cta-button:hover {
+    transform: none;
+  }
+
+  .contact-process-cta-button::before {
+    display: none;
+  }
+}
+

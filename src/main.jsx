@@ -12,6 +12,8 @@ import {
 
 import ThemeTransition from "./components/Detection/Effects/Transition/ThemeTransition.jsx";
 
+import SmoothScroll from "./components/Detection/Effects/ScrololEffect/SmoothScrolling.jsx";
+
 import "./index.css";
 import "./App.css";
 
@@ -45,18 +47,6 @@ const isGitHubPages =
    ROUTER BASENAME
 ===================================================== */
 
-/*
-  Vercel:
-  https://your-project.vercel.app/
-
-  basename = "/"
-
-  GitHub Pages:
-  https://username.github.io/Portfoio/
-
-  basename = "/Portfoio"
-*/
-
 const basename =
   isGitHubPages
     ? "/Portfoio"
@@ -83,6 +73,8 @@ root.render(
     >
 
       <ThemeProvider>
+
+        <SmoothScroll />
 
         <Detection>
 

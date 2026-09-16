@@ -14,11 +14,16 @@ import {
 } from "react-router-dom";
 
 import {
+  motion,
+  AnimatePresence,
+} from "framer-motion";
+
+import clsx from "clsx";
+import {
   personalInfo,
   navigation,
-} from "../../../javascript/data/data.js";
-
-import useTheme from "../../../javascript/hooks/Theme/useTheme.js";
+  useTheme,
+} from "../../../javascript/index.js";
 
 import Button, {
   MagneticButton,
@@ -27,6 +32,7 @@ import Button, {
 import {
   TextScramble,
 } from "../../Detection/Effects/Effects.jsx";
+
 
 function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -60,10 +66,17 @@ function Navbar() {
   ========================================================= */
 
   useEffect(() => {
+    let ticking = false;
+
     const handleScroll = () => {
-      setScrolled(
-        window.scrollY > 40
-      );
+      if (ticking) return;
+
+      ticking = true;
+
+      requestAnimationFrame(() => {
+        setScrolled(window.scrollY > 40);
+        ticking = false;
+      });
     };
 
     handleScroll();
@@ -99,10 +112,12 @@ function Navbar() {
   ========================================================= */
 
   useEffect(() => {
-    document.body.style.overflow =
-      menuOpen
-        ? "hidden"
-        : "";
+    if (!menuOpen) {
+      document.body.style.overflow = "";
+      return;
+    }
+
+    document.body.style.overflow = "hidden";
 
     return () => {
       document.body.style.overflow = "";
@@ -141,16 +156,71 @@ function Navbar() {
 
 
   /* =========================================================
+     ANIMATION SETTINGS
+  ========================================================= */
+
+  const navbarTransition = {
+    duration: 0.45,
+    ease: [0.76, 0, 0.24, 1],
+  };
+
+  const mobileMenuVariants = {
+    closed: {
+      opacity: 0,
+      y: -20,
+      transition: {
+        duration: 0.3,
+        ease: [0.76, 0, 0.24, 1],
+      },
+    },
+
+    open: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.55,
+        ease: [0.76, 0, 0.24, 1],
+      },
+    },
+  };
+
+  const mobileLinkVariants = {
+    closed: {
+      opacity: 0,
+      x: -25,
+    },
+
+    open: (index) => ({
+      opacity: 1,
+      x: 0,
+      transition: {
+        duration: 0.5,
+        delay: 0.08 + index * 0.06,
+        ease: [0.76, 0, 0.24, 1],
+      },
+    }),
+  };
+
+
+  /* =========================================================
      RENDER
   ========================================================= */
 
   return (
-    <header
-      className={`navbar ${
+    <motion.header
+      className={clsx(
+        "navbar",
         scrolled
           ? "navbar-scrolled"
           : "navbar-top"
-      }`}
+      )}
+
+      animate={{
+        y: 0,
+        opacity: 1,
+      }}
+
+      transition={navbarTransition}
     >
 
       {/* =====================================================
@@ -171,9 +241,23 @@ function Navbar() {
           aria-label="Go to homepage"
         >
 
-          <span className="navbar-logo-mark">
+          <motion.span
+            className="navbar-logo-mark"
+
+            whileHover={{
+              rotate: 8,
+              scale: 1.06,
+            }}
+
+            transition={{
+              type: "spring",
+              stiffness: 400,
+              damping: 18,
+            }}
+          >
             {logoLetter}
-          </span>
+          </motion.span>
+
 
           <span className="navbar-logo-name">
             <TextScramble
@@ -196,7 +280,7 @@ function Navbar() {
           aria-label="Main navigation"
         >
 
-          {navLinks.map((item) => {
+          {navLinks.map((item, index) => {
             const path =
               item.path ||
               item.href ||
@@ -207,17 +291,66 @@ function Navbar() {
               item.name ||
               "";
 
+            const active =
+              isActive(path);
+
             return (
               <Link
                 key={path}
                 to={path}
-                className={`navbar-link ${
-                  isActive(path)
-                    ? "active"
-                    : ""
-                }`}
+                className={clsx(
+                  "navbar-link",
+                  active && "active"
+                )}
               >
-                {label}
+
+                <motion.span
+                  initial={false}
+                  animate={{
+                    y: active ? -1 : 0,
+                  }}
+                  transition={{
+                    duration: 0.25,
+                  }}
+                >
+                  {label}
+                </motion.span>
+
+
+                {/* =========================================
+                    ACTIVE LINK INDICATOR
+                ========================================= */}
+
+                <AnimatePresence>
+                  {active && (
+                    <motion.span
+                      className="navbar-link-indicator"
+
+                      layoutId="navbar-active-indicator"
+
+                      initial={{
+                        opacity: 0,
+                        scaleX: 0,
+                      }}
+
+                      animate={{
+                        opacity: 1,
+                        scaleX: 1,
+                      }}
+
+                      exit={{
+                        opacity: 0,
+                        scaleX: 0,
+                      }}
+
+                      transition={{
+                        duration: 0.35,
+                        ease: [0.76, 0, 0.24, 1],
+                      }}
+                    />
+                  )}
+                </AnimatePresence>
+
               </Link>
             );
           })}
@@ -254,17 +387,72 @@ function Navbar() {
             }
           >
 
-            {darkMode ? (
-              <Sun
-                size={18}
-                strokeWidth={2}
-              />
-            ) : (
-              <Moon
-                size={18}
-                strokeWidth={2}
-              />
-            )}
+            <AnimatePresence
+              mode="wait"
+              initial={false}
+            >
+
+              {darkMode ? (
+
+                <motion.span
+                  key="sun"
+                  initial={{
+                    opacity: 0,
+                    rotate: -90,
+                    scale: 0.6,
+                  }}
+                  animate={{
+                    opacity: 1,
+                    rotate: 0,
+                    scale: 1,
+                  }}
+                  exit={{
+                    opacity: 0,
+                    rotate: 90,
+                    scale: 0.6,
+                  }}
+                  transition={{
+                    duration: 0.3,
+                  }}
+                >
+                  <Sun
+                    size={18}
+                    strokeWidth={2}
+                  />
+                </motion.span>
+
+              ) : (
+
+                <motion.span
+                  key="moon"
+                  initial={{
+                    opacity: 0,
+                    rotate: 90,
+                    scale: 0.6,
+                  }}
+                  animate={{
+                    opacity: 1,
+                    rotate: 0,
+                    scale: 1,
+                  }}
+                  exit={{
+                    opacity: 0,
+                    rotate: -90,
+                    scale: 0.6,
+                  }}
+                  transition={{
+                    duration: 0.3,
+                  }}
+                >
+                  <Moon
+                    size={18}
+                    strokeWidth={2}
+                  />
+                </motion.span>
+
+              )}
+
+            </AnimatePresence>
 
           </MagneticButton>
 
@@ -317,17 +505,72 @@ function Navbar() {
             aria-expanded={menuOpen}
           >
 
-            {menuOpen ? (
-              <X
-                size={24}
-                strokeWidth={2}
-              />
-            ) : (
-              <Menu
-                size={24}
-                strokeWidth={2}
-              />
-            )}
+            <AnimatePresence
+              mode="wait"
+              initial={false}
+            >
+
+              {menuOpen ? (
+
+                <motion.span
+                  key="close"
+                  initial={{
+                    opacity: 0,
+                    rotate: -90,
+                    scale: 0.7,
+                  }}
+                  animate={{
+                    opacity: 1,
+                    rotate: 0,
+                    scale: 1,
+                  }}
+                  exit={{
+                    opacity: 0,
+                    rotate: 90,
+                    scale: 0.7,
+                  }}
+                  transition={{
+                    duration: 0.25,
+                  }}
+                >
+                  <X
+                    size={24}
+                    strokeWidth={2}
+                  />
+                </motion.span>
+
+              ) : (
+
+                <motion.span
+                  key="menu"
+                  initial={{
+                    opacity: 0,
+                    rotate: 90,
+                    scale: 0.7,
+                  }}
+                  animate={{
+                    opacity: 1,
+                    rotate: 0,
+                    scale: 1,
+                  }}
+                  exit={{
+                    opacity: 0,
+                    rotate: -90,
+                    scale: 0.7,
+                  }}
+                  transition={{
+                    duration: 0.25,
+                  }}
+                >
+                  <Menu
+                    size={24}
+                    strokeWidth={2}
+                  />
+                </motion.span>
+
+              )}
+
+            </AnimatePresence>
 
           </MagneticButton>
 
@@ -340,171 +583,246 @@ function Navbar() {
           MOBILE MENU
       ===================================================== */}
 
-      <div
-        className={`navbar-mobile-menu ${
-          menuOpen
-            ? "navbar-mobile-menu-open"
-            : ""
-        }`}
-      >
+      <AnimatePresence>
 
+        {menuOpen && (
 
-        {/* ===================================================
-            MOBILE MENU HEADER
-        =================================================== */}
+          <motion.div
+            className="navbar-mobile-menu navbar-mobile-menu-open"
 
-        <div className="navbar-mobile-header">
+            variants={mobileMenuVariants}
 
-          <div>
+            initial="closed"
+            animate="open"
+            exit="closed"
 
-            <span className="navbar-mobile-label">
-              <TextScramble
-                text="Navigation"
-                duration={500}
-                className="text-scramble"
-              />
-            </span>
-
-            <h3>
-              <TextScramble
-                text="Menu"
-                duration={600}
-                delay={100}
-                className="text-scramble"
-              />
-            </h3>
-
-          </div>
-
-
-          <MagneticButton
-            type="button"
-            className="navbar-mobile-close"
-            strength={0.18}
-            duration={0.3}
-            onClick={closeMenu}
-            aria-label="Close navigation menu"
+            data-lenis-prevent
           >
 
-            <X
-              size={22}
-              strokeWidth={2}
-            />
+            {/* =============================================
+                MOBILE MENU HEADER
+            ============================================= */}
 
-          </MagneticButton>
+            <div className="navbar-mobile-header">
 
-        </div>
+              <div>
 
+                <span className="navbar-mobile-label">
 
-        {/* ===================================================
-            MOBILE NAVIGATION LINKS
-        =================================================== */}
+                  <TextScramble
+                    text="Navigation"
+                    duration={500}
+                    className="text-scramble"
+                  />
 
-        <nav
-          className="navbar-mobile-links"
-          aria-label="Mobile navigation"
-        >
+                </span>
 
-          {navLinks.map(
-            (item, index) => {
-              const path =
-                item.path ||
-                item.href ||
-                "/";
+                <h3>
 
-              const label =
-                item.label ||
-                item.name ||
-                "";
+                  <TextScramble
+                    text="Menu"
+                    duration={600}
+                    delay={100}
+                    className="text-scramble"
+                  />
 
-              return (
-                <Link
-                  key={path}
-                  to={path}
-                  className={`navbar-mobile-link ${
-                    isActive(path)
-                      ? "active"
-                      : ""
-                  }`}
-                  onClick={closeMenu}
-                >
+                </h3>
 
-                  <span className="navbar-mobile-number">
-                    {String(
-                      index + 1
-                    ).padStart(2, "0")}
-                  </span>
-
-                  <span className="navbar-mobile-link-text">
-                    {label}
-                  </span>
-
-                </Link>
-              );
-            }
-          )}
-
-        </nav>
+              </div>
 
 
-        {/* ===================================================
-            MOBILE RESUME BUTTON
-        =================================================== */}
+              <MagneticButton
+                type="button"
+                className="navbar-mobile-close"
+                strength={0.18}
+                duration={0.3}
+                onClick={closeMenu}
+                aria-label="Close navigation menu"
+              >
 
-        <div className="navbar-resume-mobile">
+                <X
+                  size={22}
+                  strokeWidth={2}
+                />
 
-          <Button
-            as="a"
-            href={resumeUrl}
-            download
-            magnetic
-            magneticStrength={0.15}
-            className="navbar-resume"
-            onClick={closeMenu}
-          >
+              </MagneticButton>
 
-            <Download
-              size={17}
-              strokeWidth={2}
-              className="navbar-resume-icon"
-            />
-
-            <span>
-              Download Resume
-            </span>
-
-          </Button>
-
-        </div>
+            </div>
 
 
-        {/* ===================================================
-            MOBILE FOOTER
-        =================================================== */}
+            {/* =============================================
+                MOBILE NAVIGATION LINKS
+            ============================================= */}
 
-        <div className="navbar-mobile-footer">
+            <nav
+              className="navbar-mobile-links"
+              aria-label="Mobile navigation"
+            >
 
-          <span className="navbar-mobile-dot" />
+              {navLinks.map(
+                (item, index) => {
 
-          <span>
-            {personalInfo?.profession ||
-              personalInfo?.role ||
-              "Frontend Developer"}
-          </span>
+                  const path =
+                    item.path ||
+                    item.href ||
+                    "/";
 
-          <span>
-            •
-          </span>
+                  const label =
+                    item.label ||
+                    item.name ||
+                    "";
 
-          <span>
-            {logoName}
-          </span>
+                  const active =
+                    isActive(path);
 
-        </div>
+                  return (
 
-      </div>
+                    <motion.div
+                      key={path}
+                      custom={index}
+                      variants={
+                        mobileLinkVariants
+                      }
+                      initial="closed"
+                      animate="open"
+                    >
 
-    </header>
+                      <Link
+                        to={path}
+                        className={clsx(
+                          "navbar-mobile-link",
+                          active && "active"
+                        )}
+                        onClick={closeMenu}
+                      >
+
+                        <span className="navbar-mobile-number">
+                          {String(
+                            index + 1
+                          ).padStart(2, "0")}
+                        </span>
+
+
+                        <motion.span
+                          className="navbar-mobile-link-text"
+
+                          whileHover={{
+                            x: 8,
+                          }}
+
+                          transition={{
+                            duration: 0.25,
+                          }}
+                        >
+                          {label}
+                        </motion.span>
+
+                      </Link>
+
+                    </motion.div>
+
+                  );
+                }
+              )}
+
+            </nav>
+
+
+            {/* =============================================
+                MOBILE RESUME BUTTON
+            ============================================= */}
+
+            <motion.div
+              className="navbar-resume-mobile"
+
+              initial={{
+                opacity: 0,
+                y: 20,
+              }}
+
+              animate={{
+                opacity: 1,
+                y: 0,
+              }}
+
+              transition={{
+                duration: 0.5,
+                delay: 0.35,
+                ease: [0.76, 0, 0.24, 1],
+              }}
+            >
+
+              <Button
+                as="a"
+                href={resumeUrl}
+                download
+                magnetic
+                magneticStrength={0.15}
+                className="navbar-resume"
+                onClick={closeMenu}
+              >
+
+                <Download
+                  size={17}
+                  strokeWidth={2}
+                  className="navbar-resume-icon"
+                />
+
+                <span>
+                  Download Resume
+                </span>
+
+              </Button>
+
+            </motion.div>
+
+
+            {/* =============================================
+                MOBILE FOOTER
+            ============================================= */}
+
+            <motion.div
+              className="navbar-mobile-footer"
+
+              initial={{
+                opacity: 0,
+              }}
+
+              animate={{
+                opacity: 1,
+              }}
+
+              transition={{
+                duration: 0.5,
+                delay: 0.45,
+              }}
+            >
+
+              <span className="navbar-mobile-dot" />
+
+              <span>
+                {personalInfo?.profession ||
+                  personalInfo?.role ||
+                  "Frontend Developer"}
+              </span>
+
+              <span>
+                •
+              </span>
+
+              <span>
+                {logoName}
+              </span>
+
+            </motion.div>
+
+          </motion.div>
+
+        )}
+
+      </AnimatePresence>
+
+    </motion.header>
   );
 }
 

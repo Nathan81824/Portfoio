@@ -5,14 +5,13 @@ import Loader from "./Loader/Loader.jsx";
 
 function Detection({ children }) {
   return (
-    <Loader>
-      <OfflineDetector>
+    <OfflineDetector>
+      <Loader>
         <Effects />
         <IdleExperience />
-
         {children}
-      </OfflineDetector>
-    </Loader>
+      </Loader>
+    </OfflineDetector>
   );
 }
 

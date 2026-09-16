@@ -1,33 +1,20 @@
-
-import { useState } from "react";
-
+import { useEffect, useRef, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Send,
-  User,
-  Mail,
-  MessageSquare,
   CheckCircle2,
   AlertCircle,
 } from "lucide-react";
+import { FaGithub, FaLinkedin } from "react-icons/fa";
 
-import dataStorage from "../../javascript/data/dataStorage.js";
-
-import {
-  notifyNewContact,
-} from "../../javascript/data/notification/notification.js";
+import contactVideo from "../../assets/videos/contact-avatar.mp4";
 
 
-/* =========================================================
-   CONTACT FORM
-========================================================= */
+function Contact() {
+  const sectionRef = useRef(null);
+  const videoRef = useRef(null);
 
-export default function ContactForm({
-  onSubmitted,
-}) {
-
-  /* =======================================================
-     FORM STATE
-  ======================================================= */
+  const [isInView, setIsInView] = useState(false);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -35,563 +22,460 @@ export default function ContactForm({
     message: "",
   });
 
-
-  /* =======================================================
-     STATUS
-  ======================================================= */
-
-  const [status, setStatus] =
-    useState("idle");
+  const [status, setStatus] = useState({
+    type: "",
+    message: "",
+  });
 
 
-  const [error, setError] =
-    useState("");
+  /* =========================================================
+     SECTION VISIBILITY
+  ========================================================= */
+
+  useEffect(() => {
+    const section = sectionRef.current;
+
+    if (!section) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsInView(entry.isIntersecting);
+      },
+      {
+        threshold: 0.35,
+      }
+    );
+
+    observer.observe(section);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
 
 
-  /* =======================================================
-     HANDLE INPUT
-  ======================================================= */
+  /* =========================================================
+     VIDEO PLAY / PAUSE
+  ========================================================= */
+
+  useEffect(() => {
+    const video = videoRef.current;
+
+    if (!video) return;
+
+    if (isInView) {
+      video.currentTime = 0;
+      video.volume = 1;
+      video.muted = false;
+
+      const playVideo = async () => {
+        try {
+          await video.play();
+        } catch (error) {
+          console.log(
+            "Browser blocked autoplay with sound:",
+            error
+          );
+
+          /*
+            Some browsers require user interaction before
+            allowing sound. The video will still attempt
+            to play normally.
+          */
+
+          try {
+            video.muted = true;
+            await video.play();
+          } catch (fallbackError) {
+            console.log(
+              "Video playback was blocked:",
+              fallbackError
+            );
+          }
+        }
+      };
+
+      playVideo();
+    } else {
+      video.pause();
+    }
+  }, [isInView]);
+
+
+  /* =========================================================
+     FORM HANDLING
+  ========================================================= */
 
   const handleChange = (event) => {
-
-    const {
-      name,
-      value,
-    } = event.target;
-
+    const { name, value } = event.target;
 
     setFormData((previous) => ({
       ...previous,
       [name]: value,
     }));
-
-
-    if (status !== "idle") {
-      setStatus("idle");
-    }
-
-
-    if (error) {
-      setError("");
-    }
-
   };
 
-
-  /* =======================================================
-     VALIDATE FORM
-  ======================================================= */
-
-  const validateForm = () => {
-
-    const name =
-      formData.name.trim();
-
-    const email =
-      formData.email.trim();
-
-    const message =
-      formData.message.trim();
-
-
-    if (!name) {
-      return "Please enter your name.";
-    }
-
-
-    if (!email) {
-      return "Please enter your email.";
-    }
-
-
-    const emailPattern =
-      /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-
-    if (!emailPattern.test(email)) {
-      return "Please enter a valid email address.";
-    }
-
-
-    if (!message) {
-      return "Please enter a message.";
-    }
-
-
-    if (message.length > 1000) {
-      return "Your message must be 1000 characters or less.";
-    }
-
-
-    return "";
-
-  };
-
-
-  /* =======================================================
-     SUBMIT
-  ======================================================= */
 
   const handleSubmit = (event) => {
-
     event.preventDefault();
 
-    setError("");
+    const name = formData.name.trim();
+    const email = formData.email.trim();
+    const message = formData.message.trim();
 
-
-    const validationError =
-      validateForm();
-
-
-    if (validationError) {
-
-      setError(
-        validationError
-      );
-
-      setStatus("error");
-
-      return;
-
-    }
-
-
-    /* =====================================================
-       CREATE CONTACT MESSAGE
-    ===================================================== */
-
-    const now =
-      new Date();
-
-
-    const contactMessage = {
-
-      id:
-        `${Date.now()}-${Math.random()
-          .toString(36)
-          .slice(2, 9)}`,
-
-      name:
-        formData.name.trim(),
-
-      email:
-        formData.email.trim(),
-
-      message:
-        formData.message.trim(),
-
-      createdAt:
-        now.toISOString(),
-
-      read:
-        false,
-
-    };
-
-
-    try {
-
-      /* ===================================================
-         SAVE MESSAGE
-      =================================================== */
-
-      if (
-        !dataStorage ||
-        typeof dataStorage.save !==
-          "function"
-      ) {
-
-        throw new Error(
-          "Contact message storage is unavailable."
-        );
-
-      }
-
-
-      dataStorage.save(
-        contactMessage
-      );
-
-
-      /* ===================================================
-         NOTIFICATION
-      =================================================== */
-
-      try {
-
-        notifyNewContact(
-          contactMessage
-        );
-
-      } catch (
-        notificationError
-      ) {
-
-        console.warn(
-          "Browser notification could not be created:",
-          notificationError
-        );
-
-      }
-
-
-      /* ===================================================
-         UPDATE INBOX
-      =================================================== */
-
-      window.dispatchEvent(
-        new CustomEvent(
-          "contact:new",
-          {
-            detail:
-              contactMessage,
-          }
-        )
-      );
-
-
-      /* ===================================================
-         CLEAR FORM
-      =================================================== */
-
-      setFormData({
-        name: "",
-        email: "",
-        message: "",
+    if (!name || !email || !message) {
+      setStatus({
+        type: "error",
+        message: "Please fill in all fields.",
       });
 
-
-      /* ===================================================
-         SUCCESS
-      =================================================== */
-
-      setStatus(
-        "success"
-      );
-
-
-      if (
-        typeof onSubmitted ===
-        "function"
-      ) {
-
-        onSubmitted(
-          contactMessage
-        );
-
-      }
-
-    } catch (
-      submissionError
-    ) {
-
-      console.error(
-        "Contact form error:",
-        submissionError
-      );
-
-
-      setError(
-        "Something went wrong while saving your message. Please try again."
-      );
-
-
-      setStatus(
-        "error"
-      );
-
+      return;
     }
 
+    setStatus({
+      type: "success",
+      message: "Message ready to send.",
+    });
+
+    setFormData({
+      name: "",
+      email: "",
+      message: "",
+    });
+
+    setTimeout(() => {
+      setStatus({
+        type: "",
+        message: "",
+      });
+    }, 4000);
   };
 
 
-  /* =======================================================
-     CHARACTER COUNT
-  ======================================================= */
+  /* =========================================================
+     VIDEO ANIMATION
+  ========================================================= */
 
-  const characterCount =
-    formData.message.length;
+  const videoAnimation = {
+    initial: {
+      left: "50%",
+      width: "min(520px, 44vw)",
+    },
+
+    animate: {
+      left: isInView ? "75%" : "50%",
+      width: isInView
+        ? "min(430px, 36vw)"
+        : "min(520px, 44vw)",
+    },
+
+    transition: {
+      left: {
+        duration: 1.8,
+        delay: isInView ? 2 : 0,
+        ease: [0.76, 0, 0.24, 1],
+      },
+
+      width: {
+        duration: 1.8,
+        delay: isInView ? 2 : 0,
+        ease: [0.76, 0, 0.24, 1],
+      },
+    },
+  };
 
 
-  /* =======================================================
-     RENDER
-  ======================================================= */
+  /* =========================================================
+     CONTENT ANIMATION
+  ========================================================= */
+
+  const contentAnimation = {
+    initial: {
+      opacity: 0,
+      x: -100,
+    },
+
+    animate: {
+      opacity: isInView ? 1 : 0,
+      x: isInView ? 0 : -100,
+    },
+
+    transition: {
+      duration: 1.1,
+      delay: isInView ? 3 : 0,
+      ease: [0.76, 0, 0.24, 1],
+    },
+  };
+
 
   return (
-
     <section
-      className="contact-form"
-      aria-label="Contact form"
+      ref={sectionRef}
+      className="contact-page"
+      id="contact"
     >
 
-      {/* ===================================================
-          HEADER
-      =================================================== */}
+      {/* =====================================================
+          CONTACT CONTENT
+      ===================================================== */}
 
-      <div className="contact-form__header">
-
-        <span className="contact-form__eyebrow">
-          GET IN TOUCH
-        </span>
-
-
-        <h2>
-          Send a message
-        </h2>
-
-
-        <p>
-          Have a project, question, or idea?
-          Send me a message and I'll get back
-          to you.
-        </p>
-
-      </div>
-
-
-      {/* ===================================================
-          SUCCESS MESSAGE
-      =================================================== */}
-
-      {status === "success" && (
-
-        <div
-          className="
-            contact-form__status
-            contact-form__status--success
-          "
-          role="status"
-        >
-
-          <CheckCircle2
-            size={19}
-            strokeWidth={1.8}
-          />
-
-          <div>
-
-            <strong>
-              Message sent
-            </strong>
-
-            <span>
-              Your message has been saved successfully.
-            </span>
-
-          </div>
-
-        </div>
-
-      )}
-
-
-      {/* ===================================================
-          ERROR MESSAGE
-      =================================================== */}
-
-      {status === "error" && error && (
-
-        <div
-          className="
-            contact-form__status
-            contact-form__status--error
-          "
-          role="alert"
-        >
-
-          <AlertCircle
-            size={19}
-            strokeWidth={1.8}
-          />
-
-          <span>
-            {error}
-          </span>
-
-        </div>
-
-      )}
-
-
-      {/* ===================================================
-          FORM
-      =================================================== */}
-
-      <form
-        className="contact-form__body"
-        onSubmit={handleSubmit}
-        noValidate
+      <motion.div
+        className="contact-content"
+        initial={contentAnimation.initial}
+        animate={contentAnimation.animate}
+        transition={contentAnimation.transition}
       >
 
-        {/* =================================================
-            NAME
-        ================================================= */}
+        <div className="contact-heading">
 
-        <div className="contact-form__field">
+          <div className="contact-eyebrow">
+            <span>GET IN TOUCH</span>
+          </div>
 
-          <label
-            htmlFor="contact-name"
-          >
-            Name
-          </label>
+          <h1>
+            Have a project
+            <span>in mind?</span>
+          </h1>
+
+          <p className="contact-description">
+            Whether you're building a website, a web app,
+            or something completely new, let's turn your
+            idea into something real.
+          </p>
+
+        </div>
 
 
-          <div className="contact-form__input-wrap">
+        {/* ===================================================
+            FORM
+        =================================================== */}
 
-            <User
-              size={17}
-              strokeWidth={1.7}
-              aria-hidden="true"
-            />
+        <form
+          className="contact-form"
+          onSubmit={handleSubmit}
+        >
 
+          <div className="contact-field">
+
+            <label htmlFor="name">
+              Name
+            </label>
 
             <input
-              id="contact-name"
+              id="name"
               name="name"
               type="text"
+              placeholder="Your name"
               value={formData.name}
               onChange={handleChange}
-              placeholder="Your name"
               autoComplete="name"
-              maxLength={80}
-              required
             />
 
           </div>
 
-        </div>
 
+          <div className="contact-field">
 
-        {/* =================================================
-            EMAIL
-        ================================================= */}
-
-        <div className="contact-form__field">
-
-          <label
-            htmlFor="contact-email"
-          >
-            Email
-          </label>
-
-
-          <div className="contact-form__input-wrap">
-
-            <Mail
-              size={17}
-              strokeWidth={1.7}
-              aria-hidden="true"
-            />
-
+            <label htmlFor="email">
+              Email
+            </label>
 
             <input
-              id="contact-email"
+              id="email"
               name="email"
               type="email"
+              placeholder="you@example.com"
               value={formData.email}
               onChange={handleChange}
-              placeholder="you@example.com"
               autoComplete="email"
-              maxLength={120}
-              required
             />
 
           </div>
 
-        </div>
 
+          <div className="contact-field">
 
-        {/* =================================================
-            MESSAGE
-        ================================================= */}
-
-        <div className="contact-form__field">
-
-          <div className="contact-form__label-row">
-
-            <label
-              htmlFor="contact-message"
-            >
+            <label htmlFor="message">
               Message
             </label>
 
+            <textarea
+              id="message"
+              name="message"
+              placeholder="Tell me about your project..."
+              value={formData.message}
+              onChange={handleChange}
+              rows="5"
+            />
 
-            <span
-              className={
-                characterCount >= 900
-                  ? `
-                    contact-form__counter
-                    contact-form__counter--warning
-                  `
-                  : "contact-form__counter"
-              }
-            >
-              {characterCount}/1000
+          </div>
+
+
+          <button
+            type="submit"
+            className="contact-submit"
+          >
+            <span>Let's talk</span>
+
+            <Send size={17} />
+
+          </button>
+
+        </form>
+
+
+        {/* ===================================================
+            SOCIAL LINKS
+        =================================================== */}
+
+        <div className="contact-socials">
+
+          <a
+            href="https://github.com/Nathan81824?tab=repositories"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="GitHub"
+          >
+            <FaGithub size={18} />
+          </a>
+
+
+          <a
+            href="https://www.linkedin.com/in/nathan-moses-b13b143bb/"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="LinkedIn"
+          >
+            <FaLinkedin size={18} />
+          </a>
+
+        </div>
+
+      </motion.div>
+
+
+      {/* =====================================================
+          VIDEO
+      ===================================================== */}
+
+      <motion.div
+        className="contact-visual"
+        initial={videoAnimation.initial}
+        animate={videoAnimation.animate}
+        transition={videoAnimation.transition}
+      >
+
+        <div className="contact-video-frame">
+
+          <video
+            ref={videoRef}
+            className="contact-video"
+            src={contactVideo}
+            autoPlay
+            loop
+            playsInline
+            preload="auto"
+            muted={false}
+          />
+
+
+          {/* VIDEO OVERLAY */}
+
+          <div className="contact-video-overlay" />
+
+
+          {/* SCANLINE */}
+
+          <div className="contact-scanline" />
+
+
+          {/* CORNERS */}
+
+          <span className="contact-corner top-left" />
+          <span className="contact-corner top-right" />
+          <span className="contact-corner bottom-left" />
+          <span className="contact-corner bottom-right" />
+
+
+          {/* STATUS */}
+
+          <div className="contact-video-status">
+
+            <span className="contact-video-status-dot" />
+
+            <span>
+              AVAILABLE
             </span>
 
           </div>
 
 
-          <div className="contact-form__textarea-wrap">
+          {/* CAPTION */}
 
-            <MessageSquare
-              size={17}
-              strokeWidth={1.7}
-              aria-hidden="true"
-            />
-
-
-            <textarea
-              id="contact-message"
-              name="message"
-              value={formData.message}
-              onChange={handleChange}
-              placeholder="Write your message..."
-              rows={6}
-              maxLength={1000}
-              required
-            />
-
+          <div className="contact-video-caption">
+            Let's build something meaningful.
           </div>
+
+
+          {/* FLOATING NODES */}
+
+          <span className="contact-floating-node node-one" />
+          <span className="contact-floating-node node-two" />
 
         </div>
 
-
-        {/* =================================================
-            SUBMIT
-        ================================================= */}
-
-        <button
-          type="submit"
-          className="contact-form__submit"
-        >
-
-          <span>
-            Send Message
-          </span>
+      </motion.div>
 
 
-          <Send
-            size={17}
-            strokeWidth={1.8}
-          />
+      {/* =====================================================
+          STATUS POPUP
+      ===================================================== */}
 
-        </button>
+      <AnimatePresence>
 
-      </form>
+        {status.message && (
 
+          <motion.div
+            className={`contact-status-popup ${status.type}`}
+            initial={{
+              opacity: 0,
+              y: 30,
+              scale: 0.95,
+            }}
+            animate={{
+              opacity: 1,
+              y: 0,
+              scale: 1,
+            }}
+            exit={{
+              opacity: 0,
+              y: 20,
+              scale: 0.95,
+            }}
+            transition={{
+              duration: 0.3,
+              ease: "easeOut",
+            }}
+          >
 
-      {/* ===================================================
-          PRIVACY NOTE
-      =================================================== */}
+            {status.type === "success" ? (
+              <CheckCircle2 size={20} />
+            ) : (
+              <AlertCircle size={20} />
+            )}
 
-      <p className="contact-form__note">
-        Your contact details are used only to
-        respond to your message.
-      </p>
+            <span>
+              {status.message}
+            </span>
+
+          </motion.div>
+
+        )}
+
+      </AnimatePresence>
 
     </section>
-
   );
-
 }
+
+export default Contact;

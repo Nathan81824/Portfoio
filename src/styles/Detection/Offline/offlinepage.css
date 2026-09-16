@@ -1,0 +1,350 @@
+.offline-page {
+  position: fixed;
+  inset: 0;
+  z-index: 999999;
+
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 24px;
+
+  background: #080808;
+
+  overflow: hidden;
+}
+
+
+/* =========================================================
+   OFFLINE CARD
+========================================================= */
+
+.offline-card {
+  position: relative;
+
+  display: flex;
+  flex-direction: column;
+
+  width: min(950px, calc(100vw - 48px));
+  height: min(760px, calc(100vh - 48px));
+  height: min(760px, calc(100dvh - 48px));
+
+  overflow: hidden;
+
+  background: #0d0d0d;
+
+  border: 1px solid rgba(255, 255, 255, 0.12);
+
+  border-radius: 24px;
+
+  box-shadow:
+    0 30px 100px rgba(0, 0, 0, 0.7),
+    0 0 70px rgba(255, 159, 0, 0.1);
+}
+
+
+/* =========================================================
+   TOP GLOW LINE
+========================================================= */
+
+.offline-card::before {
+  content: "";
+
+  position: absolute;
+
+  top: 0;
+  left: 8%;
+
+  width: 84%;
+  height: 2px;
+
+  z-index: 20;
+
+  background: linear-gradient(
+    90deg,
+    transparent,
+    #ff9f00,
+    #ff8a00,
+    #ff9f00,
+    transparent
+  );
+
+  box-shadow:
+    0 0 20px rgba(255, 159, 0, 0.5);
+
+  pointer-events: none;
+}
+
+
+/* =========================================================
+   VIDEO CONTAINER
+========================================================= */
+
+.offline-video-container {
+  position: relative;
+
+  width: 100%;
+
+  flex: 1;
+
+  min-height: 0;
+
+  overflow: hidden;
+
+  background: #080808;
+}
+
+
+/* =========================================================
+   VIDEO
+========================================================= */
+
+.offline-character-video {
+  position: absolute;
+
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+
+  display: block;
+
+  /*
+    COVER makes the video completely
+    fill the box.
+  */
+
+  object-fit: cover;
+
+  object-position: center center;
+
+  background: #080808;
+
+  border: none;
+  outline: none;
+
+  opacity: 1;
+
+  visibility: visible;
+
+  user-select: none;
+
+  pointer-events: none;
+}
+
+
+/* =========================================================
+   VIDEO OVERLAY
+========================================================= */
+
+.offline-video-container::after {
+  content: "";
+
+  position: absolute;
+
+  inset: 0;
+
+  z-index: 2;
+
+  pointer-events: none;
+
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(8, 8, 8, 0.05) 0%,
+      transparent 45%,
+      rgba(8, 8, 8, 0.2) 75%,
+      rgba(8, 8, 8, 0.85) 100%
+    );
+}
+
+
+/* =========================================================
+   ACTION AREA
+========================================================= */
+
+.offline-actions {
+  position: relative;
+
+  z-index: 10;
+
+  display: grid;
+
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  gap: 14px;
+
+  padding: 18px 20px;
+
+  background: #0d0d0d;
+
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+
+/* =========================================================
+   BUTTONS
+========================================================= */
+
+.offline-actions button {
+  min-height: 54px;
+
+  padding: 0 20px;
+
+  border: 1px solid rgba(255, 255, 255, 0.12);
+
+  border-radius: 12px;
+
+  background: #151515;
+
+  color: #ffffff;
+
+  font-family: inherit;
+
+  font-size: 15px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+
+/* =========================================================
+   BUTTON HOVER
+========================================================= */
+
+.offline-actions button:hover {
+  transform: translateY(-2px);
+
+  background: #1d1d1d;
+
+  border-color: rgba(255, 159, 0, 0.6);
+
+  box-shadow:
+    0 8px 25px rgba(0, 0, 0, 0.35),
+    0 0 20px rgba(255, 159, 0, 0.08);
+}
+
+
+/* =========================================================
+   BUTTON ACTIVE
+========================================================= */
+
+.offline-actions button:active {
+  transform: translateY(0);
+}
+
+
+/* =========================================================
+   DISABLED BUTTON
+========================================================= */
+
+.offline-actions button:disabled {
+  opacity: 0.6;
+
+  cursor: not-allowed;
+
+  transform: none;
+}
+
+
+/* =========================================================
+   PLAY GAME BUTTON
+========================================================= */
+
+.offline-actions button:last-child {
+  background: linear-gradient(
+    135deg,
+    #ff9f00,
+    #ff8a00
+  );
+
+  color: #080808;
+
+  border-color: rgba(255, 159, 0, 0.8);
+
+  box-shadow:
+    0 8px 25px rgba(255, 159, 0, 0.12);
+}
+
+
+/* =========================================================
+   PLAY GAME HOVER
+========================================================= */
+
+.offline-actions button:last-child:hover {
+  background: linear-gradient(
+    135deg,
+    #ffb703,
+    #ff9f00
+  );
+
+  border-color: #ffb703;
+
+  box-shadow:
+    0 10px 30px rgba(255, 159, 0, 0.2);
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 700px) {
+  .offline-page {
+    padding: 12px;
+  }
+
+  .offline-card {
+    width: 100%;
+
+    height: calc(100vh - 24px);
+    height: calc(100dvh - 24px);
+
+    border-radius: 18px;
+  }
+
+  .offline-actions {
+    grid-template-columns: 1fr;
+
+    gap: 10px;
+
+    padding: 14px;
+  }
+
+  .offline-actions button {
+    min-height: 50px;
+  }
+}
+
+
+/* =========================================================
+   SMALL PHONES
+========================================================= */
+
+@media (max-width: 420px) {
+  .offline-page {
+    padding: 8px;
+  }
+
+  .offline-card {
+    height: calc(100vh - 16px);
+    height: calc(100dvh - 16px);
+
+    border-radius: 16px;
+  }
+
+  .offline-actions {
+    padding: 12px;
+  }
+}

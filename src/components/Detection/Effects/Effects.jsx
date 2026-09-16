@@ -1,65 +1,67 @@
 /* =========================================================
-EFFECTS
-Nathan — Frontend Developer Portfolio
+   EFFECTS
+   Nathan — Frontend Developer Portfolio
 
-Central effects export.
+   Central effects export.
 
-Global effects:
+   Global effects:
+   - CursorGlow
+   - BackgroundParticles
+   - PageTransition
+   - SmoothScroll
 
-* CursorGlow
-* BackgroundParticles
-* PageTransition
-* ScrollEffects
+   Reusable effects:
+   - ScrollReveal
+   - TextScramble
+   ========================================================= */
 
-Reusable effects:
-
-* ScrollReveal
-* TextScramble
-  ========================================================= */
 
 /* =========================================================
-GLOBAL EFFECTS
+   GLOBAL EFFECTS
 ========================================================= */
 
 import CursorGlow from "./CursorGlow/CursorGlow.jsx";
 import BackgroundParticles from "./BackgroundParticles/BackgroundParticles.jsx";
 import PageTransition from "./Transition/PageTransition.jsx";
-// import ScrollEffects from "./ScrollEffects.jsx";
+
 
 /* =========================================================
-REUSABLE EFFECTS
+   REUSABLE EFFECTS
 ========================================================= */
 
 import ScrollReveal from "./ScrollReveal/ScrollReveal.jsx";
 import TextScramble from "./TextScramble/TextScramble.jsx";
 
+
 /* =========================================================
-GLOBAL EFFECT COMPONENT
+   GLOBAL EFFECT COMPONENT
 ========================================================= */
 
 function Effects() {
-return (
-<> <CursorGlow /> <BackgroundParticles /> 
-{/* <ScrollEffects /> */}
-</>
-);
+  return (
+    <>
+      <CursorGlow />
+      <BackgroundParticles />
+    </>
+  );
 }
 
+
 /* =========================================================
-EFFECT EXPORTS
+   EFFECT EXPORTS
 ========================================================= */
 
 export {
-CursorGlow,
-BackgroundParticles,
-PageTransition,
-// ScrollEffects,
-ScrollReveal,
-TextScramble,
+  CursorGlow,
+  BackgroundParticles,
+  PageTransition,
+  ScrollReveal,
+  TextScramble,
 };
 
+
 /* =========================================================
-DEFAULT EXPORT
+   DEFAULT EXPORT
 ========================================================= */
 
 export default Effects;

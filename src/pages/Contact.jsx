@@ -1,12 +1,15 @@
-import ContactForm from "../components/Contact/ContactForm"
+import ContactCTA from "../components/Contact/ContactCta"
 import ContactHero from "../components/Contact/ContactHero"
+import ContactProcess from "../components/Contact/ContactProcess"
 
 function About() {
   return (
     <div>
       <ContactHero/>
 
-      <ContactForm/>
+      <ContactProcess/>
+
+      <ContactCTA/>
 
      
     </div>

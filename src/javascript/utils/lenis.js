@@ -1,9 +1,7 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import Lenis from "lenis";
 
-function ScrollReal({ children }) {
-  const lenisRef = useRef(null);
-
+function SmoothScroll() {
   useEffect(() => {
     const prefersReducedMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)"
@@ -14,17 +12,12 @@ function ScrollReal({ children }) {
     }
 
     const lenis = new Lenis({
-      duration: 1.4,
-      easing: (t) => 1 - Math.pow(1 - t, 4),
-      lerp: 0.075,
+      duration: 1.15,
       smoothWheel: true,
       syncTouch: false,
-      wheelMultiplier: 0.85,
+      wheelMultiplier: 1,
       touchMultiplier: 1,
-      autoRaf: false,
     });
-
-    lenisRef.current = lenis;
 
     let animationFrame;
 
@@ -37,14 +30,11 @@ function ScrollReal({ children }) {
 
     return () => {
       cancelAnimationFrame(animationFrame);
-
       lenis.destroy();
-
-      lenisRef.current = null;
     };
   }, []);
 
-  return children;
+  return null;
 }
 
-export default ScrollReal;
+export default SmoothScroll;

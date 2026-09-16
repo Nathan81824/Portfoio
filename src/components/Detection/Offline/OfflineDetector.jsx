@@ -1,32 +1,62 @@
 import { useEffect, useState } from "react";
-import OflinePage from "../../../pages/Offline/OflinePage";
+import { useLocation } from "react-router-dom";
+
+
+import OflinePage from "../../../pages/Offline/OflinePage.jsx";
+import OfflineGame from "../../../components/Detection/Offline/OfflineGame/OflineGame.jsx";
 
 export default function OfflineDetector({ children }) {
-const [isOffline, setIsOffline] = useState(!navigator.onLine);
+  const location = useLocation();
 
-useEffect(() => {
-const handleOnline = () => {
-setIsOffline(false);
-};
+  const [isOffline, setIsOffline] = useState(() => {
+    return !navigator.onLine;
+  });
 
-const handleOffline = () => {
-  setIsOffline(true);
-};
+  const [wasInGame, setWasInGame] = useState(() => {
+    return location.pathname === "/offline-game";
+  });
 
-window.addEventListener("online", handleOnline);
-window.addEventListener("offline", handleOffline);
+  useEffect(() => {
+    const handleOnline = () => {
+      setIsOffline(false);
+    };
 
-return () => {
-  window.removeEventListener("online", handleOnline);
-  window.removeEventListener("offline", handleOffline);
-};
+    const handleOffline = () => {
+      setIsOffline(true);
+    };
 
-}, []);
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
 
-if (isOffline) {
-return <OflinePage />;
+    return () => {
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (location.pathname === "/offline-game") {
+      setWasInGame(true);
+    }
+  }, [location.pathname]);
+
+  const isGamePage = location.pathname === "/offline-game";
+
+  /*
+    If the user is already inside the game,
+    NEVER replace the game just because the
+    network connection changed.
+  */
+  if (isGamePage) {
+    return <OfflineGame />;
+  }
+
+  /*
+    Normal offline behavior.
+  */
+  if (isOffline && !wasInGame) {
+    return <OflinePage />;
+  }
+
+  return children;
 }
-
-return children;
-}
-

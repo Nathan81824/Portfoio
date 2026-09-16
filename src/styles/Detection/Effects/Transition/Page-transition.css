@@ -1,0 +1,227 @@
+
+/* =====================================================
+   PAGE TRANSITION
+===================================================== */
+
+.page-transition {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+
+  width: 100%;
+  height: 100vh;
+
+  pointer-events: none;
+  overflow: hidden;
+}
+
+
+/* =====================================================
+   TRANSITION PANELS
+===================================================== */
+
+.page-transition-panel {
+  position: relative;
+
+  width: 100%;
+  height: 100%;
+
+  background: #030508;
+}
+
+
+/* =====================================================
+   PAGE TITLE
+===================================================== */
+
+.page-transition-title {
+  position: absolute;
+  inset: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0 24px;
+
+  pointer-events: none;
+}
+
+
+.page-transition-title h1 {
+  margin: 0;
+
+  color: #ffffff;
+
+  font-size: clamp(
+    3rem,
+    10vw,
+    9rem
+  );
+
+  font-weight: 900;
+
+  line-height: 0.9;
+
+  text-align: center;
+
+  text-transform: uppercase;
+
+  letter-spacing: 0.12em;
+
+  user-select: none;
+
+  white-space: nowrap;
+}
+
+
+/* =====================================================
+   TOP RIGHT PAGE NUMBER
+===================================================== */
+
+.page-transition-number {
+  position: absolute;
+
+  top: 24px;
+  right: 24px;
+
+  color: #64748b;
+
+  font-size: 12px;
+
+  font-weight: 500;
+
+  letter-spacing: 0.3em;
+}
+
+
+/* =====================================================
+   BOTTOM LEFT LINE
+===================================================== */
+
+.page-transition-line {
+  position: absolute;
+
+  left: 24px;
+  bottom: 32px;
+
+  width: 100px;
+  height: 2px;
+
+  background: #22d3ee;
+}
+
+
+/* =====================================================
+   BOTTOM RIGHT TEXT
+===================================================== */
+
+.page-transition-info {
+  position: absolute;
+
+  right: 24px;
+  bottom: 28px;
+
+  color: #64748b;
+
+  font-size: 10px;
+
+  font-weight: 500;
+
+  letter-spacing: 0.25em;
+
+  text-transform: uppercase;
+
+  white-space: nowrap;
+}
+
+
+/* =====================================================
+   TABLET
+===================================================== */
+
+@media (min-width: 640px) {
+
+  .page-transition-title {
+    padding: 0 40px;
+  }
+
+  .page-transition-number {
+    top: 40px;
+    right: 40px;
+  }
+
+  .page-transition-line {
+    left: 40px;
+    bottom: 40px;
+  }
+
+  .page-transition-info {
+    right: 40px;
+    bottom: 32px;
+  }
+
+}
+
+
+/* =====================================================
+   MOBILE
+===================================================== */
+
+@media (max-width: 639px) {
+
+  .page-transition-title h1 {
+    font-size: clamp(
+      2.5rem,
+      14vw,
+      5rem
+    );
+
+    letter-spacing: 0.08em;
+
+    white-space: normal;
+  }
+
+  .page-transition-number {
+    top: 20px;
+    right: 20px;
+
+    font-size: 10px;
+  }
+
+  .page-transition-line {
+    left: 20px;
+    bottom: 24px;
+
+    width: 70px;
+  }
+
+  .page-transition-info {
+    right: 20px;
+    bottom: 22px;
+
+    max-width: 180px;
+
+    font-size: 8px;
+
+    letter-spacing: 0.15em;
+  }
+
+}
+
+
+/* =====================================================
+   VERY SMALL SCREENS
+===================================================== */
+
+@media (max-width: 380px) {
+
+  .page-transition-info {
+    display: none;
+  }
+
+  .page-transition-title h1 {
+    font-size: 2.5rem;
+  }
+
+}
