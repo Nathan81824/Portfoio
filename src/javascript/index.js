@@ -8,9 +8,7 @@ export { default as api } from "./api/api.js";
 /* =====================================================
    SITE CONFIG
 ===================================================== */
-
-export { default as siteConfig } from "./constants/SiteConfig.js";
-
+export { default as siteConfig } from "./constants/siteConfig.js";
 
 /* =====================================================
    CONTACT
