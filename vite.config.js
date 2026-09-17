@@ -2,9 +2,7 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { VitePWA } from "vite-plugin-pwa";
 
-export default defineConfig(({ command, mode }) => {
-  const isProduction = command === "build";
-
+export default defineConfig(({ command }) => {
   const isGitHubPages =
     process.env.GITHUB_PAGES === "true";
 
@@ -45,7 +43,6 @@ export default defineConfig(({ command, mode }) => {
               sizes: "192x192",
               type: "image/png",
             },
-
             {
               src: `${base}logo.png`,
               sizes: "512x512",
@@ -56,6 +53,10 @@ export default defineConfig(({ command, mode }) => {
 
         workbox: {
           navigateFallback: `${base}index.html`,
+
+          navigateFallbackDenylist: [
+            /^\/Portfoio\/api/,
+          ],
         },
       }),
     ],
