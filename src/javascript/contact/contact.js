@@ -1,808 +1,202 @@
 /* =========================================================
-   CHAT CONTROLLER
+   CONTACT SERVICE
 
    Nathan — Frontend Developer Portfolio
 
-   PURPOSE
-   ---------------------------------------------------------
-   Controls the visitor chat experience.
-
-   Handles:
-   - Starting conversations
-   - Restoring conversations
-   - Loading messages
-   - Sending visitor messages
-   - Realtime message subscriptions
-   - Clearing local chat state
-   - Opening / closing the floating chat
-   - Chat events
-
-   DATABASE OPERATIONS
-   ---------------------------------------------------------
-   chat.js owns:
-   - Conversations
-   - Messages
-   - Supabase
-   - Realtime
-   - Permanent deletion
-
-   chatController.js owns:
-   - Chat UI state
-   - Chat interaction flow
-   - Chat events
-
-   notification.js owns:
-   - Notifications
-   - Browser notifications
-   - Unanswered-message reminders
+   Responsibilities:
+   - Contact form validation
+   - EmailJS contact submission
+   - Contact configuration
+   - Chat service access
 ========================================================= */
 
 
 /* =========================================================
-   CHAT SERVICE
+   EMAILJS
+========================================================= */
+
+import emailjs from "@emailjs/browser";
+
+
+/* =========================================================
+   CHAT
 ========================================================= */
 
 import {
+  createConversation,
   getStoredConversation,
+  getStoredConversationToken,
   getConversation,
   getMessages,
   sendMessage,
+  sendVoiceMessage,
+  uploadVoiceMessage,
   subscribeToMessages,
   clearStoredConversation,
+  deleteConversation,
+  deleteAllConversations,
+  resolveMessageAudioUrls,
+  createAudioSignedUrl,
+  getChatAudioBucket,
 } from "./chat.js";
 
 
 /* =========================================================
-   EVENTS
+   CONFIGURATION
 ========================================================= */
 
-export const EVENTS = {
+const EMAILJS_SERVICE_ID =
+  import.meta.env.VITE_EMAILJS_SERVICE_ID || "";
 
-  OPEN:
-    "floating-chat:open",
+const EMAILJS_TEMPLATE_ID =
+  import.meta.env.VITE_EMAILJS_TEMPLATE_ID || "";
 
-  CLOSE:
-    "floating-chat:close",
-
-  TOGGLE:
-    "floating-chat:toggle",
-
-  STARTED:
-    "floating-chat:started",
-
-  NEW_MESSAGE:
-    "floating-chat:new-message",
-
-  CLEARED:
-    "floating-chat:cleared",
-
-  ERROR:
-    "floating-chat:error",
-
-};
+const EMAILJS_PUBLIC_KEY =
+  import.meta.env.VITE_EMAILJS_PUBLIC_KEY || "";
 
 
 /* =========================================================
-   EVENT DISPATCHER
+   CONTACT FORM LIMITS
 ========================================================= */
 
-function emit(
-  eventName,
-  detail = {}
+const MAX_NAME_LENGTH =
+  120;
+
+const MAX_EMAIL_LENGTH =
+  160;
+
+const MAX_SUBJECT_LENGTH =
+  200;
+
+const MAX_MESSAGE_LENGTH =
+  5000;
+
+
+/* =========================================================
+   CLEAN TEXT
+========================================================= */
+
+function cleanText(
+  value,
+  maxLength
 ) {
 
-  try {
-
-    window.dispatchEvent(
-      new CustomEvent(
-        eventName,
-        {
-          detail,
-        }
-      )
+  return String(
+    value || ""
+  )
+    .trim()
+    .slice(
+      0,
+      maxLength
     );
-
-  } catch (error) {
-
-    console.warn(
-      "Could not dispatch chat event:",
-      error
-    );
-
-  }
 
 }
 
 
 /* =========================================================
-   CHAT CONTROLLER FACTORY
+   EMAIL VALIDATION
 ========================================================= */
 
-export function createChatController() {
+function isValidEmail(
+  email
+) {
 
-  /* =======================================================
-     STATE
-  ======================================================= */
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
+    email
+  );
 
-  let currentConversation =
-    null;
+}
 
-  let unsubscribe =
-    null;
 
-  let isOpen =
-    false;
-
-
-  /* =======================================================
-     START CONVERSATION
-  ======================================================= */
-
-  async function start({
-    name,
-    email = "",
-  }) {
-
-    const cleanName =
-      String(
-        name || ""
-      ).trim();
-
-    const cleanEmail =
-      String(
-        email || ""
-      ).trim();
-
-
-    if (!cleanName) {
-
-      throw new Error(
-        "Please enter your name."
-      );
-
-    }
-
-
-    /*
-      chat.js should handle creating or
-      restoring the conversation.
-    */
-
-    const conversation =
-      await getStoredConversation();
-
-
-    if (
-      conversation?.id &&
-      conversation?.visitor_name ===
-        cleanName
-    ) {
-
-      currentConversation =
-        conversation;
-
-
-      emit(
-        EVENTS.STARTED,
-        {
-          conversation,
-        }
-      );
-
-
-      return conversation;
-
-    }
-
-
-    /*
-      Create a new conversation directly
-      through chat.js.
-
-      We use a dynamic import here so the
-      controller remains compatible with the
-      chat service architecture.
-    */
-
-    const {
-      createConversation,
-    } = await import(
-      "./chat.js"
-    );
-
-
-    const newConversation =
-      await createConversation({
-
-        visitorName:
-          cleanName,
-
-        visitorEmail:
-          cleanEmail,
-
-      });
-
-
-    currentConversation =
-      newConversation;
-
-
-    emit(
-      EVENTS.STARTED,
-      {
-        conversation:
-          newConversation,
-      }
-    );
-
-
-    return newConversation;
-
-  }
-
-
-  /* =======================================================
-     RESTORE SAVED CONVERSATION
-  ======================================================= */
-
-  async function restore() {
-
-    try {
-
-      const savedConversation =
-        await getStoredConversation();
-
-
-      if (
-        !savedConversation?.id
-      ) {
-
-        return null;
-
-      }
-
-
-      /*
-        Verify that the conversation still
-        exists in Supabase.
-
-        If it was permanently deleted,
-        getConversation() returns null.
-      */
-
-      const conversation =
-        await getConversation(
-          savedConversation.id
-        );
-
-
-      if (!conversation) {
-
-        currentConversation =
-          null;
-
-        return null;
-
-      }
-
-
-      currentConversation =
-        conversation;
-
-
-      emit(
-        EVENTS.STARTED,
-        {
-          conversation,
-        }
-      );
-
-
-      return conversation;
-
-    } catch (error) {
-
-      console.error(
-        "Failed to restore conversation:",
-        error
-      );
-
-
-      emit(
-        EVENTS.ERROR,
-        {
-          error,
-        }
-      );
-
-
-      return null;
-
-    }
-
-  }
-
-
-  /* =======================================================
-     LOAD MESSAGES
-  ======================================================= */
-
-  async function load(
-    conversationId
-  ) {
-
-    const id =
-      conversationId ||
-      currentConversation?.id;
-
-
-    if (!id) {
-
-      return [];
-
-    }
-
-
-    try {
-
-      const messages =
-        await getMessages(
-          id
-        );
-
-
-      return (
-        messages || []
-      );
-
-    } catch (error) {
-
-      emit(
-        EVENTS.ERROR,
-        {
-          error,
-        }
-      );
-
-
-      throw error;
-
-    }
-
-  }
-
-
-  /* =======================================================
-     SEND MESSAGE
-  ======================================================= */
-
-  async function send({
-    message,
-    conversationId,
-  }) {
-
-    const cleanMessage =
-      String(
-        message || ""
-      ).trim();
-
-
-    if (!cleanMessage) {
-
-      return null;
-
-    }
-
-
-    const id =
-      conversationId ||
-      currentConversation?.id;
-
-
-    if (!id) {
-
-      throw new Error(
-        "No active conversation."
-      );
-
-    }
-
-
-    try {
-
-      const sentMessage =
-        await sendMessage({
-
-          conversationId:
-            id,
-
-          message:
-            cleanMessage,
-
-          sender:
-            "visitor",
-
-        });
-
-
-      /*
-        Realtime normally delivers this
-        message to the UI as well.
-
-        This event is still useful for
-        local UI updates and other systems.
-      */
-
-      emit(
-        EVENTS.NEW_MESSAGE,
-        {
-          message:
-            sentMessage,
-        }
-      );
-
-
-      return sentMessage;
-
-    } catch (error) {
-
-      emit(
-        EVENTS.ERROR,
-        {
-          error,
-        }
-      );
-
-
-      throw error;
-
-    }
-
-  }
-
-
-  /* =======================================================
-     SUBSCRIBE TO REALTIME MESSAGES
-  ======================================================= */
-
-  function subscribe(
-    conversationId,
-    callback
-  ) {
-
-    const id =
-      conversationId ||
-      currentConversation?.id;
-
-
-    if (!id) {
-
-      return () => {};
-
-    }
-
-
-    /*
-      Remove previous subscription.
-    */
-
-    if (
-      typeof unsubscribe ===
-      "function"
-    ) {
-
-      unsubscribe();
-
-      unsubscribe =
-        null;
-
-    }
-
-
-    /*
-      chat.js returns an object containing
-      an unsubscribe function.
-    */
-
-    const subscription =
-      subscribeToMessages({
-
-        conversationId:
-          id,
-
-        onMessage:
-          (message) => {
-
-            if (
-              typeof callback ===
-              "function"
-            ) {
-
-              callback(
-                message
-              );
-
-            }
-
-
-            emit(
-              EVENTS.NEW_MESSAGE,
-              {
-                message,
-              }
-            );
-
-          },
-
-        onDelete:
-          (message) => {
-
-            emit(
-              EVENTS.NEW_MESSAGE,
-              {
-                type:
-                  "DELETE",
-
-                message,
-              }
-            );
-
-          },
-
-      });
-
-
-    unsubscribe =
-      subscription?.unsubscribe ||
-      null;
-
-
-    return () => {
-
-      if (
-        typeof unsubscribe ===
-        "function"
-      ) {
-
-        unsubscribe();
-
-        unsubscribe =
-          null;
-
-      }
-
-    };
-
-  }
-
-
-  /* =======================================================
-     GET CURRENT CONVERSATION
-  ======================================================= */
-
-  function getConversation() {
-
-    return currentConversation;
-
-  }
-
-
-  /* =======================================================
-     CHECK ACTIVE CONVERSATION
-  ======================================================= */
-
-  function hasConversation() {
-
-    return Boolean(
-      currentConversation?.id
-    );
-
-  }
-
-
-  /* =======================================================
-     GET OPEN STATE
-  ======================================================= */
-
-  function getIsOpen() {
-
-    return isOpen;
-
-  }
-
-
-  /* =======================================================
-     OPEN CHAT
-  ======================================================= */
-
-  function open() {
-
-    isOpen =
-      true;
-
-
-    emit(
-      EVENTS.OPEN
-    );
-
-
-    return true;
-
-  }
-
-
-  /* =======================================================
-     CLOSE CHAT
-  ======================================================= */
-
-  function close() {
-
-    isOpen =
-      false;
-
-
-    emit(
-      EVENTS.CLOSE
-    );
-
-
-    return false;
-
-  }
-
-
-  /* =======================================================
-     TOGGLE CHAT
-  ======================================================= */
-
-  function toggle() {
-
-    isOpen =
-      !isOpen;
-
-
-    emit(
-      isOpen
-        ? EVENTS.OPEN
-        : EVENTS.CLOSE
-    );
-
-
-    return isOpen;
-
-  }
-
-
-  /* =======================================================
-     CLEAR LOCAL CHAT
-     -------------------------------------------------------
-     This clears the visitor's LOCAL chat state.
-
-     It does NOT permanently delete the
-     Supabase conversation.
+/* =========================================================
+   CONTACT FORM VALIDATION
 ========================================================= */
 
-  async function clear() {
+export function validateContactForm(
+  form = {}
+) {
 
-    /*
-      Stop realtime first.
-    */
-
-    if (
-      typeof unsubscribe ===
-      "function"
-    ) {
-
-      unsubscribe();
-
-      unsubscribe =
-        null;
-
-    }
-
-
-    /*
-      Remove stored conversation.
-    */
-
-    clearStoredConversation();
-
-
-    /*
-      Reset controller state.
-    */
-
-    currentConversation =
-      null;
-
-
-    /*
-      Close the chat.
-    */
-
-    isOpen =
-      false;
-
-
-    emit(
-      EVENTS.CLEARED
+  const name =
+    cleanText(
+      form.name,
+      MAX_NAME_LENGTH
     );
 
-  }
+  const email =
+    cleanText(
+      form.email,
+      MAX_EMAIL_LENGTH
+    );
+
+  const subject =
+    cleanText(
+      form.subject,
+      MAX_SUBJECT_LENGTH
+    );
+
+  const message =
+    cleanText(
+      form.message,
+      MAX_MESSAGE_LENGTH
+    );
 
 
-  /* =======================================================
-     RESET CONTROLLER
-  ======================================================= */
-
-  function reset() {
-
-    if (
-      typeof unsubscribe ===
-      "function"
-    ) {
-
-      unsubscribe();
-
-      unsubscribe =
-        null;
-
-    }
+  const errors = {};
 
 
-    currentConversation =
-      null;
+  if (!name) {
 
-    isOpen =
-      false;
-
-  }
-
-
-  /* =======================================================
-     DESTROY
-  ======================================================= */
-
-  function destroy() {
-
-    reset();
+    errors.name =
+      "Please enter your name.";
 
   }
 
 
-  /* =======================================================
-     CONTROLLER API
-  ======================================================= */
+  if (!email) {
+
+    errors.email =
+      "Please enter your email.";
+
+  } else if (
+    !isValidEmail(
+      email
+    )
+  ) {
+
+    errors.email =
+      "Please enter a valid email address.";
+
+  }
+
+
+  if (!message) {
+
+    errors.message =
+      "Please enter your message.";
+
+  }
+
 
   return {
 
-    start,
+    valid:
+      Object.keys(
+        errors
+      ).length === 0,
 
-    restore,
+    errors,
 
-    load,
+    values: {
 
-    send,
+      name,
 
-    subscribe,
+      email,
 
-    getConversation,
+      subject,
 
-    hasConversation,
+      message,
 
-    getIsOpen,
-
-    open,
-
-    close,
-
-    toggle,
-
-    clear,
-
-    reset,
-
-    destroy,
+    },
 
   };
 
@@ -810,15 +204,438 @@ export function createChatController() {
 
 
 /* =========================================================
-   SINGLETON
+   GET CONTACT CONFIG
 ========================================================= */
 
-const chatController =
-  createChatController();
+export function getContactConfig() {
+
+  return {
+
+    emailjs: {
+
+      configured:
+        Boolean(
+          EMAILJS_SERVICE_ID &&
+          EMAILJS_TEMPLATE_ID &&
+          EMAILJS_PUBLIC_KEY
+        ),
+
+      serviceId:
+        EMAILJS_SERVICE_ID,
+
+      templateId:
+        EMAILJS_TEMPLATE_ID,
+
+    },
+
+  };
+
+}
+
+
+/* =========================================================
+   SEND CONTACT FORM
+========================================================= */
+
+export async function sendContactForm(
+  form = {}
+) {
+
+  const validation =
+    validateContactForm(
+      form
+    );
+
+
+  if (
+    !validation.valid
+  ) {
+
+    const error =
+      new Error(
+        "Please correct the contact form."
+      );
+
+
+    error.validation =
+      validation.errors;
+
+
+    throw error;
+
+  }
+
+
+  if (
+    !EMAILJS_SERVICE_ID ||
+    !EMAILJS_TEMPLATE_ID ||
+    !EMAILJS_PUBLIC_KEY
+  ) {
+
+    throw new Error(
+      "Email service is not configured."
+    );
+
+  }
+
+
+  const {
+    name,
+    email,
+    subject,
+    message,
+  } =
+    validation.values;
+
+
+  const templateParams = {
+
+    name,
+
+    email,
+
+    subject,
+
+    message,
+
+    from_name:
+      name,
+
+    from_email:
+      email,
+
+    reply_to:
+      email,
+
+    user_name:
+      name,
+
+    user_email:
+      email,
+
+    user_message:
+      message,
+
+  };
+
+
+  try {
+
+    const response =
+      await emailjs.send(
+
+        EMAILJS_SERVICE_ID,
+
+        EMAILJS_TEMPLATE_ID,
+
+        templateParams,
+
+        EMAILJS_PUBLIC_KEY
+
+      );
+
+
+    return {
+
+      success:
+        true,
+
+      status:
+        response.status,
+
+      text:
+        response.text,
+
+    };
+
+  } catch (error) {
+
+    console.error(
+      "Contact form submission failed:",
+      error
+    );
+
+
+    throw error;
+
+  }
+
+}
+
+
+/* =========================================================
+   GET STORED CHAT
+========================================================= */
+
+export function getStoredChat() {
+
+  return getStoredConversation();
+
+}
+
+
+/* =========================================================
+   GET CHAT TOKEN
+========================================================= */
+
+export function getChatToken() {
+
+  return getStoredConversationToken();
+
+}
+
+
+/* =========================================================
+   CREATE CHAT
+========================================================= */
+
+export async function startChat({
+  visitorName = "",
+  visitorEmail = "",
+} = {}) {
+
+  return createConversation({
+
+    visitorName,
+
+    visitorEmail,
+
+  });
+
+}
+
+
+/* =========================================================
+   GET CHAT CONVERSATION
+========================================================= */
+
+export async function getChatConversation(
+  conversationId
+) {
+
+  return getConversation(
+    conversationId
+  );
+
+}
+
+
+/* =========================================================
+   GET CHAT MESSAGES
+========================================================= */
+
+export async function getChatMessages(
+  conversationId
+) {
+
+  return getMessages(
+    conversationId
+  );
+
+}
+
+
+/* =========================================================
+   SEND CHAT MESSAGE
+========================================================= */
+
+export async function sendChatMessage(
+  options = {}
+) {
+
+  return sendMessage(
+    options
+  );
+
+}
+
+
+/* =========================================================
+   SEND VOICE CHAT MESSAGE
+========================================================= */
+
+export async function sendChatVoiceMessage(
+  options = {}
+) {
+
+  return sendVoiceMessage(
+    options
+  );
+
+}
+
+
+/* =========================================================
+   UPLOAD CHAT VOICE
+========================================================= */
+
+export async function uploadChatVoice(
+  options = {}
+) {
+
+  return uploadVoiceMessage(
+    options
+  );
+
+}
+
+
+/* =========================================================
+   CHAT REALTIME
+========================================================= */
+
+export function subscribeToChat(
+  options = {}
+) {
+
+  return subscribeToMessages(
+    options
+  );
+
+}
+
+
+/* =========================================================
+   CLEAR LOCAL CHAT
+========================================================= */
+
+export function clearChat() {
+
+  return clearStoredConversation();
+
+}
+
+
+/* =========================================================
+   DELETE CHAT
+========================================================= */
+
+export async function deleteChat(
+  conversationId
+) {
+
+  return deleteConversation(
+    conversationId
+  );
+
+}
+
+
+/* =========================================================
+   DELETE ALL CHATS
+========================================================= */
+
+export async function deleteAllChats() {
+
+  return deleteAllConversations();
+
+}
+
+
+/* =========================================================
+   RESOLVE CHAT AUDIO
+========================================================= */
+
+export async function resolveChatAudio(
+  messages = [],
+  expiresIn = 3600,
+  conversationId = null
+) {
+
+  return resolveMessageAudioUrls(
+
+    messages,
+
+    expiresIn,
+
+    conversationId
+
+  );
+
+}
+
+
+/* =========================================================
+   CREATE CHAT AUDIO URL
+========================================================= */
+
+export async function getChatAudioUrl(
+  audioPath,
+  expiresIn = 3600,
+  conversationId = null
+) {
+
+  return createAudioSignedUrl(
+
+    audioPath,
+
+    expiresIn,
+
+    conversationId
+
+  );
+
+}
+
+
+/* =========================================================
+   GET CHAT AUDIO BUCKET
+========================================================= */
+
+export function getAudioBucket() {
+
+  return getChatAudioBucket();
+
+}
+
+
+/* =========================================================
+   DEFAULT CONTACT OBJECT
+========================================================= */
+
+const contact = {
+
+  validateContactForm,
+
+  getContactConfig,
+
+  sendContactForm,
+
+  getStoredChat,
+
+  getChatToken,
+
+  startChat,
+
+  getChatConversation,
+
+  getChatMessages,
+
+  sendChatMessage,
+
+  sendChatVoiceMessage,
+
+  uploadChatVoice,
+
+  subscribeToChat,
+
+  clearChat,
+
+  deleteChat,
+
+  deleteAllChats,
+
+  resolveChatAudio,
+
+  getChatAudioUrl,
+
+  getAudioBucket,
+
+};
 
 
 /* =========================================================
    DEFAULT EXPORT
 ========================================================= */
 
-export default chatController;
+export default contact;
