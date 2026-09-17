@@ -2,51 +2,66 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { VitePWA } from "vite-plugin-pwa";
 
-export default defineConfig({
-  base: "/",
+export default defineConfig(({ command, mode }) => {
+  const isProduction = command === "build";
 
-  plugins: [
-    react(),
+  const isGitHubPages =
+    process.env.GITHUB_PAGES === "true";
 
-    VitePWA({
-      registerType: "autoUpdate",
+  const base = isGitHubPages
+    ? "/Portfoio/"
+    : "/";
 
-      manifest: {
-        name: "Nathan — Frontend Developer",
+  return {
+    base,
 
-        short_name: "Nathan",
+    plugins: [
+      react(),
 
-        description:
-          "Nathan — Frontend Developer creating responsive, interactive and modern digital experiences.",
+      VitePWA({
+        registerType: "autoUpdate",
 
-        theme_color: "#090909",
+        manifest: {
+          name: "Nathan — Frontend Developer",
 
-        background_color: "#090909",
+          short_name: "Nathan",
 
-        display: "standalone",
+          description:
+            "Nathan — Frontend Developer creating responsive, interactive and modern digital experiences.",
 
-        start_url: "/",
+          theme_color: "#090909",
 
-        scope: "/",
+          background_color: "#090909",
 
-        icons: [
-          {
-            src: "/logo.png",
-            sizes: "192x192",
-            type: "image/png",
-          },
+          display: "standalone",
 
-          {
-            src: "/logo.png",
-            sizes: "512x512",
-            type: "image/png",
-          },
-        ],
-      },
-    }),
-  ],
+          start_url: base,
 
-  build: {
-    chunkSizeWarningLimit: 1000,
-  },
+          scope: base,
+
+          icons: [
+            {
+              src: `${base}logo.png`,
+              sizes: "192x192",
+              type: "image/png",
+            },
+
+            {
+              src: `${base}logo.png`,
+              sizes: "512x512",
+              type: "image/png",
+            },
+          ],
+        },
+
+        workbox: {
+          navigateFallback: `${base}index.html`,
+        },
+      }),
+    ],
+
+    build: {
+      chunkSizeWarningLimit: 1000,
+    },
+  };
 });
