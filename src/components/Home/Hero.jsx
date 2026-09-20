@@ -7,11 +7,19 @@
 
    Uses:
    - Central website data
+   - Central site text
+   - Central media
+   - Personal information
    - Framer Motion
    - Lucide React
    - Reusable Button component
    - MagneticButton
    - Background video
+========================================================= */
+
+
+/* =========================================================
+   REACT
 ========================================================= */
 
 import {
@@ -42,14 +50,7 @@ import {
 
 
 /* =========================================================
-   VIDEO
-========================================================= */
-
-import video from "../../assets/videos/hero-background.mp4";
-
-
-/* =========================================================
-   BUTTON
+   BUTTONS
 ========================================================= */
 
 import Button, {
@@ -57,13 +58,16 @@ import Button, {
 } from "../Shared/Button/Button.jsx";
 
 
+
 /* =========================================================
    CENTRAL DATA
 ========================================================= */
 
 import {
-  getData,
-} from "../../javascript/data/data.js";
+  personalInfo,
+  siteText,
+  media,
+} from "../../javascript/index.js";
 
 
 /* =========================================================
@@ -71,6 +75,7 @@ import {
 ========================================================= */
 
 export default function Hero() {
+
 
   /* =======================================================
      REDUCED MOTION
@@ -81,43 +86,52 @@ export default function Hero() {
 
 
   /* =======================================================
-     WEBSITE DATA
-  ======================================================= */
-
-  const data =
-    getData();
-
-
-  const personalInfo =
-    data?.personalInfo || {};
-
-
-  const roles =
-    Array.isArray(data?.roles)
-      ? data.roles
-      : [];
-
-
-  const siteText =
-    data?.siteText || {};
-
-
-  /* =======================================================
      HOME TEXT
   ======================================================= */
 
   const homeText =
-    siteText?.home || {};
+    siteText.home;
 
 
   /* =======================================================
-     DISPLAY NAME
+     HERO TEXT
+
+     homeText structure:
+
+     home
+     ├── hero
+     │   ├── eyebrow
+     │   ├── greeting
+     │   ├── name
+     │   ├── heading
+     │   │   └── rotatingRoles
+     │   ├── description
+     │   ├── actions
+     │   └── scroll
+     │
+     └── aboutPreview
   ======================================================= */
 
-  const displayName =
-    personalInfo.displayName ||
-    personalInfo.name ||
-    "Nathan";
+  const heroText =
+    homeText.hero;
+
+
+  /* =======================================================
+     HERO VIDEO
+
+     Loaded from the central media system.
+  ======================================================= */
+
+  const heroVideo =
+    media.videos.heroBackground;
+
+
+  /* =======================================================
+     ROTATING ROLES
+  ======================================================= */
+
+  const roles =
+    heroText.heading.rotatingRoles;
 
 
   /* =======================================================
@@ -179,11 +193,17 @@ export default function Hero() {
   ======================================================= */
 
   const currentRole =
-    roles.length > 0
-      ? roles[
-          roleIndex % roles.length
-        ]
-      : "Frontend Developer";
+    roles[
+      roleIndex % roles.length
+    ];
+
+
+  /* =======================================================
+     DISPLAY NAME
+  ======================================================= */
+
+  const displayName =
+    personalInfo.displayName;
 
 
   /* =======================================================
@@ -191,8 +211,7 @@ export default function Hero() {
   ======================================================= */
 
   const resumeUrl =
-    personalInfo.resume ||
-    `${import.meta.env.BASE_URL}resume.pdf`;
+    heroText.actions.secondary.link;
 
 
   /* =======================================================
@@ -200,7 +219,7 @@ export default function Hero() {
   ======================================================= */
 
   const projectsUrl =
-    `${import.meta.env.BASE_URL}projects`;
+    heroText.actions.primary.link;
 
 
   /* =======================================================
@@ -225,7 +244,7 @@ export default function Hero() {
       >
 
         <video
-          src={video}
+          src={heroVideo}
           autoPlay
           muted
           loop
@@ -344,9 +363,7 @@ export default function Hero() {
 
                 key={currentRole}
 
-                className="
-                  hero-eyebrow-text
-                "
+                className="hero-eyebrow-text"
 
                 initial={
                   shouldReduceMotion
@@ -428,10 +445,7 @@ export default function Hero() {
             }}
           >
 
-            {
-              homeText.greeting ||
-              "Hi, I'm"
-            }
+            {heroText.greeting.text}
 
             {" "}
 
@@ -480,10 +494,53 @@ export default function Hero() {
             }}
           >
 
-            {
-              homeText.subtitle1 ||
-              "I build modern digital experiences."
-            }
+            <AnimatePresence
+              mode="wait"
+              initial={false}
+            >
+
+              <motion.span
+
+                key={currentRole}
+
+                initial={
+                  shouldReduceMotion
+                    ? {
+                        opacity: 1,
+                      }
+                    : {
+                        opacity: 0,
+                        y: 10,
+                      }
+                }
+
+                animate={{
+                  opacity: 1,
+                  y: 0,
+                }}
+
+                exit={
+                  shouldReduceMotion
+                    ? {
+                        opacity: 1,
+                      }
+                    : {
+                        opacity: 0,
+                        y: -10,
+                      }
+                }
+
+                transition={{
+                  duration: 0.35,
+                  ease: "easeOut",
+                }}
+              >
+
+                {currentRole}
+
+              </motion.span>
+
+            </AnimatePresence>
 
           </motion.h2>
 
@@ -497,9 +554,7 @@ export default function Hero() {
 
           <motion.p
 
-            className="
-              hero-description
-            "
+            className="hero-description"
 
             initial={
               shouldReduceMotion
@@ -526,11 +581,7 @@ export default function Hero() {
             }}
           >
 
-            {
-              homeText.description1 ||
-              personalInfo.bio ||
-              "I create responsive, interactive and visually engaging websites using modern frontend technologies."
-            }
+            {heroText.description.text}
 
           </motion.p>
 
@@ -577,7 +628,7 @@ export default function Hero() {
             {/* =============================================
                 VIEW MY WORK
 
-                ONE MAGNETIC BUTTON
+                MAGNETIC BUTTON
             ============================================= */}
 
             <MagneticButton
@@ -591,16 +642,13 @@ export default function Hero() {
               icon={ArrowRight}
             >
 
-              {
-                homeText.button1 ||
-                "View My Work"
-              }
+              {heroText.actions.primary.text}
 
             </MagneticButton>
 
 
             {/* =============================================
-                DOWNLOAD RESUME
+                DOWNLOAD CV
 
                 NORMAL BUTTON
             ============================================= */}
@@ -618,19 +666,79 @@ export default function Hero() {
               download
             >
 
-              {
-                homeText.button2 ||
-                "Download Resume"
-              }
+              {heroText.actions.secondary.text}
 
             </Button>
 
+
           </motion.div>
+
+
+          {/* ===============================================
+              SCROLL TO EXPLORE
+          =============================================== */}
+
+          <motion.a
+
+            href={
+              heroText.scroll.link
+            }
+
+            className="hero-scroll"
+
+            initial={
+              shouldReduceMotion
+                ? false
+                : {
+                    opacity: 0,
+                    y: 25,
+                  }
+            }
+
+            animate={
+              shouldReduceMotion
+                ? undefined
+                : {
+                    opacity: 1,
+                    y: 0,
+                  }
+            }
+
+            transition={{
+              duration: 0.8,
+              delay: 1.2,
+              ease: [0.22, 1, 0.36, 1],
+            }}
+          >
+
+            <span
+              className="hero-scroll-line"
+              aria-hidden="true"
+            />
+
+            <span className="hero-scroll-text">
+
+              {heroText.scroll.text}
+
+            </span>
+
+          </motion.a>
 
 
         </div>
 
       </div>
+
+
+      {/* ===================================================
+          BOTTOM GRADIENT
+      =================================================== */}
+
+      <div
+        className="hero-bottom-gradient"
+        aria-hidden="true"
+      />
+
 
     </section>
 

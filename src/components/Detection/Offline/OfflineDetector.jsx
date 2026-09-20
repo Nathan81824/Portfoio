@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 
 
-import OflinePage from "../../../pages/Offline/OflinePage.jsx";
+// import OflinePage from "../../../pages/Offline/OflinePage.jsx";
 import OfflineGame from "../../../components/Detection/Offline/OfflineGame/OflineGame.jsx";
+import App from "../../../App.jsx";
 
 export default function OfflineDetector({ children }) {
   const location = useLocation();
@@ -55,7 +56,7 @@ export default function OfflineDetector({ children }) {
     Normal offline behavior.
   */
   if (isOffline && !wasInGame) {
-    return <OflinePage />;
+    return <App />;
   }
 
   return children;

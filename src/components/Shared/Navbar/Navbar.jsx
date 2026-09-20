@@ -19,6 +19,7 @@ import {
 } from "framer-motion";
 
 import clsx from "clsx";
+
 import {
   personalInfo,
   navigation,
@@ -62,7 +63,7 @@ function Navbar() {
 
 
   /* =========================================================
-     HANDLE NAVBAR SCROLL STATE
+     SCROLL STATE
   ========================================================= */
 
   useEffect(() => {
@@ -99,7 +100,7 @@ function Navbar() {
 
 
   /* =========================================================
-     CLOSE MOBILE MENU WHEN ROUTE CHANGES
+     CLOSE MENU WHEN ROUTE CHANGES
   ========================================================= */
 
   useEffect(() => {
@@ -108,7 +109,7 @@ function Navbar() {
 
 
   /* =========================================================
-     LOCK BODY SCROLL WHEN MOBILE MENU IS OPEN
+     LOCK BODY SCROLL
   ========================================================= */
 
   useEffect(() => {
@@ -134,14 +135,12 @@ function Navbar() {
   };
 
   const toggleMenu = () => {
-    setMenuOpen(
-      (previous) => !previous
-    );
+    setMenuOpen((previous) => !previous);
   };
 
 
   /* =========================================================
-     ACTIVE NAVIGATION LINK
+     ACTIVE LINK
   ========================================================= */
 
   const isActive = (path) => {
@@ -149,14 +148,15 @@ function Navbar() {
       return location.pathname === "/";
     }
 
-    return location.pathname.startsWith(
-      path
+    return (
+      location.pathname === path ||
+      location.pathname.startsWith(`${path}/`)
     );
   };
 
 
   /* =========================================================
-     ANIMATION SETTINGS
+     NAVBAR ANIMATION
   ========================================================= */
 
   const navbarTransition = {
@@ -164,10 +164,16 @@ function Navbar() {
     ease: [0.76, 0, 0.24, 1],
   };
 
+
+  /* =========================================================
+     MOBILE MENU ANIMATION
+  ========================================================= */
+
   const mobileMenuVariants = {
     closed: {
       opacity: 0,
       y: -20,
+
       transition: {
         duration: 0.3,
         ease: [0.76, 0, 0.24, 1],
@@ -177,12 +183,18 @@ function Navbar() {
     open: {
       opacity: 1,
       y: 0,
+
       transition: {
         duration: 0.55,
         ease: [0.76, 0, 0.24, 1],
       },
     },
   };
+
+
+  /* =========================================================
+     MOBILE LINK ANIMATION
+  ========================================================= */
 
   const mobileLinkVariants = {
     closed: {
@@ -193,6 +205,7 @@ function Navbar() {
     open: (index) => ({
       opacity: 1,
       x: 0,
+
       transition: {
         duration: 0.5,
         delay: 0.08 + index * 0.06,
@@ -280,7 +293,7 @@ function Navbar() {
           aria-label="Main navigation"
         >
 
-          {navLinks.map((item, index) => {
+          {navLinks.map((item) => {
             const path =
               item.path ||
               item.href ||
@@ -300,7 +313,8 @@ function Navbar() {
                 to={path}
                 className={clsx(
                   "navbar-link",
-                  active && "active"
+                  active &&
+                    "navbar-link-active"
                 )}
               >
 
@@ -309,6 +323,7 @@ function Navbar() {
                   animate={{
                     y: active ? -1 : 0,
                   }}
+
                   transition={{
                     duration: 0.25,
                   }}
@@ -317,9 +332,7 @@ function Navbar() {
                 </motion.span>
 
 
-                {/* =========================================
-                    ACTIVE LINK INDICATOR
-                ========================================= */}
+                {/* ACTIVE INDICATOR */}
 
                 <AnimatePresence>
                   {active && (
@@ -359,27 +372,32 @@ function Navbar() {
 
 
         {/* ===================================================
-            RIGHT SIDE CONTROLS
+            RIGHT CONTROLS
         =================================================== */}
 
         <div className="navbar-right">
 
 
           {/* =================================================
-              THEME TOGGLE
+              THEME BUTTON
           ================================================= */}
 
           <MagneticButton
             type="button"
+
             className="navbar-theme"
+
             strength={0.2}
             duration={0.3}
+
             onClick={toggleTheme}
+
             aria-label={
               darkMode
                 ? "Switch to light theme"
                 : "Switch to dark theme"
             }
+
             title={
               darkMode
                 ? "Switch to light theme"
@@ -396,21 +414,25 @@ function Navbar() {
 
                 <motion.span
                   key="sun"
+
                   initial={{
                     opacity: 0,
                     rotate: -90,
                     scale: 0.6,
                   }}
+
                   animate={{
                     opacity: 1,
                     rotate: 0,
                     scale: 1,
                   }}
+
                   exit={{
                     opacity: 0,
                     rotate: 90,
                     scale: 0.6,
                   }}
+
                   transition={{
                     duration: 0.3,
                   }}
@@ -425,21 +447,25 @@ function Navbar() {
 
                 <motion.span
                   key="moon"
+
                   initial={{
                     opacity: 0,
                     rotate: 90,
                     scale: 0.6,
                   }}
+
                   animate={{
                     opacity: 1,
                     rotate: 0,
                     scale: 1,
                   }}
+
                   exit={{
                     opacity: 0,
                     rotate: -90,
                     scale: 0.6,
                   }}
+
                   transition={{
                     duration: 0.3,
                   }}
@@ -458,17 +484,22 @@ function Navbar() {
 
 
           {/* =================================================
-              DESKTOP RESUME BUTTON
+              DESKTOP RESUME
           ================================================= */}
 
           <div className="navbar-resume-desktop">
 
             <Button
               as="a"
+
               href={resumeUrl}
+
               download
+
               magnetic
+
               magneticStrength={0.15}
+
               className="navbar-resume"
             >
 
@@ -493,15 +524,20 @@ function Navbar() {
 
           <MagneticButton
             type="button"
+
             className="navbar-menu-button"
+
             strength={0.2}
             duration={0.3}
+
             onClick={toggleMenu}
+
             aria-label={
               menuOpen
                 ? "Close navigation menu"
                 : "Open navigation menu"
             }
+
             aria-expanded={menuOpen}
           >
 
@@ -514,21 +550,25 @@ function Navbar() {
 
                 <motion.span
                   key="close"
+
                   initial={{
                     opacity: 0,
                     rotate: -90,
                     scale: 0.7,
                   }}
+
                   animate={{
                     opacity: 1,
                     rotate: 0,
                     scale: 1,
                   }}
+
                   exit={{
                     opacity: 0,
                     rotate: 90,
                     scale: 0.7,
                   }}
+
                   transition={{
                     duration: 0.25,
                   }}
@@ -543,21 +583,25 @@ function Navbar() {
 
                 <motion.span
                   key="menu"
+
                   initial={{
                     opacity: 0,
                     rotate: 90,
                     scale: 0.7,
                   }}
+
                   animate={{
                     opacity: 1,
                     rotate: 0,
                     scale: 1,
                   }}
+
                   exit={{
                     opacity: 0,
                     rotate: -90,
                     scale: 0.7,
                   }}
+
                   transition={{
                     duration: 0.25,
                   }}
@@ -599,44 +643,45 @@ function Navbar() {
             data-lenis-prevent
           >
 
-            {/* =============================================
-                MOBILE MENU HEADER
-            ============================================= */}
+
+            {/* ===============================================
+                MOBILE HEADER
+            =============================================== */}
 
             <div className="navbar-mobile-header">
 
-              <div>
+              <div className="navbar-mobile-title">
 
-                <span className="navbar-mobile-label">
-
+                <span>
                   <TextScramble
                     text="Navigation"
                     duration={500}
                     className="text-scramble"
                   />
-
                 </span>
 
-                <h3>
-
+                <span>
                   <TextScramble
                     text="Menu"
                     duration={600}
                     delay={100}
                     className="text-scramble"
                   />
-
-                </h3>
+                </span>
 
               </div>
 
 
               <MagneticButton
                 type="button"
+
                 className="navbar-mobile-close"
+
                 strength={0.18}
                 duration={0.3}
+
                 onClick={closeMenu}
+
                 aria-label="Close navigation menu"
               >
 
@@ -650,9 +695,9 @@ function Navbar() {
             </div>
 
 
-            {/* =============================================
-                MOBILE NAVIGATION LINKS
-            ============================================= */}
+            {/* ===============================================
+                MOBILE LINKS
+            =============================================== */}
 
             <nav
               className="navbar-mobile-links"
@@ -679,20 +724,28 @@ function Navbar() {
 
                     <motion.div
                       key={path}
+
                       custom={index}
+
                       variants={
                         mobileLinkVariants
                       }
+
                       initial="closed"
+
                       animate="open"
                     >
 
                       <Link
                         to={path}
+
                         className={clsx(
                           "navbar-mobile-link",
-                          active && "active"
+
+                          active &&
+                            "navbar-mobile-link-active"
                         )}
+
                         onClick={closeMenu}
                       >
 
@@ -704,7 +757,7 @@ function Navbar() {
 
 
                         <motion.span
-                          className="navbar-mobile-link-text"
+                          className="navbar-mobile-text"
 
                           whileHover={{
                             x: 8,
@@ -728,9 +781,9 @@ function Navbar() {
             </nav>
 
 
-            {/* =============================================
-                MOBILE RESUME BUTTON
-            ============================================= */}
+            {/* ===============================================
+                MOBILE RESUME
+            =============================================== */}
 
             <motion.div
               className="navbar-resume-mobile"
@@ -754,11 +807,17 @@ function Navbar() {
 
               <Button
                 as="a"
+
                 href={resumeUrl}
+
                 download
+
                 magnetic
+
                 magneticStrength={0.15}
+
                 className="navbar-resume"
+
                 onClick={closeMenu}
               >
 
@@ -777,9 +836,9 @@ function Navbar() {
             </motion.div>
 
 
-            {/* =============================================
+            {/* ===============================================
                 MOBILE FOOTER
-            ============================================= */}
+            =============================================== */}
 
             <motion.div
               className="navbar-mobile-footer"
@@ -798,7 +857,7 @@ function Navbar() {
               }}
             >
 
-              <span className="navbar-mobile-dot" />
+              <span className="navbar-mobile-footer-dot" />
 
               <span>
                 {personalInfo?.profession ||
@@ -825,5 +884,6 @@ function Navbar() {
     </motion.header>
   );
 }
+
 
 export default Navbar;

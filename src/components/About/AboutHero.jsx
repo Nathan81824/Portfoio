@@ -7,15 +7,19 @@
 
    Uses:
    - Central website data
+   - Central site text
+   - Central media
    - Framer Motion
    - Lucide React
-   - Reusable Button component
-   - Background image
+   - Reusable Button
+   - Cinematic hero video
+   - Scroll parallax
 ========================================================= */
 
 import {
   useEffect,
   useState,
+  useRef,
 } from "react";
 
 
@@ -27,6 +31,8 @@ import {
   ArrowRight,
   Mail,
   MapPin,
+  Play,
+  Sparkles,
 } from "lucide-react";
 
 
@@ -38,16 +44,20 @@ import {
   motion,
   AnimatePresence,
   useReducedMotion,
+  useScroll,
+  useTransform,
 } from "framer-motion";
 
 
 /* =========================================================
-   CENTRAL DATA
+   CENTRAL SYSTEMS
 ========================================================= */
 
 import {
   getData,
-} from "../../javascript/data/data.js";
+  media,
+  siteText,
+} from "../../javascript/index.js";
 
 
 /* =========================================================
@@ -56,12 +66,6 @@ import {
 
 import Button from "../Shared/Button/Button.jsx";
 
-
-/* =========================================================
-   IMAGE
-========================================================= */
-
-import image from "../../assets/images/my-image.jpg";
 
 
 
@@ -72,12 +76,63 @@ import image from "../../assets/images/my-image.jpg";
 
 export default function AboutHero() {
 
+
   /* =======================================================
      REDUCED MOTION
   ======================================================= */
 
   const shouldReduceMotion =
     useReducedMotion();
+
+
+  /* =======================================================
+     HERO REF
+  ======================================================= */
+
+  const heroRef =
+    useRef(null);
+
+
+  /* =======================================================
+     SCROLL PROGRESS
+  ======================================================= */
+
+  const {
+    scrollYProgress,
+  } = useScroll({
+
+    target: heroRef,
+
+    offset: [
+      "start start",
+      "end start",
+    ],
+
+  });
+
+
+  /* =======================================================
+     VIDEO PARALLAX
+  ======================================================= */
+
+  const videoY =
+    useTransform(
+      scrollYProgress,
+      [0, 1],
+      shouldReduceMotion
+        ? ["0%", "0%"]
+        : ["0%", "12%"]
+    );
+
+
+  const videoScale =
+    useTransform(
+      scrollYProgress,
+      [0, 1],
+      shouldReduceMotion
+        ? [1, 1]
+        : [1, 1.08]
+    );
 
 
   /* =======================================================
@@ -96,6 +151,14 @@ export default function AboutHero() {
     Array.isArray(data?.roles)
       ? data.roles
       : [];
+
+
+  /* =======================================================
+     SITE TEXT
+  ======================================================= */
+
+  const text =
+    siteText.about.hero;
 
 
   /* =======================================================
@@ -120,7 +183,7 @@ export default function AboutHero() {
 
   const bio =
     personalInfo.bio ||
-    "I build modern, responsive and interactive digital experiences using modern frontend technologies.";
+    text.description;
 
 
   /* =======================================================
@@ -146,6 +209,26 @@ export default function AboutHero() {
     roleIndex,
     setRoleIndex,
   ] = useState(0);
+
+
+  /* =======================================================
+     VIDEO STATE
+  ======================================================= */
+
+  const [
+    videoError,
+    setVideoError,
+  ] = useState(false);
+
+
+  /* =======================================================
+     VIDEO PLAY STATE
+  ======================================================= */
+
+  const [
+    isVideoPlaying,
+    setIsVideoPlaying,
+  ] = useState(true);
 
 
   /* =======================================================
@@ -206,26 +289,54 @@ export default function AboutHero() {
 
 
   /* =======================================================
-     IMAGE FALLBACK
+     VIDEO ERROR
   ======================================================= */
 
-  const handleImageError = (
-    event
-  ) => {
+  const handleVideoError = () => {
 
-    event.currentTarget.style.display =
-      "none";
+    setVideoError(true);
+    setIsVideoPlaying(false);
 
-
-    const fallback =
-      event.currentTarget
-        .nextElementSibling;
+  };
 
 
-    if (fallback) {
+  /* =======================================================
+     VIDEO PLAY / PAUSE
+  ======================================================= */
 
-      fallback.style.display =
-        "flex";
+  const toggleVideo = () => {
+
+    const video =
+      heroRef.current?.querySelector(
+        ".about-hero-video"
+      );
+
+
+    if (!video) {
+      return;
+    }
+
+
+    if (video.paused) {
+
+      video
+        .play()
+        .then(() => {
+
+          setIsVideoPlaying(true);
+
+        })
+        .catch(() => {
+
+          setIsVideoPlaying(false);
+
+        });
+
+    } else {
+
+      video.pause();
+
+      setIsVideoPlaying(false);
 
     }
 
@@ -239,6 +350,7 @@ export default function AboutHero() {
   return (
 
     <section
+      ref={heroRef}
       className="about-hero"
       id="about"
     >
@@ -290,7 +402,7 @@ export default function AboutHero() {
               ? false
               : {
                   opacity: 0,
-                  x: -35,
+                  x: -45,
                 }
           }
 
@@ -309,8 +421,13 @@ export default function AboutHero() {
           }}
 
           transition={{
-            duration: 0.8,
-            ease: "easeOut",
+            duration: 0.85,
+            ease: [
+              0.22,
+              1,
+              0.36,
+              1,
+            ],
           }}
         >
 
@@ -352,7 +469,15 @@ export default function AboutHero() {
             }}
           >
 
-            ABOUT ME
+            <Sparkles
+              size={14}
+              strokeWidth={1.8}
+              aria-hidden="true"
+            />
+
+            <span>
+              {text.eyebrow.text}
+            </span>
 
           </motion.div>
 
@@ -362,6 +487,59 @@ export default function AboutHero() {
           =============================================== */}
 
           <motion.h1
+
+            initial={
+              shouldReduceMotion
+                ? false
+                : {
+                    opacity: 0,
+                    y: 30,
+                  }
+            }
+
+            whileInView={
+              shouldReduceMotion
+                ? undefined
+                : {
+                    opacity: 1,
+                    y: 0,
+                  }
+            }
+
+            viewport={{
+              once: true,
+            }}
+
+            transition={{
+              duration: 0.75,
+              delay: 0.1,
+              ease: [
+                0.22,
+                1,
+                0.36,
+                1,
+              ],
+            }}
+          >
+
+            {text.heading.greeting}{" "}
+
+            <span
+              className="about-hero-name"
+            >
+
+              {displayName}
+
+            </span>
+
+          </motion.h1>
+
+
+          {/* ===============================================
+              SUBTITLE
+          =============================================== */}
+
+          <motion.h2
 
             initial={
               shouldReduceMotion
@@ -386,60 +564,13 @@ export default function AboutHero() {
             }}
 
             transition={{
-              duration: 0.7,
-              delay: 0.1,
-            }}
-          >
-
-            Hi, I'm{" "}
-
-            <span
-              className="about-hero-name"
-            >
-
-              {displayName}
-
-            </span>
-
-          </motion.h1>
-
-
-          {/* ===============================================
-              SUBTITLE
-          =============================================== */}
-
-          <motion.h2
-
-            initial={
-              shouldReduceMotion
-                ? false
-                : {
-                    opacity: 0,
-                    y: 20,
-                  }
-            }
-
-            whileInView={
-              shouldReduceMotion
-                ? undefined
-                : {
-                    opacity: 1,
-                    y: 0,
-                  }
-            }
-
-            viewport={{
-              once: true,
-            }}
-
-            transition={{
-              duration: 0.7,
+              duration: 0.75,
               delay: 0.2,
+              ease: "easeOut",
             }}
           >
 
-            I create modern digital
-            experiences for the web.
+            {text.heading.subtitle}
 
           </motion.h2>
 
@@ -601,35 +732,26 @@ export default function AboutHero() {
             }}
           >
 
-
-            {/* =============================================
-                SKILLS
-            ============================================= */}
-
             <Button
-              href="/skills"
+              href={text.actions.skills.link}
               variant="primary"
               size="lg"
               icon={ArrowRight}
             >
 
-              Behind the Code
+              {text.actions.skills.text}
 
             </Button>
 
 
-            {/* =============================================
-                CONTACT
-            ============================================= */}
-
             <Button
-              href="/contact"
+              href={text.actions.contact.link}
               variant="secondary"
               size="lg"
               icon={Mail}
             >
 
-              Get In Touch
+              {text.actions.contact.text}
 
             </Button>
 
@@ -653,8 +775,8 @@ export default function AboutHero() {
               ? false
               : {
                   opacity: 0,
-                  x: 40,
-                  scale: 0.96,
+                  x: 45,
+                  scale: 0.94,
                 }
           }
 
@@ -674,9 +796,14 @@ export default function AboutHero() {
           }}
 
           transition={{
-            duration: 0.8,
-            delay: 0.2,
-            ease: "easeOut",
+            duration: 0.9,
+            delay: 0.15,
+            ease: [
+              0.22,
+              1,
+              0.36,
+              1,
+            ],
           }}
         >
 
@@ -688,7 +815,7 @@ export default function AboutHero() {
 
 
             {/* =============================================
-                IMAGE AREA
+                VIDEO AREA
             ============================================= */}
 
             <div
@@ -697,38 +824,125 @@ export default function AboutHero() {
               "
             >
 
-              <img
-                src={image}
-                alt={
-                  `${displayName} — ${currentRole}`
-                }
-                className="
-                  about-hero-image
-                "
-                onError={
-                  handleImageError
-                }
-              />
+              {!videoError ? (
+
+                <motion.video
+
+                  src={
+                    media.videos.myImageVideo
+                  }
+
+                  poster={
+                    media.images.myImage
+                  }
+
+                  className="
+                    about-hero-image
+                    about-hero-video
+                  "
+
+                  style={{
+                    y: videoY,
+                    scale: videoScale,
+                  }}
+
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  preload="metadata"
+
+                  aria-label={
+                    text.media.videoLabel
+                  }
+
+                  onError={
+                    handleVideoError
+                  }
+
+                />
+
+              ) : (
+
+                <img
+                  src={
+                    media.images.myImage
+                  }
+
+                  alt={
+                    text.media.imageAlt
+                  }
+
+                  className="
+                    about-hero-image
+                  "
+                />
+
+              )}
 
 
               {/* ===========================================
-                  IMAGE FALLBACK
+                  VIDEO OVERLAY
               =========================================== */}
 
               <div
                 className="
-                  about-hero-image-fallback
+                  about-hero-video-overlay
                 "
                 aria-hidden="true"
-              >
+              />
 
-                {
-                  displayName
-                    .charAt(0)
-                    .toUpperCase()
-                }
 
-              </div>
+              {/* ===========================================
+                  VIDEO CONTROL
+              =========================================== */}
+
+              {!videoError && (
+
+                <button
+
+                  type="button"
+
+                  className="
+                    about-hero-video-control
+                  "
+
+                  onClick={
+                    toggleVideo
+                  }
+
+                  aria-label={
+                    isVideoPlaying
+                      ? "Pause background video"
+                      : "Play background video"
+                  }
+                >
+
+                  {isVideoPlaying ? (
+
+                    <span
+                      className="
+                        about-hero-video-pause
+                      "
+                      aria-hidden="true"
+                    >
+                      <span />
+                      <span />
+                    </span>
+
+                  ) : (
+
+                    <Play
+                      size={15}
+                      fill="currentColor"
+                      aria-hidden="true"
+                    />
+
+                  )}
+
+                </button>
+
+              )}
 
 
               {/* ===========================================
@@ -820,7 +1034,7 @@ export default function AboutHero() {
             >
 
               <span>
-                Currently
+                {text.meta.currently}
               </span>
 
               <strong>
@@ -828,8 +1042,7 @@ export default function AboutHero() {
               </strong>
 
               <p>
-                Building modern and engaging
-                digital experiences.
+                {text.meta.building}
               </p>
 
             </div>
@@ -839,6 +1052,49 @@ export default function AboutHero() {
         </motion.div>
 
       </div>
+
+
+      {/* ===================================================
+          BOTTOM SCROLL INDICATOR
+      =================================================== */}
+
+      <motion.div
+
+        className="
+          about-hero-scroll-indicator
+        "
+
+        initial={
+          shouldReduceMotion
+            ? false
+            : {
+                opacity: 0,
+              }
+        }
+
+        animate={
+          shouldReduceMotion
+            ? undefined
+            : {
+                opacity: 1,
+              }
+        }
+
+        transition={{
+          delay: 1.2,
+          duration: 0.8,
+        }}
+
+        aria-hidden="true"
+      >
+
+        <span />
+
+        <span />
+
+        <span />
+
+      </motion.div>
 
     </section>
 

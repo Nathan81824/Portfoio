@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+
 import OfflineCharacterVideo from "../../assets/videos/oflline-avatar-viedio.mp4";
 
 export default function OflinePage() {
@@ -6,6 +8,7 @@ export default function OflinePage() {
   const [gameStarting, setGameStarting] = useState(false);
 
   const videoRef = useRef(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
@@ -34,9 +37,17 @@ export default function OflinePage() {
 
   const handleKeepWaiting = () => {
     setShowButtons(false);
+
+    window.setTimeout(() => {
+      setShowButtons(true);
+    }, 3000);
   };
 
   const handlePlayGame = () => {
+    if (gameStarting) {
+      return;
+    }
+
     setGameStarting(true);
 
     const video = videoRef.current;
@@ -46,7 +57,7 @@ export default function OflinePage() {
     }
 
     window.setTimeout(() => {
-      window.location.href = "/offline-game";
+      navigate("/offline-game");
     }, 350);
   };
 
@@ -59,9 +70,13 @@ export default function OflinePage() {
             className="offline-character-video"
             src={OfflineCharacterVideo}
             autoPlay
+            muted
+            loop
             playsInline
             preload="auto"
           />
+
+          <div className="offline-video-overlay" />
         </div>
 
         {showButtons && (

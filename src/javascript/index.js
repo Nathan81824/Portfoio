@@ -8,13 +8,37 @@ export { default as api } from "./api/api.js";
 /* =====================================================
    SITE CONFIG
 ===================================================== */
-export { default as siteConfig } from "./constants/siteConfig.js";
+
+export {
+  default as siteConfig,
+} from "./constants/siteConfig.js";
+
+
+/* =====================================================
+   SITE TEXT
+===================================================== */
+
+export {
+  default as siteText,
+} from "./siteText/siteText.js";
+
+
+/* =====================================================
+   MEDIA
+===================================================== */
+
+export {
+  default as media,
+} from "./media/media.js";
+
 
 /* =====================================================
    CONTACT
 ===================================================== */
 
-export { default as contact } from "./contact/contact.js";
+export {
+  default as contact,
+} from "./contact/contact.js";
 
 
 /* =====================================================
@@ -22,9 +46,14 @@ export { default as contact } from "./contact/contact.js";
 ===================================================== */
 
 export * from "./data/data.js";
-export { default as data } from "./data/data.js";
 
-export { default as dataStorage } from "./data/dataStorage.js";
+export {
+  default as data,
+} from "./data/data.js";
+
+export {
+  default as dataStorage,
+} from "./store/dataStorage.js";
 
 
 /* =====================================================
@@ -32,23 +61,32 @@ export { default as dataStorage } from "./data/dataStorage.js";
 ===================================================== */
 
 export * from "./hooks/hooks.js";
-export { default as hooks } from "./hooks/hooks.js";
+
+export {
+  default as hooks,
+} from "./hooks/hooks.js";
 
 
 /* =====================================================
    PROJECTS
 ===================================================== */
 
-export { default as projects } from "./projects/projects.js";
+export {
+  default as projects,
+} from "./projects/projects.js";
 
 
 /* =====================================================
    SKILLS
 ===================================================== */
 
-export { default as skills } from "./skills/skills.js";
+export {
+  default as skills,
+} from "./skills/skills.js";
 
-export { default as createSkillsScene } from "./skills/skills.js";
+export {
+  default as createSkillsScene,
+} from "./skills/skills.js";
 
 
 /* =====================================================
@@ -73,7 +111,9 @@ export {
    UTILITIES
 ===================================================== */
 
-export { default as utils } from "./utils/utils.js";
+export {
+  default as utils,
+} from "./utils/utils.js";
 
 export * from "./utils/utils.js";
 

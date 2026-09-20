@@ -1,319 +1,655 @@
-import { useEffect, useRef } from "react";
+/* =========================================================
+   LOADER
+   Nathan — Frontend Developer Portfolio
+
+   Location:
+   src/components/Detection/Loader/Loader.jsx
+
+   Purpose:
+   - Display the portfolio loading screen
+   - Run portfolio startup checks
+   - Load index.js
+   - Load media.js
+   - Load data.js
+   - Load siteText.js
+   - Animate loading progress with GSAP
+   - Finish loading only after startup checks complete
+   - NEVER redirect to an error page
+========================================================= */
+
+
+/* =========================================================
+   REACT
+========================================================= */
+
+import {
+  useEffect,
+  useRef,
+} from "react";
+
+
+/* =========================================================
+   GSAP
+========================================================= */
+
 import gsap from "gsap";
 
-import useAnimationStore from "../../../store/animationStore";
 
-import { portfolioCheck } from "../../../javascript/index.js";
+/* =========================================================
+   ANIMATION STORE
+========================================================= */
+
+import useAnimationStore from "../../../javascript/store/animationStore.js";
 
 
-function Loader({ children }) {
-  const screenRef = useRef(null);
-  const progressRef = useRef(null);
+/* =========================================================
+   PORTFOLIO SYSTEM
+========================================================= */
 
-  const isLoading = useAnimationStore(
-    (state) => state.isLoading
-  );
+import {
+  portfolioCheck,
+} from "../../../javascript/index.js";
 
-  const progress = useAnimationStore(
-    (state) => state.progress
-  );
 
-  const setProgress = useAnimationStore(
-    (state) => state.setProgress
-  );
+/* =========================================================
+   LOADER COMPONENT
+========================================================= */
 
-  const finishLoading = useAnimationStore(
-    (state) => state.finishLoading
-  );
+function Loader({
+  children,
+}) {
 
+  /* =======================================================
+     REFS
+  ======================================================= */
+
+  const screenRef =
+    useRef(null);
+
+  const progressRef =
+    useRef(null);
+
+
+  /* =======================================================
+     GLOBAL LOADING STATE
+  ======================================================= */
+
+  const isLoading =
+    useAnimationStore(
+      (state) => state.isLoading
+    );
+
+
+  /* =======================================================
+     GLOBAL PROGRESS
+  ======================================================= */
+
+  const progress =
+    useAnimationStore(
+      (state) => state.progress
+    );
+
+
+  /* =======================================================
+     SET PROGRESS
+  ======================================================= */
+
+  const setProgress =
+    useAnimationStore(
+      (state) => state.setProgress
+    );
+
+
+  /* =======================================================
+     FINISH LOADING
+  ======================================================= */
+
+  const finishLoading =
+    useAnimationStore(
+      (state) => state.finishLoading
+    );
+
+
+  /* =======================================================
+     STARTUP EFFECT
+  ======================================================= */
 
   useEffect(() => {
+
     let cancelled = false;
 
-    const screen = screenRef.current;
+
+    /* =====================================================
+       LOADER SCREEN
+    ===================================================== */
+
+    const screen =
+      screenRef.current;
+
 
     if (!screen) {
       return;
     }
 
 
-    const ctx = gsap.context(() => {
-
-      gsap.from(".loading-logo", {
-        opacity: 0,
-        y: 25,
-        scale: 0.85,
-        duration: 0.8,
-        ease: "power3.out",
-      });
-
-
-      gsap.from(".loading-message", {
-        opacity: 0,
-        y: 15,
-        duration: 0.7,
-        delay: 0.2,
-        ease: "power3.out",
-      });
-
-
-      gsap.from(".loading-progress-wrapper", {
-        opacity: 0,
-        y: 15,
-        duration: 0.7,
-        delay: 0.3,
-        ease: "power3.out",
-      });
-
-
-      gsap.from(".loading-status", {
-        opacity: 0,
-        y: 10,
-        duration: 0.6,
-        delay: 0.4,
-        ease: "power3.out",
-      });
-
-
-      gsap.to(".loading-glow-one", {
-        x: 50,
-        y: -30,
-        scale: 1.08,
-        duration: 6,
-        ease: "sine.inOut",
-        repeat: -1,
-        yoyo: true,
-      });
-
-
-      gsap.to(".loading-glow-two", {
-        x: -45,
-        y: 35,
-        scale: 1.08,
-        duration: 7,
-        ease: "sine.inOut",
-        repeat: -1,
-        yoyo: true,
-      });
-
-
-      gsap.to(".loading-logo", {
-        y: -4,
-        scale: 1.02,
-        duration: 2.8,
-        ease: "sine.inOut",
-        repeat: -1,
-        yoyo: true,
-      });
-
-    }, screen);
-
-
-    const updateProgress = (value) => {
-
-      if (cancelled) {
-        return;
-      }
-
-
-      const safeValue = Math.min(
-        100,
-        Math.max(0, Math.round(value))
-      );
-
-
-      setProgress(safeValue);
-
-
-      if (progressRef.current) {
-
-        gsap.to(progressRef.current, {
-          width: `${safeValue}%`,
-          duration: 0.4,
-          ease: "power2.out",
-        });
-
-      }
-
-    };
-
-
-    const wait = (milliseconds) => {
-      return new Promise((resolve) => {
-        window.setTimeout(resolve, milliseconds);
-      });
-    };
-
-
-    const runChecks = async () => {
-
-      try {
-
-        updateProgress(5);
-
-
-        /*
-          Run the portfolio checker.
-
-          The checker is allowed to fail.
-          The portfolio will still continue loading.
-        */
-
-        let checkResult = null;
-
-
-        try {
-
-          checkResult = await portfolioCheck();
-
-        } catch (error) {
-
-          console.warn(
-            "Portfolio check encountered an issue. Continuing anyway:",
-            error
-          );
-
-        }
-
-
-        if (cancelled) {
-          return;
-        }
-
-
-        updateProgress(20);
-
-        await wait(200);
-
-
-        if (cancelled) {
-          return;
-        }
-
-
-        updateProgress(40);
-
-        await wait(200);
-
-
-        if (cancelled) {
-          return;
-        }
-
-
-        updateProgress(60);
-
-        await wait(200);
-
-
-        if (cancelled) {
-          return;
-        }
-
-
-        updateProgress(80);
-
-        await wait(200);
-
-
-        if (cancelled) {
-          return;
-        }
-
-
-        /*
-          Checker errors are only logged.
-
-          NEVER redirect.
-          NEVER navigate to /server-error.
-          NEVER stop the portfolio.
-        */
-
-        if (
-          checkResult &&
-          Array.isArray(checkResult.errors) &&
-          checkResult.errors.length > 0
-        ) {
-
-          console.warn(
-            "Some portfolio checks failed, but the portfolio will continue:",
-            checkResult.errors
-          );
-
-        }
-
-
-        updateProgress(100);
-
-
-        if (progressRef.current) {
-
-          gsap.to(progressRef.current, {
-            width: "100%",
-            duration: 0.5,
-            ease: "power2.out",
-          });
-
-        }
-
-
-        window.setTimeout(() => {
-
-          if (!cancelled) {
-            finishLoading();
+    /* =====================================================
+       GSAP CONTEXT
+    ===================================================== */
+
+    const ctx =
+      gsap.context(() => {
+
+
+        /* ================================================
+           LOGO ENTRANCE
+        ================================================ */
+
+        gsap.from(
+          ".loading-logo",
+          {
+            opacity: 0,
+            y: 25,
+            scale: 0.85,
+            duration: 0.8,
+            ease: "power3.out",
           }
-
-        }, 500);
-
-      } catch (error) {
-
-        /*
-          Absolute fallback.
-
-          Even if something unexpected happens,
-          the portfolio continues loading.
-        */
-
-        console.warn(
-          "Unexpected portfolio startup issue. Continuing anyway:",
-          error
         );
 
 
+        /* ================================================
+           MESSAGE ENTRANCE
+        ================================================ */
+
+        gsap.from(
+          ".loading-message",
+          {
+            opacity: 0,
+            y: 15,
+            duration: 0.7,
+            delay: 0.2,
+            ease: "power3.out",
+          }
+        );
+
+
+        /* ================================================
+           PROGRESS ENTRANCE
+        ================================================ */
+
+        gsap.from(
+          ".loading-progress-wrapper",
+          {
+            opacity: 0,
+            y: 15,
+            duration: 0.7,
+            delay: 0.3,
+            ease: "power3.out",
+          }
+        );
+
+
+        /* ================================================
+           STATUS ENTRANCE
+        ================================================ */
+
+        gsap.from(
+          ".loading-status",
+          {
+            opacity: 0,
+            y: 10,
+            duration: 0.6,
+            delay: 0.4,
+            ease: "power3.out",
+          }
+        );
+
+
+        /* ================================================
+           FIRST BACKGROUND GLOW
+        ================================================ */
+
+        gsap.to(
+          ".loading-glow-one",
+          {
+            x: 50,
+            y: -30,
+            scale: 1.08,
+            duration: 6,
+            ease: "sine.inOut",
+            repeat: -1,
+            yoyo: true,
+          }
+        );
+
+
+        /* ================================================
+           SECOND BACKGROUND GLOW
+        ================================================ */
+
+        gsap.to(
+          ".loading-glow-two",
+          {
+            x: -45,
+            y: 35,
+            scale: 1.08,
+            duration: 7,
+            ease: "sine.inOut",
+            repeat: -1,
+            yoyo: true,
+          }
+        );
+
+
+        /* ================================================
+           LOGO FLOATING ANIMATION
+        ================================================ */
+
+        gsap.to(
+          ".loading-logo",
+          {
+            y: -4,
+            scale: 1.02,
+            duration: 2.8,
+            ease: "sine.inOut",
+            repeat: -1,
+            yoyo: true,
+          }
+        );
+
+      },
+      screen
+    );
+
+
+    /* =====================================================
+       UPDATE PROGRESS
+    ===================================================== */
+
+    const updateProgress =
+      (value) => {
+
         if (cancelled) {
           return;
         }
 
 
-        updateProgress(100);
+        const safeValue =
+          Math.min(
+            100,
+            Math.max(
+              0,
+              Math.round(value)
+            )
+          );
 
 
-        if (progressRef.current) {
+        /* ===============================================
+           STORE
+        =============================================== */
 
-          gsap.to(progressRef.current, {
-            width: "100%",
-            duration: 0.5,
-            ease: "power2.out",
-          });
+        setProgress(
+          safeValue
+        );
+
+
+        /* ===============================================
+           PROGRESS BAR
+        =============================================== */
+
+        if (
+          progressRef.current
+        ) {
+
+          gsap.to(
+            progressRef.current,
+            {
+              width:
+                `${safeValue}%`,
+              duration: 0.4,
+              ease: "power2.out",
+              overwrite: true,
+            }
+          );
 
         }
 
+      };
 
-        window.setTimeout(() => {
 
-          if (!cancelled) {
-            finishLoading();
+    /* =====================================================
+       WAIT HELPER
+    ===================================================== */
+
+    const wait =
+      (milliseconds) =>
+        new Promise(
+          (resolve) => {
+
+            window.setTimeout(
+              resolve,
+              milliseconds
+            );
+
+          }
+        );
+
+
+    /* =====================================================
+       RUN PORTFOLIO STARTUP CHECK
+    ===================================================== */
+
+    const runChecks =
+      async () => {
+
+        try {
+
+          /* ===============================================
+             INITIAL PROGRESS
+          =============================================== */
+
+          updateProgress(5);
+
+
+          await wait(150);
+
+
+          if (cancelled) {
+            return;
           }
 
-        }, 500);
 
-      }
+          /* ===============================================
+             INDEX.JS
+          =============================================== */
 
-    };
+          updateProgress(10);
 
+
+          /*
+            portfolioCheck() loads:
+
+            index.js
+              ↓
+            media.js
+              ↓
+            data.js
+              ↓
+            siteText.js
+          */
+
+          let checkResult =
+            null;
+
+
+          try {
+
+            checkResult =
+              await portfolioCheck();
+
+          } catch (error) {
+
+            console.warn(
+              "Portfolio check encountered an issue. Continuing anyway:",
+              error
+            );
+
+          }
+
+
+          if (cancelled) {
+            return;
+          }
+
+
+          /* ===============================================
+             CHECK RESULT
+          =============================================== */
+
+          if (
+            checkResult &&
+            checkResult.index
+          ) {
+
+            updateProgress(30);
+
+          } else {
+
+            updateProgress(25);
+
+          }
+
+
+          await wait(200);
+
+
+          if (cancelled) {
+            return;
+          }
+
+
+          /* ===============================================
+             MEDIA.JS
+          =============================================== */
+
+          if (
+            checkResult &&
+            checkResult.media
+          ) {
+
+            updateProgress(50);
+
+          } else {
+
+            /*
+              Even if media has a warning,
+              don't stop the portfolio.
+            */
+
+            updateProgress(45);
+
+          }
+
+
+          await wait(200);
+
+
+          if (cancelled) {
+            return;
+          }
+
+
+          /* ===============================================
+             DATA.JS
+          =============================================== */
+
+          if (
+            checkResult &&
+            checkResult.data
+          ) {
+
+            updateProgress(70);
+
+          } else {
+
+            updateProgress(65);
+
+          }
+
+
+          await wait(200);
+
+
+          if (cancelled) {
+            return;
+          }
+
+
+          /* ===============================================
+             SITE TEXT
+          =============================================== */
+
+          if (
+            checkResult &&
+            checkResult.siteText
+          ) {
+
+            updateProgress(85);
+
+          } else {
+
+            updateProgress(80);
+
+          }
+
+
+          await wait(250);
+
+
+          if (cancelled) {
+            return;
+          }
+
+
+          /* ===============================================
+             CHECK WARNINGS
+          =============================================== */
+
+          if (
+            checkResult &&
+            checkResult.success === false
+          ) {
+
+            console.warn(
+              "Portfolio startup completed with warnings. Continuing anyway."
+            );
+
+          }
+
+
+          /* ===============================================
+             FINAL PROGRESS
+          =============================================== */
+
+          updateProgress(
+            100
+          );
+
+
+          /* ===============================================
+             FORCE PROGRESS BAR TO 100%
+          =============================================== */
+
+          if (
+            progressRef.current
+          ) {
+
+            gsap.to(
+              progressRef.current,
+              {
+                width: "100%",
+                duration: 0.5,
+                ease: "power2.out",
+                overwrite: true,
+              }
+            );
+
+          }
+
+
+          /* ===============================================
+             FINISH LOADING
+          =============================================== */
+
+          window.setTimeout(
+            () => {
+
+              if (!cancelled) {
+
+                finishLoading();
+
+              }
+
+            },
+            600
+          );
+
+
+        } catch (error) {
+
+
+          /* ===============================================
+             ABSOLUTE FALLBACK
+          =============================================== */
+
+          console.warn(
+            "Unexpected portfolio startup issue. Continuing anyway:",
+            error
+          );
+
+
+          if (cancelled) {
+            return;
+          }
+
+
+          /* ===============================================
+             COMPLETE PROGRESS
+          =============================================== */
+
+          updateProgress(
+            100
+          );
+
+
+          if (
+            progressRef.current
+          ) {
+
+            gsap.to(
+              progressRef.current,
+              {
+                width: "100%",
+                duration: 0.5,
+                ease: "power2.out",
+                overwrite: true,
+              }
+            );
+
+          }
+
+
+          /* ===============================================
+             STILL OPEN PORTFOLIO
+          =============================================== */
+
+          window.setTimeout(
+            () => {
+
+              if (!cancelled) {
+
+                finishLoading();
+
+              }
+
+            },
+            600
+          );
+
+        }
+
+      };
+
+
+    /* =====================================================
+       START CHECKS
+    ===================================================== */
 
     runChecks();
 
+
+    /* =====================================================
+       CLEANUP
+    ===================================================== */
 
     return () => {
 
@@ -323,15 +659,29 @@ function Loader({ children }) {
 
     };
 
-  }, [setProgress, finishLoading]);
+  }, [
+    setProgress,
+    finishLoading,
+  ]);
 
+
+  /* =======================================================
+     SHOW PORTFOLIO
+  ======================================================= */
 
   if (!isLoading) {
+
     return children;
+
   }
 
 
+  /* =======================================================
+     LOADING SCREEN
+  ======================================================= */
+
   return (
+
     <main
       ref={screenRef}
       className="loading-screen"
@@ -339,26 +689,51 @@ function Loader({ children }) {
       aria-live="polite"
     >
 
+      {/* =================================================
+          BACKGROUND GLOW ONE
+      ================================================= */}
+
       <div
-        className="loading-glow loading-glow-one"
+        className="
+          loading-glow
+          loading-glow-one
+        "
         aria-hidden="true"
       />
 
 
+      {/* =================================================
+          BACKGROUND GLOW TWO
+      ================================================= */}
+
       <div
-        className="loading-glow loading-glow-two"
+        className="
+          loading-glow
+          loading-glow-two
+        "
         aria-hidden="true"
       />
 
+
+      {/* =================================================
+          LOADING CONTENT
+      ================================================= */}
 
       <div className="loading-content">
+
+
+        {/* ===============================================
+            LOGO
+        =============================================== */}
 
         <div className="loading-logo">
 
           <div className="loading-logo-circle">
 
             <img
-              src={`${import.meta.env.BASE_URL}logo.png`}
+              src={
+                `${import.meta.env.BASE_URL}logo.png`
+              }
               alt="Nathan logo"
               className="loading-logo-image"
             />
@@ -368,12 +743,23 @@ function Loader({ children }) {
         </div>
 
 
+        {/* ===============================================
+            MESSAGE
+        =============================================== */}
+
         <p className="loading-message">
+
           Preparing your experience...
+
         </p>
 
 
+        {/* ===============================================
+            PROGRESS
+        =============================================== */}
+
         <div className="loading-progress-wrapper">
+
 
           <div
             className="loading-progress-track"
@@ -388,29 +774,50 @@ function Loader({ children }) {
               ref={progressRef}
               className="loading-progress"
               style={{
-                width: `${progress}%`,
+                width:
+                  `${progress}%`,
               }}
             />
 
           </div>
 
 
+          {/* =============================================
+              PERCENTAGE
+          ============================================= */}
+
           <span className="loading-percentage">
+
             {progress}%
+
           </span>
+
 
         </div>
 
 
+        {/* ===============================================
+            STATUS
+        =============================================== */}
+
         <span className="loading-status">
+
           Preparing portfolio
+
         </span>
+
 
       </div>
 
     </main>
+
   );
+
 }
 
+
+/* =========================================================
+   EXPORT
+========================================================= */
 
 export default Loader;
