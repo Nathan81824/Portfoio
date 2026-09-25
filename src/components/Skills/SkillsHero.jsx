@@ -234,12 +234,6 @@ function Skills() {
               3D SKILLS
             </div>
 
-            {/* BOTTOM LABEL */}
-
-            <div className="scene-label scene-label-bottom">
-              THREE.JS
-            </div>
-
           </motion.div>
 
         </div>

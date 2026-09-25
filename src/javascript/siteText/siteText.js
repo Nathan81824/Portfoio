@@ -4,7 +4,7 @@
 
 import heroText from "../siteText/home/homeText.js";
 
-import about from "../siteText/about/about-text.js";
+import about from "./about/aboutText.js";
 
 import skills from "../siteText/skills/skillsText.js";
 

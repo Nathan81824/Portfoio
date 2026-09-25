@@ -69,11 +69,7 @@ const scrollToBottom =
   (() => {});
 
 
-/* =========================================================
-   SOUND
-========================================================= */
 
-import * as sound from "../sounds/sound.js";
 
 
 /* =========================================================
@@ -90,7 +86,7 @@ const utils = {
   scrollToSection,
   scrollToTop,
   scrollToBottom,
-  sound,
+ 
 };
 
 
@@ -108,7 +104,7 @@ export {
   scrollToSection,
   scrollToTop,
   scrollToBottom,
-  sound,
+
 };
 
 

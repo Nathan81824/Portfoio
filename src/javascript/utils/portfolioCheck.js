@@ -9,6 +9,11 @@
    - Check the main portfolio system
    - Load index.js
    - Load media.js
+   - Load mediaLoader.js
+   - Load sound.js
+   - Preload images
+   - Preload videos
+   - Preload sounds
    - Load data.js
    - Load siteText.js
    - Verify portfolio pages
@@ -16,6 +21,13 @@
    - Verify site text
    - NEVER stop the portfolio because of a check warning
 ========================================================= */
+
+
+/* =========================================================
+   MEDIA LOADER
+========================================================= */
+
+import preloadMedia from "../media/mediaLoader";
 
 
 /* =========================================================
@@ -44,6 +56,7 @@ async function loadModule(
   );
 
   try {
+
     const module =
       await importFunction();
 
@@ -69,6 +82,64 @@ async function loadModule(
       module: null,
       error,
     };
+
+  }
+}
+
+
+/* =========================================================
+   MEDIA PRELOADER
+========================================================= */
+
+async function loadAllMedia() {
+
+  console.log("");
+
+  console.log(
+    "⏳ Starting background media loading..."
+  );
+
+  try {
+
+    await preloadMedia();
+
+    console.log(
+      "✓ Images loaded."
+    );
+
+    console.log(
+      "✓ Videos loaded."
+    );
+
+    console.log(
+      "✓ Sounds loaded."
+    );
+
+    console.log(
+      "✓ Background media loading complete."
+    );
+
+    return {
+      success: true,
+      error: null,
+    };
+
+  } catch (error) {
+
+    console.warn(
+      "⚠ Background media loading reported a warning.",
+      error
+    );
+
+    console.warn(
+      "⚠ Portfolio will continue loading."
+    );
+
+    return {
+      success: false,
+      error,
+    };
+
   }
 }
 
@@ -80,15 +151,19 @@ async function loadModule(
 async function portfolioCheck() {
 
   console.log("");
+
   console.log(
     "=============================================="
   );
+
   console.log(
     "       PORTFOLIO STARTUP CHECK"
   );
+
   console.log(
     "=============================================="
   );
+
   console.log("");
 
 
@@ -99,7 +174,6 @@ async function portfolioCheck() {
   console.log(
     "⏳ Starting portfolio system check..."
   );
-
 
   await wait(100);
 
@@ -115,15 +189,6 @@ async function portfolioCheck() {
     );
 
 
-  /*
-    If index.js completely fails,
-    the rest of the system cannot be
-    reliably checked.
-
-    We return safely instead of crashing
-    the entire portfolio.
-  */
-
   if (!indexResult.success) {
 
     console.warn(
@@ -135,21 +200,27 @@ async function portfolioCheck() {
     );
 
     console.log("");
+
     console.log(
       "=============================================="
     );
+
     console.log(
       "PORTFOLIO STARTUP CHECK COMPLETE WITH WARNINGS"
     );
+
     console.log(
       "=============================================="
     );
+
     console.log("");
 
     return {
       success: false,
       index: false,
       media: false,
+      mediaLoader: false,
+      sounds: false,
       data: false,
       siteText: false,
       pages: [],
@@ -157,6 +228,7 @@ async function portfolioCheck() {
         indexResult.error,
       ],
     };
+
   }
 
 
@@ -168,6 +240,28 @@ async function portfolioCheck() {
     await loadModule(
       "media.js",
       () => import("../media/media.js")
+    );
+
+
+  /* =======================================================
+     MEDIA LOADER
+  ======================================================= */
+
+  const mediaLoaderResult =
+    await loadModule(
+      "mediaLoader.js",
+      () => import("../media/mediaLoader.js")
+    );
+
+
+  /* =======================================================
+     SOUND.JS
+  ======================================================= */
+
+  const soundResult =
+    await loadModule(
+      "sound.js",
+      () => import("../media/sounds/sound.js")
     );
 
 
@@ -200,30 +294,48 @@ async function portfolioCheck() {
   const errors = [];
 
 
-  if (
-    !mediaResult.success
-  ) {
+  if (!mediaResult.success) {
+
     errors.push(
       "media.js failed to load."
     );
+
   }
 
 
-  if (
-    !dataResult.success
-  ) {
+  if (!mediaLoaderResult.success) {
+
+    errors.push(
+      "mediaLoader.js failed to load."
+    );
+
+  }
+
+
+  if (!soundResult.success) {
+
+    errors.push(
+      "sound.js failed to load."
+    );
+
+  }
+
+
+  if (!dataResult.success) {
+
     errors.push(
       "data.js failed to load."
     );
+
   }
 
 
-  if (
-    !siteTextResult.success
-  ) {
+  if (!siteTextResult.success) {
+
     errors.push(
       "siteText.js failed to load."
     );
+
   }
 
 
@@ -253,9 +365,7 @@ async function portfolioCheck() {
     );
 
 
-  if (
-    indexHasMedia
-  ) {
+  if (indexHasMedia) {
 
     console.log(
       "✓ index.js → media loaded."
@@ -270,9 +380,7 @@ async function portfolioCheck() {
   }
 
 
-  if (
-    indexHasData
-  ) {
+  if (indexHasData) {
 
     console.log(
       "✓ index.js → data loaded."
@@ -287,9 +395,7 @@ async function portfolioCheck() {
   }
 
 
-  if (
-    indexHasSiteText
-  ) {
+  if (indexHasSiteText) {
 
     console.log(
       "✓ index.js → siteText loaded."
@@ -316,17 +422,13 @@ async function portfolioCheck() {
     null;
 
 
-  if (
-    mediaLoaded
-  ) {
+  if (mediaLoaded) {
 
     mediaObject =
       mediaResult.module.default;
 
 
-    if (
-      !mediaObject
-    ) {
+    if (!mediaObject) {
 
       console.warn(
         "⚠ media.js loaded but has no default export."
@@ -357,13 +459,7 @@ async function portfolioCheck() {
     );
 
 
-    /* =====================================================
-       IMAGES
-    ===================================================== */
-
-    if (
-      mediaObject.images
-    ) {
+    if (mediaObject.images) {
 
       console.log(
         "✓ Media images registered."
@@ -378,13 +474,7 @@ async function portfolioCheck() {
     }
 
 
-    /* =====================================================
-       VIDEOS
-    ===================================================== */
-
-    if (
-      mediaObject.videos
-    ) {
+    if (mediaObject.videos) {
 
       console.log(
         "✓ Media videos registered."
@@ -397,6 +487,156 @@ async function portfolioCheck() {
       );
 
     }
+
+
+    if (mediaObject.sounds) {
+
+      console.log(
+        "✓ Media sounds registered."
+      );
+
+    } else {
+
+      console.warn(
+        "⚠ Media sounds object not found."
+      );
+
+    }
+
+  }
+
+
+  /* =======================================================
+     SOUND CHECK
+  ======================================================= */
+
+  let soundsLoaded =
+    soundResult.success;
+
+
+  let soundsObject =
+    null;
+
+
+  if (soundsLoaded) {
+
+    soundsObject =
+      soundResult.module.default;
+
+
+    if (
+      soundsObject === undefined ||
+      soundsObject === null
+    ) {
+
+      console.warn(
+        "⚠ sound.js loaded but has no default export."
+      );
+
+      soundsLoaded = false;
+
+      errors.push(
+        "sound.js has no default export."
+      );
+
+    }
+
+  }
+
+
+  /* =======================================================
+     SOUND SUCCESS
+  ======================================================= */
+
+  if (soundsLoaded) {
+
+    console.log(
+      "✓ Sound system loaded successfully."
+    );
+
+
+    if (
+      typeof soundsObject === "object"
+    ) {
+
+      const soundKeys =
+        Object.keys(
+          soundsObject
+        );
+
+
+      if (soundKeys.length > 0) {
+
+        console.log(
+          `✓ Sounds registered: ${soundKeys.join(", ")}`
+        );
+
+      } else {
+
+        console.log(
+          "✓ sound.js loaded successfully."
+        );
+
+      }
+
+    }
+
+  }
+
+
+  /* =======================================================
+     MEDIA LOADER CHECK
+  ======================================================= */
+
+  let mediaLoaderLoaded =
+    mediaLoaderResult.success;
+
+
+  if (mediaLoaderLoaded) {
+
+    const loaderModule =
+      mediaLoaderResult.module;
+
+
+    if (
+      typeof loaderModule.default !== "function" &&
+      typeof loaderModule.preloadMedia !== "function"
+    ) {
+
+      console.warn(
+        "⚠ mediaLoader.js loaded but preloadMedia was not found."
+      );
+
+      mediaLoaderLoaded = false;
+
+      errors.push(
+        "mediaLoader.js has no preloadMedia function."
+      );
+
+    } else {
+
+      console.log(
+        "✓ Media loader system registered."
+      );
+
+    }
+
+  }
+
+
+  /* =======================================================
+     BACKGROUND MEDIA PRELOAD
+  ======================================================= */
+
+  const mediaPreloadResult =
+    await loadAllMedia();
+
+
+  if (!mediaPreloadResult.success) {
+
+    errors.push(
+      "Background media preload reported a warning."
+    );
 
   }
 
@@ -413,26 +653,11 @@ async function portfolioCheck() {
     null;
 
 
-  if (
-    dataLoaded
-  ) {
+  if (dataLoaded) {
 
     dataObject =
       dataResult.module.default;
 
-
-    /*
-      The important part:
-
-      data.js is considered loaded when
-      the module itself loads successfully.
-
-      We DO NOT require Object.keys(data)
-      to contain sections.
-
-      This prevents the false warning you
-      were seeing.
-    */
 
     if (
       dataObject === undefined ||
@@ -458,22 +683,12 @@ async function portfolioCheck() {
      DATA SUCCESS MESSAGE
   ======================================================= */
 
-  if (
-    dataLoaded
-  ) {
+  if (dataLoaded) {
 
     console.log(
       "✓ Portfolio data loaded successfully."
     );
 
-
-    /*
-      Only display the structure when
-      enumerable keys actually exist.
-
-      No warning is shown when there
-      are zero keys.
-    */
 
     if (
       dataObject !== null &&
@@ -489,9 +704,7 @@ async function portfolioCheck() {
         );
 
 
-      if (
-        dataKeys.length > 0
-      ) {
+      if (dataKeys.length > 0) {
 
         console.log(
           `✓ Data sections found: ${dataKeys.join(", ")}`
@@ -522,17 +735,13 @@ async function portfolioCheck() {
     null;
 
 
-  if (
-    siteTextLoaded
-  ) {
+  if (siteTextLoaded) {
 
     siteTextObject =
       siteTextResult.module.default;
 
 
-    if (
-      !siteTextObject
-    ) {
+    if (!siteTextObject) {
 
       console.warn(
         "⚠ siteText.js loaded but has no default export."
@@ -553,9 +762,7 @@ async function portfolioCheck() {
      SITE TEXT SUCCESS
   ======================================================= */
 
-  if (
-    siteTextLoaded
-  ) {
+  if (siteTextLoaded) {
 
     console.log(
       "✓ Site text loaded successfully."
@@ -568,9 +775,7 @@ async function portfolioCheck() {
       );
 
 
-    if (
-      siteTextKeys.length > 0
-    ) {
+    if (siteTextKeys.length > 0) {
 
       console.log(
         `✓ Text sections found: ${siteTextKeys.join(", ")}`
@@ -645,12 +850,32 @@ async function portfolioCheck() {
 
 
   /* =======================================================
-     INDEX EXPORT WARNINGS
+     MEDIA SOUND COUNT
   ======================================================= */
 
   if (
-    !indexHasMedia
+    soundsObject &&
+    typeof soundsObject === "object"
   ) {
+
+    const soundCount =
+      Object.keys(
+        soundsObject
+      ).length;
+
+
+    console.log(
+      `✓ Sounds available: ${soundCount}`
+    );
+
+  }
+
+
+  /* =======================================================
+     INDEX EXPORT WARNINGS
+  ======================================================= */
+
+  if (!indexHasMedia) {
 
     errors.push(
       "index.js does not export media."
@@ -659,9 +884,7 @@ async function portfolioCheck() {
   }
 
 
-  if (
-    !indexHasData
-  ) {
+  if (!indexHasData) {
 
     errors.push(
       "index.js does not export data."
@@ -670,9 +893,7 @@ async function portfolioCheck() {
   }
 
 
-  if (
-    !indexHasSiteText
-  ) {
+  if (!indexHasSiteText) {
 
     errors.push(
       "index.js does not export siteText."
@@ -688,6 +909,8 @@ async function portfolioCheck() {
   const everythingLoaded =
     indexResult.success &&
     mediaLoaded &&
+    mediaLoaderLoaded &&
+    soundsLoaded &&
     dataLoaded &&
     siteTextLoaded;
 
@@ -696,14 +919,13 @@ async function portfolioCheck() {
 
 
   console.log("");
+
   console.log(
     "=============================================="
   );
 
 
-  if (
-    everythingLoaded
-  ) {
+  if (everythingLoaded) {
 
     console.log(
       "PORTFOLIO STARTUP CHECK COMPLETE"
@@ -722,11 +944,31 @@ async function portfolioCheck() {
     );
 
     console.log(
+      "✓ mediaLoader.js loaded."
+    );
+
+    console.log(
+      "✓ sound.js loaded."
+    );
+
+    console.log(
       "✓ data.js loaded."
     );
 
     console.log(
       "✓ siteText.js loaded."
+    );
+
+    console.log(
+      "✓ Images loaded."
+    );
+
+    console.log(
+      "✓ Videos loaded."
+    );
+
+    console.log(
+      "✓ Sounds loaded."
     );
 
     console.log(
@@ -741,6 +983,10 @@ async function portfolioCheck() {
 
     console.warn(
       "Some portfolio systems reported warnings."
+    );
+
+    console.warn(
+      "The portfolio will continue loading."
     );
 
   }
@@ -767,6 +1013,15 @@ async function portfolioCheck() {
 
     media:
       mediaLoaded,
+
+    mediaLoader:
+      mediaLoaderLoaded,
+
+    sounds:
+      soundsLoaded,
+
+    mediaPreload:
+      mediaPreloadResult.success,
 
     data:
       dataLoaded,

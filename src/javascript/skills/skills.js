@@ -118,6 +118,11 @@ const createSkillsScene = (container) => {
     height
   );
 
+  renderer.setClearColor(
+    0x000000,
+    0
+  );
+
   renderer.outputColorSpace =
     THREE.SRGBColorSpace;
 
@@ -141,6 +146,7 @@ const createSkillsScene = (container) => {
 
   // ==========================================
   // CARD
+  // TRANSPARENT GLASS STYLE
   // ==========================================
 
   const cardGeometry =
@@ -158,12 +164,24 @@ const createSkillsScene = (container) => {
   const cardMaterial =
     new THREE.MeshPhysicalMaterial({
       color: cardColor,
-      metalness: 0.55,
-      roughness: 0.25,
+
+      transparent: true,
+
+      opacity: 0.16,
+
+      metalness: 0.45,
+
+      roughness: 0.22,
+
       clearcoat: 1,
-      clearcoatRoughness: 0.18,
+
+      clearcoatRoughness: 0.15,
+
       emissive: accentPrimary,
-      emissiveIntensity: 0.18,
+
+      emissiveIntensity: 0.08,
+
+      depthWrite: false,
     });
 
   const card =
@@ -218,7 +236,7 @@ const createSkillsScene = (container) => {
     new THREE.LineBasicMaterial({
       color: accentSecondary,
       transparent: true,
-      opacity: 0.3,
+      opacity: 0.45,
     });
 
   const innerFrame =
@@ -525,6 +543,7 @@ const createSkillsScene = (container) => {
   const startScramble = (
     newSkill
   ) => {
+
     currentText = newSkill;
 
     scrambleText =
@@ -549,6 +568,7 @@ const createSkillsScene = (container) => {
     text,
     opacity = 1
   ) => {
+
     skillContext.clearRect(
       0,
       0,
@@ -557,6 +577,7 @@ const createSkillsScene = (container) => {
     );
 
     // Orange glow
+
     skillContext.shadowColor =
       accentPrimary.getStyle();
 
@@ -585,10 +606,12 @@ const createSkillsScene = (container) => {
     );
 
     // Reset shadow
+
     skillContext.shadowBlur =
       0;
 
     // Small secondary line
+
     skillContext.font =
       "500 20px Inter, Arial, Helvetica, sans-serif";
 
@@ -601,7 +624,8 @@ const createSkillsScene = (container) => {
       285
     );
 
-    skillContext.globalAlpha = 1;
+    skillContext.globalAlpha =
+      1;
 
     skillTexture.needsUpdate =
       true;
@@ -614,6 +638,7 @@ const createSkillsScene = (container) => {
   const updateScramble = (
     now
   ) => {
+
     if (!isScrambling) {
       return;
     }
@@ -638,6 +663,7 @@ const createSkillsScene = (container) => {
       i < target.length;
       i++
     ) {
+
       const characterProgress =
         i / target.length;
 
@@ -645,11 +671,16 @@ const createSkillsScene = (container) => {
         progress >
         characterProgress
       ) {
+
         result += target[i];
+
       } else {
+
         result +=
           randomCharacter();
+
       }
+
     }
 
     displayedText =
@@ -660,18 +691,23 @@ const createSkillsScene = (container) => {
     );
 
     if (progress >= 1) {
+
       displayedText =
         target;
 
-      isScrambling = false;
+      isScrambling =
+        false;
 
       drawSkill(
         displayedText
       );
+
     }
+
   };
 
   // Initial text
+
   drawSkill(
     currentText
   );
@@ -683,7 +719,8 @@ const createSkillsScene = (container) => {
   let transitionActive =
     false;
 
-  let transitionStart = 0;
+  let transitionStart =
+    0;
 
   let transitionDuration =
     650;
@@ -694,6 +731,7 @@ const createSkillsScene = (container) => {
   const startTransition = (
     now
   ) => {
+
     if (
       transitionActive ||
       isScrambling
@@ -708,13 +746,18 @@ const createSkillsScene = (container) => {
       now;
 
     nextSkillIndex =
-      (currentSkillIndex + 1) %
+      (
+        currentSkillIndex +
+        1
+      ) %
       skills.length;
+
   };
 
   const updateTransition = (
     now
   ) => {
+
     if (!transitionActive) {
       return;
     }
@@ -731,6 +774,7 @@ const createSkillsScene = (container) => {
       );
 
     // Smooth easing
+
     const eased =
       1 -
       Math.pow(
@@ -738,11 +782,16 @@ const createSkillsScene = (container) => {
         3
       );
 
+    // Prevent unused calculation
+
+    void eased;
+
     // ==================================
     // CURRENT SKILL GOES UP
     // ==================================
 
     if (progress < 0.5) {
+
       const phase =
         progress / 0.5;
 
@@ -766,17 +815,20 @@ const createSkillsScene = (container) => {
       currentSkillIndex !==
       nextSkillIndex
     ) {
+
       currentSkillIndex =
         nextSkillIndex;
 
       startScramble(
         skills[currentSkillIndex]
       );
+
     }
 
     const phase =
-      (progress - 0.5) /
-      0.5;
+      (
+        progress - 0.5
+      ) / 0.5;
 
     const move =
       -1.4 +
@@ -789,6 +841,7 @@ const createSkillsScene = (container) => {
       phase;
 
     if (progress >= 1) {
+
       skillMesh.position.y =
         -0.05;
 
@@ -797,7 +850,9 @@ const createSkillsScene = (container) => {
 
       transitionActive =
         false;
+
     }
+
   };
 
   // ==========================================
@@ -814,7 +869,8 @@ const createSkillsScene = (container) => {
   // PARTICLES
   // ==========================================
 
-  const particleCount = 90;
+  const particleCount =
+    90;
 
   const particlePositions =
     new Float32Array(
@@ -826,22 +882,32 @@ const createSkillsScene = (container) => {
     i < particleCount;
     i++
   ) {
+
     const index =
       i * 3;
 
     particlePositions[index] =
-      (Math.random() - 0.5) * 8;
+      (
+        Math.random() -
+        0.5
+      ) * 8;
 
     particlePositions[
       index + 1
     ] =
-      (Math.random() - 0.5) * 6;
+      (
+        Math.random() -
+        0.5
+      ) * 6;
 
     particlePositions[
       index + 2
     ] =
-      (Math.random() - 0.5) * 3 -
-      1;
+      (
+        Math.random() -
+        0.5
+      ) * 3 - 1;
+
   }
 
   const particleGeometry =
@@ -1059,18 +1125,23 @@ const createSkillsScene = (container) => {
   const handleMouseMove = (
     event
   ) => {
+
     const rect =
       container.getBoundingClientRect();
 
     const x =
-      (event.clientX -
-        rect.left) /
+      (
+        event.clientX -
+        rect.left
+      ) /
         rect.width -
       0.5;
 
     const y =
-      (event.clientY -
-        rect.top) /
+      (
+        event.clientY -
+        rect.top
+      ) /
         rect.height -
       0.5;
 
@@ -1079,6 +1150,7 @@ const createSkillsScene = (container) => {
 
     targetRotation.x =
       y * -0.3;
+
   };
 
   container.addEventListener(
@@ -1091,6 +1163,7 @@ const createSkillsScene = (container) => {
   // ==========================================
 
   const handleResize = () => {
+
     const newWidth =
       container.clientWidth ||
       600;
@@ -1116,6 +1189,7 @@ const createSkillsScene = (container) => {
         2
       )
     );
+
   };
 
   window.addEventListener(
@@ -1133,6 +1207,7 @@ const createSkillsScene = (container) => {
   let animationFrame;
 
   const animate = () => {
+
     animationFrame =
       requestAnimationFrame(
         animate
@@ -1158,14 +1233,16 @@ const createSkillsScene = (container) => {
     // ==================================
 
     cardGroup.rotation.x +=
-      (targetRotation.x -
-        cardGroup.rotation.x) *
-      0.05;
+      (
+        targetRotation.x -
+        cardGroup.rotation.x
+      ) * 0.05;
 
     cardGroup.rotation.y +=
-      (targetRotation.y -
-        cardGroup.rotation.y) *
-      0.05;
+      (
+        targetRotation.y -
+        cardGroup.rotation.y
+      ) * 0.05;
 
     cardGroup.rotation.z =
       Math.sin(
@@ -1192,8 +1269,7 @@ const createSkillsScene = (container) => {
       0.55 +
       Math.sin(
         elapsed * 1.5
-      ) *
-        0.1;
+      ) * 0.1;
 
     // ==================================
     // LIGHT MOVEMENT
@@ -1203,15 +1279,13 @@ const createSkillsScene = (container) => {
       3.5 +
       Math.sin(
         elapsed * 0.8
-      ) *
-        0.7;
+      ) * 0.7;
 
     orangeLight.position.y =
       2.8 +
       Math.cos(
         elapsed * 0.7
-      ) *
-        0.4;
+      ) * 0.4;
 
     // ==================================
     // SCRAMBLE
@@ -1240,12 +1314,14 @@ const createSkillsScene = (container) => {
         skillVisibleStart >
         visibleDuration
     ) {
+
       skillVisibleStart =
         now;
 
       startTransition(
         now
       );
+
     }
 
     // ==================================
@@ -1256,6 +1332,7 @@ const createSkillsScene = (container) => {
       scene,
       camera
     );
+
   };
 
   animate();
@@ -1265,6 +1342,7 @@ const createSkillsScene = (container) => {
   // ==========================================
 
   return () => {
+
     cancelAnimationFrame(
       animationFrame
     );
@@ -1318,13 +1396,17 @@ const createSkillsScene = (container) => {
         renderer.domElement
       )
     ) {
+
       container.removeChild(
         renderer.domElement
       );
+
     }
 
     scene.clear();
+
   };
+
 };
 
 export default createSkillsScene;

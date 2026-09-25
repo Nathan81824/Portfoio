@@ -93,7 +93,7 @@ export {
    SOUNDS
 ===================================================== */
 
-export * from "./sounds/sound.js";
+export * from "./media/sounds/sound.js";
 
 
 /* =====================================================

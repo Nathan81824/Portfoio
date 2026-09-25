@@ -1,11 +1,11 @@
 
-import jumpSound from "../../assets/sounds/jump.mp3";
-import clickSound from "../../assets/sounds/click.mp3";
-import errorSound from "../../assets/sounds/error.mp3";
-import gameOverSound from "../../assets/sounds/gameover.mp3";
-import gameBonusSound from "../../assets/sounds/GameBonus.mp3";
-import victorySound from "../../assets/sounds/victory.mp3";
-import notificationSound from "../../assets/sounds/notification.mp3";
+import jumpSound from "../../../assets/sounds/jump.mp3";
+import clickSound from "../../../assets/sounds/click.mp3";
+import errorSound from "../../../assets/sounds/error.mp3";
+import gameOverSound from "../../../assets/sounds/gameover.mp3";
+import gameBonusSound from "../../../assets/sounds/GameBonus.mp3";
+import victorySound from "../../../assets/sounds/victory.mp3";
+import notificationSound from "../../../assets/sounds/notification.mp3";
 
 // =========================================================
 // SOUND CONFIG

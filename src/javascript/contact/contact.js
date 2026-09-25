@@ -38,7 +38,7 @@ import {
   resolveMessageAudioUrls,
   createAudioSignedUrl,
   getChatAudioBucket,
-} from "./chat.js";
+} from "../contact/chat.js";
 
 
 /* =========================================================
